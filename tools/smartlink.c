@@ -70,6 +70,7 @@ int main(int argc, char **argv)
   char *lpath;
   char *rpath;
   int rpath_in_use = 0;
+  int skip_rpath = 0;
   char *lp;
   char *rp;
   char *full_rpath;
@@ -102,6 +103,8 @@ int main(int argc, char **argv)
       fatal("Out of memory (2)!\n");
     }
   }
+  if (getenv("DEB_BUILD_ARCH") || getenv("NO_RPATH_PLEASE"))
+    skip_rpath = 1;
 
   path = getenv("PATH");
 
@@ -140,17 +143,20 @@ int main(int argc, char **argv)
   new_argc = 0;
   full_rpath = rpath;
 
+  /* small hack for Debian (and those who don't want rpath at all) */
+  if (!skip_rpath) {
 #ifdef USE_Wl
-  strcat(rpath, "-Wl,-rpath,");
+    strcat(rpath, "-Wl,-rpath,");
 #elif defined(USE_Wl_R)
-  strcat(rpath, "-Wl,-R");
+    strcat(rpath, "-Wl,-R");
 #elif defined(USE_R)
-  strcat(rpath, "-R");
+    strcat(rpath, "-R");
 #elif defined(USE_LD_LIBRARY_PATH)
-  strcat(rpath, "LD_LIBRARY_PATH=");
+    strcat(rpath, "LD_LIBRARY_PATH=");
 #endif /* defined(USE_Wl) || defined(USE_Wl_R) || defined(USE_R) || defined(USE_LD_LIBRARY_PATH) */
-  rpath += strlen(rpath);
-
+    rpath += strlen(rpath);
+  }
+ 
   new_argv[new_argc++] = argv[1];
 
   if (!strcmp(argv[1], "cpp")) {
@@ -179,10 +185,10 @@ int main(int argc, char **argv)
 	}
 	if (!argv[i][2]) {
 	  i++;
-	  if (i < argc) {
+	  if (!skip_rpath && i < argc) {
 	    rpath_in_use |= add_path(rpath, argv[i]);
 	  }
-	} else {
+	} else if (!skip_rpath) {
 	  rpath_in_use |= add_path(rpath, argv[i] + 2);
 	}
 	continue;
@@ -245,14 +251,16 @@ int main(int argc, char **argv)
 
     while (p = strchr(ld_lib_path, ':')) {
       *p = 0;
-      rpath_in_use |= add_path(rpath, ld_lib_path);
+      if (!skip_rpath)
+         rpath_in_use |= add_path(rpath, ld_lib_path);
       *p = ':';		/* Make sure LD_LIBRARY_PATH isn't modified */
       ld_lib_path = p+1;
     }
-    rpath_in_use |= add_path(rpath, ld_lib_path);
+    if (!skip_rpath)
+       rpath_in_use |= add_path(rpath, ld_lib_path);
   }
 
-  if (rpath_in_use) {
+  if (!skip_rpath && rpath_in_use) {
     /* Delete the terminating ':' */
     rpath[strlen(rpath) - 1] = 0;
 
