@@ -243,7 +243,10 @@ static mapping build_env_vars(string f, object id, string path_info)
   new["REQUEST_METHOD"]=id->method||"GET";
   new["SERVER_PORT"] = id->my_fd?
     ((id->my_fd->query_address(1)||"foo unknown")/" ")[1]: "Internal";
-    
+
+  if(id->ssl_accept_callback)
+    new["HTTPS"]="on";
+
   return new;
 }
 
@@ -885,13 +888,13 @@ static string make_tag_attributes(mapping in)
   for(int i=0; i<sizeof(a); i++)
     if(lower_case(b[i]) != a[i])
       if(is_safe_string(b[i]))
-	a[i]+="="+b[i];
+        a[i]+="=\""+b[i]+"\"";
       else
-	// Bug inserted again. Grmbl.
-	a[i]+="=\""+replace(b[i], ({ "\"", "<", ">" //, "&"
-	}) ,
-			    ({ "&quot;", "&lt;", "&gt;" //, "&amp;"
-			    }))+"\"";
+        // Bug inserted again. Grmbl.
+        a[i]+="=\""+replace(b[i], ({ "\"", "<", ">" //, "&"
+        }) ,
+                            ({ "&quot;", "&lt;", "&gt;" //, "&amp;"
+                            }))+"\"";
   return a*" ";
 }
 
@@ -927,21 +930,6 @@ static string make_container(string tag,mapping in, string contents)
   return make_tag(tag,in)+contents+"</"+tag+">";
 }
 
-static string dirname( string file )
-{
-  if(!file) 
-    return "/";
-  mixed tmp;
-  if(file[-1] == '/')
-    if(strlen(file) > 1)
-      return file[0..strlen(file)-2];
-    else
-      return file;
-  tmp=file/"/";
-  if(sizeof(tmp)==2 && tmp[0]=="")
-    return "/";
-  return tmp[0..sizeof(tmp)-2]*"/";
-}
 
 static string conv_hex( int color )
 {
@@ -1733,7 +1721,7 @@ mixed get_scope_var(string variable, void|string scope, object id)
 
   if (!id->misc->_scope_status) {
       if (id->variables && id->variables[variable])
-          return variable;
+          return id->variables[variable];
       return 0;
   }
   
