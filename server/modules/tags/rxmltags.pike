@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2003 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -404,7 +404,7 @@ int database_created(string file)
   mixed key = open_db_file();
   database->seek((p*8)+4);
   sscanf(database->read(4), "%4c", w);
-  if(!w)
+  if(!w || (w>>31) > 0)
   {
     w=main_database_created();
     database_set_created(file, w);
@@ -707,9 +707,23 @@ array permitted = ({ "1", "2", "3", "4", "5", "6", "7", "8", "9",
 		     "0", "-", "*", "+","/", "%", "&", "|", "(", ")" });
 string sexpr_eval(string what)
 {
-  array q = what/"";
+  array   q = what/"";
+  mixed   error;
+  string  ret;
+  
+  if (!what || !sizeof(what))
+      return "";
+  
   what = "mixed foo(){ return "+(q-(q-permitted))*""+";}";
-  return (string)compile_string( what )()->foo();
+
+  error = catch {
+      ret = compile_string( what )()->foo();
+  };
+
+  if (error)
+      return "";
+
+  return ret;
 }
 
 //! container: scope
@@ -2216,7 +2230,7 @@ string tag_allow(string a, mapping (string:string) m,
   
   if(m->exists) {
     CACHE(10);
-    TEST(id->conf->try_get_file(fix_relative(m->exists,id),id,1));
+    TEST(id->conf->try_get_file(fix_relative(m->exists,id),id,1,1));
   }
 
   if(m->filename)
@@ -2955,10 +2969,11 @@ string tag_pr(string tagname, mapping m)
     m->src = "/(internal,image)/power-"+size+"-"+color;
     
     if(!m->alt)
-        m->alt="Powered by Caudium";
+        m->alt="Powered by Caudium Webserver";
     if(!m->border)
         m->border="0";
     
+    m_delete(m, size);
     return ("<a href=\"http://caudium.net/\">"+make_tag("img", m)+"</a>");
 }
 
