@@ -86,7 +86,7 @@ class CGIScript
 
     // Send input to script..
     if(tosend)
-      sendfile(tosend, stdin, lambda(int i,mixed q){ stdin=0; });
+      sendfile(tosend, stdin, lambda(object pipe){ stdin=0; pipe=0; });
     else
     {
       stdin->close();
@@ -276,7 +276,7 @@ class CGIScript
     {
        array(int) statres = file_stat(id->realfile);
        if (statres[5] >= 100) uid = statres[5];
-       if (statres[6] >= 100) gid = statres[5];
+       if (statres[6] >= 100) gid = statres[6];
     }
 
     environment =(QUERY(env)?getenv():([]));

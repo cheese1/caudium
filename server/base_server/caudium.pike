@@ -166,15 +166,17 @@ void watchdog_on()
   
    if(strlen(sock))
    {
+     object privs=Privs("Caudium: Turning Watchdog On");
      Stdio.File wds = Stdio.File();
      if(!wds->connect_unix(sock))
      {
-       werror("Watchdog not listening. Unable to turn watchdog on.\n");
+       report_error("Watchdog not listening. Unable to turn watchdog on.\n");
        return;
      }
      wds->write("WATCHDOG ON %d", pid);
      wds->close(); 
      watchdog_enabled=1;
+     privs=0;
    }
 }
 
@@ -187,6 +189,7 @@ void watchdog_off()
   
    if(strlen(sock))
    {
+     object privs=Privs("Caudium: Turning Watchdog Off");
      Stdio.File wds = Stdio.File();
      if(!wds->connect_unix(sock))
      {
@@ -196,6 +199,7 @@ void watchdog_off()
      wds->write("WATCHDOG OFF %d", pid);
      wds->close(); 
      watchdog_enabled=0;
+     privs=0;
    }
 }
 
@@ -322,6 +326,7 @@ private static void low_shutdown(int exit_type)
 #endif /* USE_SHUTDOWN_FILE */
 
 
+#if 0
       // Try to kill the start-script.
       if(startpid != getpid()) {
       	if(exit_type)
@@ -329,6 +334,8 @@ private static void low_shutdown(int exit_type)
 	else
           kill(startpid, signum("SIGTERM"));
       }
+#endif
+
     }
   }
 
@@ -2467,10 +2474,31 @@ private void define_global_variables(int argc, array (string) argv)
 	"The number of seconds Caudium has to pat the watchdog before it tries to restart Caudium.");
 
   globvar("watchdog_checkall", 1, "Watchdog: Check all Virtual Servers", TYPE_FLAG,
-	"Should the watchdog check every virtual server, or just the first one it finds in the configuration?");
+	"Should the watchdog check every virtual server, or just the first one it finds in the configuration?", 0, lambda(){ return !(QUERY(watchdog_method)=="GET"); });
 
   globvar("watchdog_enable", 1, "Watchdog: Enable Watchdog", TYPE_FLAG,
 	"Should the Caudium Watchdog be enabled?");
+
+	globvar(
+		"watchdog_method",
+		"PING",
+		"Watchdog: Check method",
+		TYPE_MULTIPLE_STRING,
+		"<p>Which method whould the watchdog use?<p>"
+		"<ul>"
+		"<li><strong>PING</strong>: This method will make a PING request to "
+		"the Caudium server which should repond with a PONG. This will basically "
+		"check a Caudium server is still listening and can perform very basic "
+		"operations.</li>"
+		"<li><strong>GET</strong>: This method will make an HTTP GET request to "
+		"the Caudium server, which should answer <strong>anything</strong>. You "
+		"can optionnaly check every 1<sup>st</sup> level virtual host or only the "
+		"first of them. This will check a virtual server is still up and delivers "
+		"data. The watchdog will be happy with any HTTP error return code, since "
+		"restarting Caudium because of an HTTP 404 or 500 error code probably "
+		"won't help and end up in an infinite Caudium restart loop.</li>"
+		"</ul>",
+		({ "PING", "GET" }));
 
 #if constant(SpiderMonkey.Context);
   globvar("js_enable", 0, "JavaScript Support: Enable support", TYPE_FLAG,
@@ -3173,12 +3201,12 @@ void scan_module_dir(string d)
   array q  = (get_dir( d )||({})) - ({".","..","CVS","RCS" });
 
   if (!sizeof(q)) {
-    MD_PERROR(("No modules in here. Continuing elsewhere\n"));
+    MD_PERROR(("No modules in here (no files). Continuing elsewhere\n"));
     return;
   }
   
   if (search(q, ".no_modules")!=-1) {
-    MD_PERROR(("No modules in here. Continuing elsewhere\n"));
+    MD_PERROR(("No modules in here (.no_modules). Continuing elsewhere\n"));
     return;
   }
   

@@ -870,7 +870,7 @@ string new_module_form(object id, object node)
       cif->status_row(node)+
       //	  display_tabular_header(node)+
       "<table><tr><td>&nbsp;<td><h2>Select a module to add "
-      "from the list below. You click on it's header to add it.</h2>";
+      "from the list below. Click on it's header to add it.</h2>";
   
      
     foreach(mods, q)
@@ -900,7 +900,12 @@ string new_module_form(object id, object node)
 mapping new_module(object id, object node)
 {
   string varname;
-  if(!sizeof(id->variables))
+  /* since Caudium 1.4, id->variables also contains empty variables
+   in HTTP request but since we are called with ?190099293 for example
+   we don't want to load such a module and thus remove empty entries from
+   the mapping
+       /vida */
+  if(!sizeof(id->variables) || !sizeof(values(id->variables)[0]))
     return stores(new_module_form(id, node));
   if(id->variables->_add_new_modules) {
     // Compact mode.
@@ -908,7 +913,7 @@ mapping new_module(object id, object node)
     foreach(toadd[1..], varname)
       new_module_copy(node, varname, id);
     varname = toadd[0];
-  } else 
+  } else
     varname = indices(id->variables)[0];
   return new_module_copy(node, varname, id);
 }
@@ -1010,7 +1015,7 @@ int low_enable_configuration(string name, string type)
 //!
 mapping new_configuration(object id)
 {
-  if(!sizeof(id->variables))
+  if(!sizeof(id->variables - id->empty_variables))
     return stores(new_configuration_form());
   if(id->variables->no)
     return Caudium.HTTP.redirect(CONFIG_URL+id->not_query[1..]+"?"+bar++);
