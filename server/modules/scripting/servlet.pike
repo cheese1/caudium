@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -32,8 +32,8 @@
 
 #include <module.h>
 
-string cvs_version = "$Id$";
-int thread_safe=1;
+constant cvs_version = "$Id$";
+constant thread_safe=1;
 
 inherit "module";
 inherit "caudiumlib";
@@ -41,8 +41,14 @@ static inherit "http";
 
 constant module_type = MODULE_LOCATION;
 constant module_name = "Java Servlet bridge";
+#if constant(Java)
 constant module_doc  = "An interface to Java <a href=\"http://jserv.javasoft.com/"
     "products/java-server/servlets/index.html\">Servlets</a>.";
+#else
+constant module_doc  = "An interface to Java <a href=\"http://jserv.javasoft.com/"
+    "products/java-server/servlets/index.html\">Servlets</a>."
+    "<br><font color=\"red\">You'll need Java support in your pike in order to use this module.</font>";
+#endif
 constant module_unique = 0;
 
 /* Doesn't work on NT yet */

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,8 +32,8 @@
 //! cvs_version: $Id$
 //
 
-string cvs_version = "$Id$";
-int thread_safe=1;   /* Probably. Check _root */
+constant cvs_version = "$Id$";
+constant thread_safe=1;   /* Probably. Check _root */
 
 #include <module.h>
 inherit "module";
@@ -188,8 +188,9 @@ class Dirnode
 
 void create()
 {
-  defvar("indexfiles", ({ "index.html", "Main.html", "welcome.html",
-			  "index.cgi", "index.lpc","index.pike", "index.htm" }),
+  defvar("indexfiles", ({ "index.html", "Main.html", "welcome.html", "index.rxml",
+			  "index.cgi", "index.lpc", "index.pike", "index.htm",
+			  "index.php", "index.php3", "index.xhtml", "index.xht" }),
 	 "Index files", TYPE_STRING_LIST,
 	 "If one of these files is present in a directory, it will "
 	 "be returned instead of the directory listing.");

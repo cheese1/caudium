@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -191,8 +191,8 @@ void create()
 	 method_is_file_or_getpwent);
   
 
-  defvar("Swashii", 1, "Turn }{| into едц", TYPE_FLAG|VAR_MORE,
-	 "Will make the module turn }{| into едц in the Real Name "+
+  defvar("Swashii", 1, "Turn }{| into Swashii", TYPE_FLAG|VAR_MORE,
+	 "Will make the module turn }{| into Swashii in the Real Name "+
 	 "field in the userinfo database. This is useful in a european "+
 	 "country, Sweden.");
 
@@ -440,7 +440,11 @@ array|int auth(array(string) auth, object id)
     return ({0, u, p}); 
   }
   
+#if constant(Crypto.crypt_md5)
+  if(!users[u][1]) || (users[u][1][0..2] == "$1$" && Crypto.crypt_md5(p, users[u][1]) == users[u][1]) || !crypt(p, users[u][1]))
+#else
   if(!users[u][1] || !crypt(p, users[u][1]))
+#endif
   {
     fail++;
     failed[id->remoteaddr]++;
@@ -508,9 +512,9 @@ int may_disable() { return 0; }
 //!  name: Password command arguments
 //
 //! defvar: Swashii
-//! Will make the module turn }{| into едц in the Real Name 
+//! Will make the module turn }{| into Swashii in the Real Name 
 //!  type: TYPE_FLAG|VAR_MORE
-//!  name: Turn }{| into едц
+//!  name: Turn }{| into Swashii
 //
 //! defvar: Strip
 //! This will strip everyting after the first ',' character from the GECOS field of the user database.

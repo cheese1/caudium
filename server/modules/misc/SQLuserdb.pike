@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1997 Francesco Chemolli <kinkie@kame.usr.dsi.unimi.it>
  * 
  * This program is free software; you can redistribute it and/or
@@ -37,7 +37,7 @@
  * or should have been shipped along with the module.
  */
 
-string cvs_version="$Id$";
+constant cvs_version="$Id$";
 
 //#define SQLAUTHDEBUG
 
@@ -52,6 +52,7 @@ constant module_doc  = "This module implements user authentication via a SQL ser
 "code.<P>"
 "&copy; 1997 Francesco Chemolli, distributed freely under GPL license.";
 constant module_unique = 1;
+constant thread_safe   = 1;
 
 #ifdef SQLAUTHDEBUG
 #define DEBUGLOG(X) perror("SQLuserdb: "+X+"\n");

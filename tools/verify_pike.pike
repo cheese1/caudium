@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -81,7 +81,7 @@ int main(int argc, array argv)
 
   if(ver < 7.0 ||
      (ver == 7.0 && rel < 268))
-    warning("Caudium 1.1 requires Pike 7.0.268 or newer.");
+    warning("Caudium 1.2 requires Pike 7.0.268 or newer.");
 
   if(ver == 7.1) {
     warning("We strongly recommend the use of Pike 7.0 for Caudium. Pike 7.1 is less\n"

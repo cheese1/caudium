@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -124,8 +124,10 @@ string headlineoutput(string tag_name, mapping args, string contents,
      }
      else
      {
+       mixed err = catch {
        object me = Headlines.Sites[ sites [lower_case(args->site) ] ]();
        me->refetch(update_me);
+       };
      }
    }
    else

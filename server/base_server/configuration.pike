@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -18,6 +18,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
+
+/*
+**! file: base_server/configuration.pike
+**!   Caudium's Configuration InterFace (CIF) main handler
+**!
+**! cvs_version: $Id$
+*/
 
 string cvs_version = "$Id$";
 #include <module.h>
@@ -108,6 +115,8 @@ void killvar(string name)
   m_delete(variables, name);
 }
 
+//! class: ConfigurableWrappe
+//!  To be documented
 static class ConfigurableWrapper
 {
   int mode;
@@ -180,6 +189,8 @@ string comment()
   return QUERY(comment);
 }
 
+//! class: Priority
+//!  To be documented.
 class Priority 
 {
   array (object) url_modules = ({ });
@@ -225,6 +236,8 @@ array (object) allocate_pris()
 }
 
 #ifndef __AUTO_BIGNUM__
+//! class: Bignum
+//!  Bignum handler.
 class Bignum {
 #if constant(Gmp.mpz) // Perfect. :-)
   object gmp = Gmp.mpz();
@@ -2021,6 +2034,8 @@ public array stat_file(string file, object id)
   TRACE_LEAVE("Returning 'no such file'");
 }
 
+//! class: StringFile
+//!  To be documented.
 class StringFile
 {
   string data;
@@ -2302,11 +2317,24 @@ public string real_file(string file, object id)
   }
 }
 
-// Convenience functions used in quite a lot of modules. Tries to
-// read a file into memory, and then returns the resulting string.
 
-// NOTE: A 'file' can be a cgi script, which will be executed, resulting in
-// a horrible delay.
+//
+//! method: mixed try_get_file(string s, object id, int|void status, int|void nocache)
+//!  Convenience function used in quite a lot of modules. Tries to read a file
+//!  into memory, and then returns the resulting string. Note that a 'file' 
+//!  can be a CGI script, which will executed, resulting in a horrible delay.
+//! arg: string s
+//!  The file to read.
+//! arg: object id
+//!  The Caudium Object Id
+//! arg: int|void status
+//!  Ask the function to return 1 if file exist or 0 if it doesn't.
+//! arg: int|void nocache
+//!  Set to 1 if you don't want to cache or use the caudium cache for this
+//!  access.
+//! returns:
+//!  A string with the content of file or int if you ask a status of the file
+//
 
 public mixed try_get_file(string s, object id, int|void status, int|void nocache)
 {
@@ -2874,7 +2902,7 @@ object enable_module( string modname )
 	     "might have (why the module are here, etc.)");
 
   me->defvar("_name", "", " Module name", TYPE_STRING|VAR_MORE,
-	     "An optional name. Set to something to remaind you what "
+	     "An optional name. Set to something to remind you what "
 	     "the module really does.");
   
   me->setvars(retrieve(modname + "#" + id, this));
@@ -3618,6 +3646,8 @@ void low_enable_all_modules() {
 
 #ifdef ENABLE_RAM_CACHE
 // Cacher for super request speed.
+//! class: DataCache
+//!  To be docmented
 class DataCache
 {
   mapping(string:array(string|mapping(string:mixed))) cache = ([]);
@@ -3713,14 +3743,16 @@ void create(string config)
 	  "you can make this value lower. With a small cache and a small "
 	  "percentage the GC routine will run more often.",
 	  ({ 5, 10, 15, 20, 25, 30, 35, 40, 50 }));
-#endif
+#endif /* ENABLE_RAM_CACHE */
+#ifdef ENABLE_NEW404
   defvar("ErrorTheme", "", "Error Theme", TYPE_STRING,
 	 "This is the theme to apply to any error messages generated " +
 	 "automatically by this server. Please enter an absolute path on the virtual " +
          "filesystem(s), otherwise the system-wide default will be used." );
-  defvar("Old404", 0, "Old-style 404's", TYPE_FLAG,
+  defvar("Old404", 1, "Old-style 404's", TYPE_FLAG,
 	 "This allows you to override the new style error responses and use " +
          "the old fasioned 404 handling." );
+#endif /* ENABLE_NEW404 */
   defvar("ZNoSuchFile", "<title>Sorry. I cannot find this resource</title>\n"
 	 "<body background='/(internal,image)/cowfish-bg' bgcolor='#ffffff'\n"
 	 "text='#000000' alink='#ff0000' vlink='#00007f' link='#0000ff'>\n"
@@ -3927,7 +3959,7 @@ void create(string config)
 	 "be used for such purposes.  Simply select a location that you are "
 	 "not likely to use for regular resources.");
 	 
-  defvar("use_scopes", "Off/Conditional", "Scopes compatibility", TYPE_STRING_LIST,
+  defvar("use_scopes", "On/Conditional", "Scopes compatibility", TYPE_STRING_LIST,
          "<p>This compatibility option manages the new feature of the Caudium Webserver "
          "known as <em>scopes</em>.</p>"
          "<p>Under Roxen 1.3, variable names can contain periods "
@@ -3973,7 +4005,7 @@ string _sprintf( )
 //!  name:  Comment
 //
 //! defvar: _name
-//! An optional name. Set to something to remaind you what the module really does.
+//! An optional name. Set to something to remind you what the module really does.
 //!  type: TYPE_STRING|VAR_MORE
 //!  name:  Module name
 //
@@ -4175,4 +4207,16 @@ string _sprintf( )
 //! Some modules may want to create links to internal resources.  This setting configures an internally handled location that can be used for such purposes.  Simply select a location that you are not likely to use for regular resources.
 //!  type: TYPE_LOCATION|VAR_MORE
 //!  name: Internal module resource mountpoint
+//
+//! defvar: use_scopes
+//! <p>This compatibility option manages the new feature of the Caudium Webserver known as <em>scopes</em>.</p><p>Under Roxen 1.3, variable names can contain periods (such as "new.form.variable") but with Caudium the scope-parsing code will attempt to make this a variable called "form.variable" in the "new" scope - and since there is no scope called "new", the action will fail - this breaks compatablity with existing RXML. A small example to illustrate the situation:</p><blockquote><pre>&lt;if variable="new.formvar is "&gt;
+//!	&lt;set variable="new.formvar" value="blargh"&gt;
+//!&lt;/if&gt;
+//!&lt;formoutput&gt;
+//!	&lt;form&gt;
+//!		&lt;input name="new.formvar"value="#new.formvar#"&gt;&lt;
+//!	/form&gt;
+//!&lt;/formoutput&gt;</pre></blockquote>
+//!  type: TYPE_STRING_LIST
+//!  name: Scopes compatibility
 //

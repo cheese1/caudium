@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -203,9 +203,12 @@ void create()
 		({ "base", "onelevel", "subtree" }) );
 
 	// LDAP server:
-        defvar ("CI_dir_server","localhost","LDAP server: Location",
-                   TYPE_STRING, "This is the host running the LDAP server with "
-                   "the authentication information.");
+        defvar ("CI_dir_server","ldap://localhost","LDAP server: Location",
+                   TYPE_STRING, "This is an URL of the host running the LDAP server with "
+                   "the authentication information. The URL has the following format:<br /> "
+                   "<blockquote>"
+                   "ldap://hostname/basedn?attrlist?scope?ext"
+                   "</blockquote>");
         defvar ("CI_basename","","LDAP server: Base name",
                    TYPE_STRING, "The distinguished name to use as a base for queries."
 		   "Typically, this would be an 'o' or 'ou' entry "

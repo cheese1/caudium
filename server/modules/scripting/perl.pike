@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@ inherit "caudiumlib";
 // written by Leif Stensson for Roxen Webserver. Ported to Caudium
 // by Jan Legenhausen and David Hedbor. 
 
-string cvs_version =
+constant cvs_version =
        "$Id$";
 
 constant module_type = MODULE_EXPERIMENTAL|MODULE_FILE_EXTENSION|MODULE_PARSER;

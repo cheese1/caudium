@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -134,7 +134,7 @@ void create()
 	 "_enable_ directory listings.\n");
 
   defvar("tilde", 0, "Directory Settings: Show backup files", TYPE_FLAG|VAR_MORE,
-	 "If set, files ending with '~' or '#' or '.bak' will "+
+	 "If set, files ending with '~', '#', '.old' or '.bak' will "+
 	 "be shown in directory listings");
 
 
@@ -175,7 +175,7 @@ void create()
 	 TYPE_FLAG|VAR_MORE,
 	 "Accesses to a file will be made  as the logged in user.\n"
 	 "This is useful for named ftp, or if you want higher security.<br>\n"
-	 "NOTE: When running a threaded server requests that don't do any "
+	 "NOTE : When running a threaded server requests that don't do any "
 	 "modification will be done as the server uid/gid.");
 
   defvar("no_symlinks", 0, "Permissions: Forbid access to symlinks", TYPE_FLAG|VAR_MORE,
@@ -529,7 +529,7 @@ mixed find_file( string f, object id )
     if(QUERY(keep_old_perms))
       st = file_stat(f);
     rm( f );
-    mkdirhier( f );
+    mkdirhier( dirname(f) );
     
     object to = open(f, "wct");
     
@@ -1007,7 +1007,7 @@ string query_name()
 //! defvar: access_as_user
 //! Accesses to a file will be made  as the logged in user.
 //!This is useful for named ftp, or if you want higher security.<br />
-//!NOTE: When running a threaded server requests that don't do any modification will be done as the server uid/gid.
+//!NOTE : When running a threaded server requests that don't do any modification will be done as the server uid/gid.
 //!  type: TYPE_FLAG|VAR_MORE
 //!  name: Permissions: Access file as the logged in user
 //
