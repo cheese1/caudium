@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
+ * Copyright © 2000-2001 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -44,7 +44,7 @@
 #endif
 
 
-#define THIS ((xslt_storage *)fp->current_object->storage)
+#define THIS ((xslt_storage *)fp->current_storage)
 
 typedef struct
 {

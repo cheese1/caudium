@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -59,7 +59,6 @@ int req_time = HRTIME();
 constant decode        = MIME.decode_base64;
 constant find_supports = caudium->find_supports;
 constant version       = caudium->version;
-constant handle        = caudium->handle;
 constant _query        = caudium->query;
 constant thepipe       = caudium->pipe;
 constant _time         = predef::time;
@@ -374,15 +373,6 @@ private int parse_got()
   
   REQUEST_WERR(sprintf("RAW_URL:%O", raw_url));
 
-  if(!remoteaddr)
-  {
-    if(my_fd) sscanf(my_fd->query_address()||"", "%s ", remoteaddr);
-    if(!remoteaddr) {
-      end();
-      return 0;
-    }
-  }
-
   if(sscanf(f,"%s?%s", f, query) == 2)
     Caudium.parse_query_string(query, variables);
   
@@ -448,7 +438,7 @@ private int parse_got()
 	   case "multipart/form-data":
 	    //		perror("Multipart/form-data post detected\n");
 	    object messg = MIME.Message(data, request_headers);
-	    foreach(messg->body_parts, object part) {
+	    foreach(messg->body_parts||({}), object part) {
 	      if(part->disp_params->filename) {
 		variables[part->disp_params->name]=part->getdata();
 		variables[part->disp_params->name+".filename"]=
@@ -619,6 +609,12 @@ private int parse_got()
       }
     }
 #endif
+  }
+  if(prestate->nocache) {
+    // This allows you to "reload" a page with MSIE by setting the
+    // (nocache) prestate.
+    pragma["no-cache"] = 1;
+    misc->cacheable = 0;
   }
 #ifdef ENABLE_SUPPORTS    
   if(useragent == "unknown") {
@@ -1569,7 +1565,7 @@ void got_data(mixed fdid, string s)
    */
   if(conf)  conf->handle_precache(this_object());
 #ifdef THREADS
-  handle(handle_request);
+  caudium->handle(handle_request);
 #else
   handle_request();
 #endif
@@ -1649,6 +1645,7 @@ void create(void|object f, void|object c)
     // No need to wait more than 30 seconds to get more data.
     call_out(do_timeout, 30);
     time = _time(1);
+    remoteaddr = Caudium.get_address(my_fd->query_address()||"");
   }
 }
 

@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -78,7 +78,7 @@ string page_0()
 	  {
 	    string fdc = 
 #ifdef FD_DEBUG
-	      mark_fd(fd)||"?";
+	      mark_fd(fd)||"";
 #else
 	    "";
 	    
@@ -89,7 +89,7 @@ string page_0()
 	      args[-2] = ( args[-2] / " " - ({""})) * " ";
 	      args[1] = (args[1] - "<tt>") - "</tt>";
 	      //	    werror("%O\n", args);
-	      return sprintf("%-5s  %-9s  %-10s   %-12s  %s",
+	      return sprintf("%-5s  %-9s  %-10s   %-12s  %s    %s",
 			   (string)fd,
 			   @args,
 			   fdc);

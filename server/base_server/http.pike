@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -320,8 +320,11 @@ string http_date(int t)
 */
 string http_encode_string(string f)
 {
-  return replace(f, ({ "\000", " ", "\t", "\n", "\r", "%", "'", "\"" }),
-		 ({"%00", "%20", "%09", "%0a", "%0d", "%25", "%27", "%22"}));
+  return
+    replace(f,
+	    ({ "\000", " ", "\t", "\n", "\r", "%", "'", "\"", "<", ">", "@" }),
+	    ({ "%00", "%20", "%09", "%0a", "%0d", "%25", "%27", "%22",
+	       "%3c", "%3e", "%40" }));
 }
 
 /*
@@ -353,15 +356,18 @@ string http_encode_cookie(string f)
 */
 string http_encode_url (string f)
 {
-  return replace (f, ({"\000", " ", "\t", "\n", "\r", "%", "'", "\"", "#",
-		       "&", "?", "=", "/", ":", "+"}),
-		  ({"%00", "%20", "%09", "%0a", "%0d", "%25", "%27", "%22", "%23",
-		    "%26", "%3f", "%3d", "%2f", "%3a", "%2b"}));
+  return
+    replace (f,
+	     ({"\000", " ", "\t", "\n", "\r", "%", "'", "\"", "#",
+	       "&", "?", "=", "/", ":", "+", "<", ">", "@" }),
+	     ({"%00", "%20", "%09", "%0a", "%0d", "%25", "%27", "%22", "%23",
+	       "%26", "%3f", "%3d", "%2f", "%3a", "%2b", "%3c", "%3e", "%40"
+	     }));
 }
 
 /*
 **! method: string http_caudium_config_cookie(string from)
-**!   Make a configuration cookie. This is is not a function ment to
+**!   Make a configuration cookie. This is is not a function meant to
 **!   be used by the average user.
 **! arg: string from
 **!   The cookie value to encode and put in the cookie.
@@ -534,7 +540,7 @@ function http_auth_failed = http_auth_required;
 **! method: mapping http_proxy_auth_required(string realm, string|void message)
 **!   Returns a http proxy authentication response mapping which will make the
 **!   browser request the user for authentication information for use with
-**!   a proxy. This is different than the normal auth in that it's ment for
+**!   a proxy. This is different than the normal auth in that it's meant for
 **!   proxies only. The optional message will be used as the body of the page. 
 **! arg: string realm
 **!   The realm of this authentication. This is show in various methods by the
