@@ -1,7 +1,7 @@
 /* I'm -*-Pike-*-, dude 
  *
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,22 +30,19 @@
  * now defined - but only within the scope of http_error_handler.
  */
 
-/*
- **! file: etc/include/http_error.h
- **!  This file implemented a new and improved error handler that let's
- **!  the administrator implement themed error messages on a per-server
- **!  basis.
- */
+
+//! file: etc/include/http_error.h
+//!  This file implemented a new and improved error handler that let's
+//!  the administrator implement themed error messages on a per-server
+//!  basis.
+//! cvs_version: $Id$
 
 
-/*
- **! class: http_error_handler
- **!  This is the new HTTP error handler, which tried to make all the error
- **!  messages look constant and nice in a per-server basis.
- **!  A possible fixme is the need to clear the template file out of the
- **!  on a change. I will look at this in the near future.
- **! name: http_error_handler - new and pretty HTTP error handler.
- */
+//! class: http_error_handler
+//!  This is the new HTTP error handler, which tried to make all the error
+//!  messages look constant and nice in a per-server basis.
+//!  A possible fixme is the need to clear the template file out of the
+//!  on a change. I will look at this in the near future.
 class http_error_handler {
 
   inherit "caudiumlib";
@@ -162,8 +159,10 @@ class http_error_handler {
            error_name = _error_name;
         else if (id->misc->error_name)
            error_name = id->misc->error_name;
-        else
+        else if ( ( id->errors ) && ( id->errors[ error_code ] ) )
            error_name = id->errors[error_code];
+	else
+	   error_name = "No Error Message Supplied. Sorry.\n\n";
 
         if (_error_message)
            error_message = _error_message;
@@ -176,7 +175,7 @@ class http_error_handler {
               if (id->method != "GET" && id->method != "HEAD" && id->method != "POST")
                  error_message = "Method (" + html_encode_string (id->method) + ") not recognised.";
               else
-                 error_message = "Unable to locate the file: " + id->not_query + ".<br>\n" +
+                 error_message = "Unable to locate the file: " + html_encode_string (id->not_query) + ".<br />\n" +
                          "The page you are looking for may have moved or been removed.";
            }
         }
@@ -279,7 +278,11 @@ class http_error_handler {
     else 
     {
        /* check if they want old-style 404 */
+#ifdef ENABLE_NEW404
        if (id->conf->query("Old404") && error_code == 404)
+#else
+       if (error_code == 404)
+#endif /* ENABLE_NEW404 */
        {
           return http_low_answer (error_code,
                           replace (parse_rxml (id->conf->query ("ZNoSuchFile"), id ),
@@ -288,7 +291,11 @@ class http_error_handler {
                                    id->conf->query ("MyWorldLocation") })));
        }
 
+#ifdef ENABLE_NEW404
        local_template = get_template (id->conf->query ("ErrorTheme"), id);
+#else
+       local_template = get_template ("", id);
+#endif /* ENABLE_NEW404 */
     }
 
     if (!error_code)

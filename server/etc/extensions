@@ -3,6 +3,11 @@
 # doc="The database used to map from extension to mime-type (example: *.gif to image/gif)";
 #
 
+# RFC 3236 support for XHTML media type cf sf bug #573363
+xht	application/xhtml+xml
+xhtml	application/xhtml+xml
+# RFC 3236
+
 aif	audio/x-aiff
 aifc	audio/x-aiff
 aiff	audio/x-aiff
@@ -50,6 +55,7 @@ ras	image/x-cmu-raster
 ras	image/cmu-raster
 rgb	image/x-rgb
 rs	image/x-sun-raster
+svg	image/svg+xml
 tga	image/x-targa
 tif	image/tiff
 tiff	image/tiff
@@ -92,7 +98,7 @@ html	text/html
 java	text/plain
 m	text/plain
 rtf	text/rtf
-rtx	text/richtext
+rtx	text/enriched
 rxml	text/html
 sgm	text/sgml
 sgml	text/sgml
@@ -103,6 +109,7 @@ spml	text/html
 tsv	text/tab-separated-values
 txt	text/plain
 xml	text/xml
+xsl	text/xml
 
 aab	application/x-authorware-bin
 aam	application/x-authorware-map
@@ -208,6 +215,7 @@ sv4cpic application/x-sv4cpio
 sv4cpio	application/x-sv4cpio
 sv4crc	application/x-sv4crc
 swf	application/x-shockwave-flash
+sxw application/vnd.sun.xml.writer
 t	application/x-troff
 tar	application/x-tar
 tbk	application/toolbook
@@ -279,6 +287,10 @@ xyz	chemical/x-pdb
 # Netscape proxy config files.
 nspc	application/x-ns-proxy-autoconfig
 pac	application/x-ns-proxy-autoconfig
+
+# Mozilla extended types
+xul	application/vnd.mozilla.xul+xml
+xpi	application/x-xpinstall
 
 # Certificate Authority Certificate (recognized at least by Netscape)
 ca_cert application/x-x509-ca-cert

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -181,7 +181,7 @@ string sql_getvirt(string hostname, object id)
 				       hostname,
 				       vpath + QUERY(wwwdir),
 				       vpath + QUERY(cgidir),
-				       vpath + QUERY(logdir),
+				       (QUERY(log2vhs))?(vpath + QUERY(logdir)):combine_path(caudium->QUERY(logdirprefix)+"/",hostname),
 				       vpath,
 				       (int)tmp->uid||QUERY(defaultuid),
 				       (int)tmp->gid||QUERY(defaultgid),
@@ -219,7 +219,7 @@ string sql_getvirt(string hostname, object id)
 				         hostname,
 				         vpath + QUERY(wwwdir),
 				         vpath + QUERY(cgidir),
-				         vpath + QUERY(logdir),
+					 (QUERY(log2vhs))?(vpath + QUERY(logdir)):combine_path(caudium->QUERY(logdirprefix)+"/",hostname),
 				         vpath,
 				         (int)tmp->uid||QUERY(defaultuid),
 				         (int)tmp->gid||QUERY(defaultgid),
@@ -377,10 +377,13 @@ void create()
          "Directory, where are virtuals and subvirtuals stored.");
 
   defvar("cgidir", "cgi-bin/", "CGI directory", TYPE_STRING,
-         "Directory, where are logfiles");
+         "Directory, mounted as cgi-bin");
 
   defvar("logdir", "logs/", "Logs directory", TYPE_STRING,
-         "Directory, mounted as cgi-bin");
+         "Directory, directory where are logfiles.");
+
+  defvar("log2vhs", 1, "Logs using VHS parameters", TYPE_FLAG,
+	 "Disable it to log to system wide configurated directory");
 
   defvar("ttl_positive", 1800, "TTL:Positive TTL", TYPE_INT,
          "Time to cache positive config hits.");
@@ -446,8 +449,9 @@ void precache_rewrite(object id)
   id->misc->vhs = vhs;
 }
 
-void start()
+void start(int count, object conf)
 {
+
   virtcache[QUERY(defvirtual)] = ConfigCache("nobody",
   QUERY(defvirtual), QUERY(searchpath), 0, 0, "/tmp", 65500, 65500,
   9999999999);
@@ -551,14 +555,19 @@ string status()
 //!  name: WWW root directory
 //
 //! defvar: cgidir
-//! Directory, where are logfiles
+//! Directory, mounted as cgi-bin
 //!  type: TYPE_STRING
 //!  name: CGI directory
 //
 //! defvar: logdir
-//! Directory, mounted as cgi-bin
+//! Directory, directory where are logfiles.
 //!  type: TYPE_STRING
 //!  name: Logs directory
+//
+//! defvar: log2vhs
+//! Disable it to log to system wide configurated directory
+//!  type: TYPE_FLAG
+//!  name: Logs using VHS parameters
 //
 //! defvar: ttl_positive
 //! Time to cache positive config hits.

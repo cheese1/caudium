@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,6 +17,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
+/*
+ * $Id$
+ */
 
 /*
  *
@@ -27,8 +30,18 @@
  *
  */
 
-string cvs_version = "$Id$";
-int thread_safe = 1;   /* Probably. Check _root */
+//! module: VHS - Directory parsing module
+//!  This is the default directory parsing module.
+//!  This one pretty prints a list of files, with
+//!  macintosh like fold and unfold buttons next to each
+//!  directory.
+//! inherits: module
+//! inherits: caudiumlib
+//! type: MODULE_DIRECTORIES
+//! cvs_version: $Id$
+
+constant cvs_version = "$Id$";
+constant thread_safe = 1;   /* Probably. Check _root */
 
 #include <module.h>
 inherit "module";
@@ -196,6 +209,10 @@ void create()
 	 "Index files", TYPE_STRING_LIST,
 	 "If one of these files is present in a directory, it will "
 	 "be returned instead of the directory listing.");
+
+  defvar("dotfiles", 0, "Show dotfiles", TYPE_FLAG|VAR_MORE,
+         "If set, show dotfiles (files beginning with '.') in directory"
+         " listings");
 
   defvar("readme", 1, "Include readme files", TYPE_FLAG|VAR_MORE,
 	 "If set, include readme files in directory listings");
@@ -387,6 +404,15 @@ object create_node(string f, object id, int nocache)
   
   if(!strlen(f) || (f[-1] != '/')) f += "/";
   dir = caudium->find_dir(f, id);
+
+  if (!QUERY(dotfiles)) {
+    if(arrayp(dir)) {
+      foreach(dir, string _f) {
+        if (sizeof(_f) && (_f[0] == '.')) 
+          dir -= ({ _f });
+      }
+    }
+  }   
   
   if(sizeof(path))
     my_node->data = path[-1];

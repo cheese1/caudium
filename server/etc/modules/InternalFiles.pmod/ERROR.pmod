@@ -1,7 +1,7 @@
 /* I'm -*-Pike-*-, dude 
  *
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -116,7 +116,11 @@ class http_error_handler {
             // in the *core*core* server.
 	    local_template = default_template;
 	} else {
+#ifdef ENABLE_NEW404
             string ErrorTheme = id->conf->query( "ErrorTheme" );
+#else
+            string ErrorTheme = id->conf->query( "" );
+#endif /* ENABLE_NEW404 */
 	    if ( ErrorTheme != template->name ) {
 		set_template( ErrorTheme );
 	    }

@@ -1,9 +1,41 @@
+/*
+ * Caudium - An extensible World Wide Web server
+ * Copyright © 2001-2002 The Caudium Group
+ * Copyright © 2002 David Gourdelier
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
+/*
+ * $Id$
+ */
+
 #include <module.h>
+
+//! module: User LDAP administration
+//!  With this module, your (or 'you' depending on what you want) user 
+//!  will be able to change some of their information. You will also be
+//!  able to create a basic account and update their gid to if you have
+//!  year related gid.
+//! inherits: module
+//! inherits: caudiumlib
+//! type: MODULE_LOCATION|MODULE_EXPERIMENTAL
+//! cvs_version: $Id$
 
 inherit "module";
 inherit "caudiumlib";
-
-// import Array;
 
 constant cvs_version = "$Id$";
 
@@ -12,40 +44,36 @@ constant module_name = "User LDAP administration";
 constant module_doc  = "With this module, your (or 'you' depending on what you want) user will be able to change some of their information. You will also be able to create a basic account and update their gid to if you have year related gid";
 constant module_unique = 0;
 
-// what to put ?
 constant thread_safe=1;
 
 // some defaults for mails
 #define DEFAULT_BADMAILTOUSER \
- "\n  [ Ceci est un message automatique de réponse  ] \n" \
- "  [ à votre adhésion à l'Internet Team  ]\n" \
- "\nUn problème est apparu lors de la création de votre compte\n" \
- "sur l'Internet Team. Un email a été envoyé à $ADMIN\n" \
- "Nous nous efforcerons de régler ce problème dans les plus\n" \
- "bref délais\n" \
- "\n -- L'équipe d'Internet Team\n"
+ "\n  [ This is an automatic reply message  ] \n" \
+ "  [ to your attempt to create an account  ]\n" \
+ "\nA problem has occured while creating your account.\n" \
+ "An email has been send to $ADMIN\n" \
+ "We will try our best to solve this problem as soon as possible\n" \
+ "\n -- The computing team\n"
 #define DEFAULT_BADMAILTOADMIN \
   "\nError:\n[\n$LAST_ERROR\n]\n" \
   "\nlogin= $LOGIN\n" \
   "uid= $UID\n" \
   "gid= $GID\n" \
-  "prénom nom= $GECOS\n" \
+  "surname name= $GECOS\n" \
   "date= $DATETIME\n"
 #define DEFAULT_GOODMAILTOUSER \
-  "\n  [ Ceci est un message automatique de réponse  ] \n" \
-  "  [ à votre adhésion à l'Internet Team  ]\n" \
-  "\nBienvenue sur l'Internet Team $LOGIN\n" \
-  "Votre compte à été créé avec succès !\n" \
-  "Pour toutes questions vous pouvez vous adressez à $ADMIN \n" \
-  "Pour en savoir plus vous pouvez consulter le site http://www.iteam.org\n" \
-  "Pour obtenir une aide immédiate vous pouvez aller sur IRC\n" \
-  "irc.openprojects.net #iteam\n" \
-  "\n -- L'équipe d'Internet Team\n"
+  "\n  [ This is an automatic reply message  ] \n" \
+  "  [ to your attempt to create an account  ]\n" \
+  "\nWelcome on board $LOGIN\n" \
+  "Your account has been successfully created !\n" \
+  "You can contact $ADMIN for any questions\n" \
+  "For more information visit your website at http://www.iteam.org\n" \
+  "\n -- The computing team\n"
 #define DEFAULT_GOODMAILTOADMIN \
   "\nlogin= $LOGIN\n" \
   "uid= $UID\n" \
   "gid= $GID\n" \
-  "prénom nom= $GECOS\n" \
+  "surname name= $GECOS\n" \
   "date= $DATETIME\n"
 
 // defaults for user interface
@@ -119,8 +147,8 @@ constant thread_safe=1;
   "send.</p>"\
   "<p align=\"center\">"\
   "Mailacceptinggeneralid is the mail(s) address(es) that this account will"\
-  "accept. If it contains email addresses to over domains, these will be   "\
-  "automatiquelly redirected (like in the old .forward mecanism). You can put"\
+  "accept. If it contains email addresses to other domains, these will be   "\
+  "automatically redirected (like in the old .forward mecanism). You can put "\
   "several mails seperated by commas.</p>"\
   "</comment>"\
   "</body></html>"
@@ -302,7 +330,7 @@ int hide_update()
 
 void create()
 {
-  defvar("location", "/iteam", "Mount Point", TYPE_LOCATION,
+  defvar("location", "/ldapadmin", "Mount Point", TYPE_LOCATION,
   "The mountpoint of this module");
   defvar("hostname", "ldap://localhost", "LDAP: LDAP server location", 
 	 TYPE_STRING, "Specifies the default LDAP directory server hostname."
@@ -324,7 +352,7 @@ void create()
 	 "Specify the default gidnumber when new account is created\n");
   defvar("default_uid", 100, "Add: uid if no uidNumber found",
   	 TYPE_INT,
-	 "uidNumber should only happen if you don't have previously users in LDAP. Never put this to something < 1.\n");
+	 "uidNumber should only happen if you don't have previously users in LDAP. Never put this to something &lt; 1.\n");
   defvar("addlastslash", 0, "Add: add a slash to the home directory",
   	 TYPE_FLAG,
 	 "It can be useful to add a '/' to home directory for example to tell your MTA you have a Maildir box format");
@@ -641,11 +669,8 @@ if(QUERY(mail))
 {
   if(QUERY(debug))
     write(sprintf("mail=%s\n", msg));
-}
-else
-{
-#if constant(Protocols.ESMP)
-  Protocols.ESMP.client(QUERY(mailserver), 25, QUERY(maildomain))->send_message(from, ({ to }),
+#if constant(Protocols.ESMTP)
+  Protocols.ESMTP.client(QUERY(mailserver), 25, QUERY(maildomain))->send_message(from, ({ to }),
               (string)MIME.Message(msg, (["mime-version":"1.0",
                                           "subject":subject,
                                           "from":from,
@@ -676,7 +701,7 @@ void sendmails(mapping (string:array(string)) defines)
   array mail_from = ({ "$LOGIN", "$UID", "$GID", "$GECOS", "$DATETIME", "$ADMIN" }); 
   array mail_to = ({ defines["uid"][0], defines["uidNumber"][0], defines["gidNumber"][0], defines["gecos"][0], date, localmailadmin });
   string msg = replace(QUERY(goodmailtoadmin), mail_from, mail_to);
-  simple_mail(localmailadmin, "Nouveau membre", localmailadmin, msg);
+  simple_mail(localmailadmin, "New user", localmailadmin, msg);
   // next mail the user (this will also create his mail account)
   msg = replace(QUERY(goodmailtouser), mail_from, mail_to);
   simple_mail(defines["uid"][0] + "@" + QUERY(maildomain) , "[ ITEAM ] Welcome on board", localmailadmin, msg);
@@ -712,7 +737,7 @@ void sendbadmails(mapping defines, string last_error)
   if(mappingp(defines) && arrayp(defines["uid"]) && stringp(defines["uid"][0]))
     simple_mail(defines["uid"][0] + "@" + QUERY(maildomain), "[ ITEAM] Erreur dans votre inscription", localmailadmin, msg);
   msg = replace(QUERY(badmailtoadmin), mail_from, mail_to);
-  simple_mail(QUERY(mailadmin), "Problème(s) lors de la création d'un compte", localmailadmin, msg);
+  simple_mail(QUERY(mailadmin), "Problem while creating an account", localmailadmin, msg);
 }
 
 int checkdns(string remoteaddr)
@@ -811,7 +836,6 @@ void insertinldap(object con, mapping(string:array(string)) defines, string base
   if((int) defines["uidNumber"][0] < 1)
     throw( ({ "Invalid uidnumber(" + defines["uidnumber"][0] + ")", backtrace() }) );
   defines["passwd"] = ({ "{crypt}" + crypt(defines["passwd"][0]) });
-  // paye = ({ "0" })
   attrval = ([ QUERY(defvaruidnumber): defines["uidNumber"] , QUERY(defvargidnumber): defines["gidNumber"] , QUERY(defvaruid): defines["uid"] , QUERY(defvargecos): defines["gecos"], QUERY(defvaruserpassword): ({ "" + defines["passwd"][0] + "" }), QUERY(defvarhomedirectory): defines["homedirectory"], QUERY(defvarobjectclass): QUERY(defaultobjectclass) ]);
  if(sizeof(QUERY(defvarcn)) > 0)
    attrval += ([ QUERY(defvarcn): defines["gecos"] ]);
@@ -1012,7 +1036,6 @@ void updatevar(object con, mapping defines, string basedn)
   array uidnumber = defines["uidNumber"];
   array uid = defines["uid"];
   array homedirectory = defines["homeDirectory"];
-  //defines["paye"] = ({ "0" });
   modifyinldap(con, defines, basedn);
   // sanity checks
   dirstat = file_stat(homedirectory[0]);
@@ -1216,13 +1239,13 @@ mapping modify(object id, string action)
       if(sizeof(QUERY(defvarmaildrop)) > 0)
       {
         /* can the user change maildrop ? */
-        if(search(QUERY(allowedmodifyattribute), QUERY(defvarmaildrop)) != -1)
+        if(search(QUERY(allowedmodifyattribute), QUERY(defvarmaildrop)) != -1 && id->variables->maildrop)
         {
 	  checkmail(errors, id->variables->maildrop);
 	  defines["maildrop"] = ({ id->variables->maildrop });
 	}
       }
-      if(sizeof(QUERY(defvarmailacceptinggeneralid)) > 0)
+      if(sizeof(QUERY(defvarmailacceptinggeneralid)) > 0 && id->variables->mailacceptinggeneralid)
       {
         array mailaccept = id->variables->mailacceptinggeneralid / ",";
         for(int i = 0; i < sizeof(mailaccept); i++)
@@ -1280,3 +1303,296 @@ mixed find_file(string path, object id)
   }
   return result;
 }
+
+/* START AUTOGENERATED DEFVAR DOCS */
+
+//! defvar: location
+//! The mountpoint of this module
+//!  type: TYPE_LOCATION
+//!  name: Mount Point
+//
+//! defvar: hostname
+//! Specifies the default LDAP directory server hostname.Format is ldap url style eg ldap://hostname[:port]/.
+//!
+//!  type: TYPE_STRING
+//!  name: LDAP: LDAP server location
+//
+//! defvar: ldapver
+//! The LDAP protocol version to use with this server.
+//!  type: TYPE_INT_LIST
+//!  name: LDAP: LDAP server version
+//
+//! defvar: basedn
+//! Specifies the distinguished name to use as a base for queries.
+//!
+//!  type: TYPE_STRING
+//!  name: LDAP: LDAP base DN
+//
+//! defvar: binddn
+//! Specifies the default binddn to use for access.
+//!
+//!  type: TYPE_STRING
+//!  name: LDAP: LDAP bind DN
+//
+//! defvar: password
+//! Specifies the default password to use for access.
+//!
+//!  type: TYPE_STRING
+//!  name: LDAP: password
+//
+//! defvar: gidnumber
+//! Specify the default gidnumber when new account is created
+//!
+//!  type: TYPE_INT
+//!  name: Add: gidnumber for new accounts
+//
+//! defvar: default_uid
+//! uidNumber should only happen if you don't have previously users in LDAP. Never put this to something &lt; 1.
+//!
+//!  type: TYPE_INT
+//!  name: Add: uid if no uidNumber found
+//
+//! defvar: addlastslash
+//! It can be useful to add a '/' to home directory for example to tell your MTA you have a Maildir box format
+//!  type: TYPE_FLAG
+//!  name: Add: add a slash to the home directory
+//
+//! defvar: defaultdomain
+//!  type: TYPE_STRING
+//!  name: Add: the domain to use in maildrop and mailacceptinggeneralid attributes
+//
+//! defvar: addrequireauth
+//! Contains the user allowed to add other users. If empty everybody can add users
+//!  type: TYPE_STRING_LIST
+//!  name: Add: require authentification
+//
+//! defvar: updaterequireauth
+//! Contains the user allowed to update other users. If empty anybody can update users (provided you allow them in features ->  allow the user to update his account). gid of the user listed in this field don't need to be in Update -> gid numbers allow to update. 
+//!  type: TYPE_STRING_LIST
+//!  name: Update: require authentification
+//
+//! defvar: defvaruidnumber
+//! Specify the name of the uidnumber attribute in LDAP.
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - uidnumber attribute
+//
+//! defvar: defvargidnumber
+//! Specify the name of the gidnumber attribute in LDAP.
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - gidnumber attribute
+//
+//! defvar: defvaruid
+//! Name of the uid attribute
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - uid attribute
+//
+//! defvar: defvarhomedirectory
+//! Name of the homedirectory attribute
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - homedirectory
+//
+//! defvar: defvargecos
+//! Name of the gecos attribute
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - gecos
+//
+//! defvar: defvaruserpassword
+//! Name of the userpassword attribute
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - userpassword
+//
+//! defvar: defvarcn
+//! If empty it will not be use
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - cn
+//
+//! defvar: defvarmaildrop
+//! This attribute contains the mail address that will appear when you send (for Postfix at least). If empty it will not be use (either in add or modify)
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - maildrop
+//
+//! defvar: defvarmailacceptinggeneralid
+//! This attribute contains the mail(s) address(es) that will be redirected to your mailbox (for Postfix at least). If empty it will not be use
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - mailacceptinggeneralid
+//
+//! defvar: defvarloginshell
+//! If empty it will not be use
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - loginShell
+//
+//! defvar: defaultshell
+//! The default shell for new accounts
+//!  type: TYPE_STRING
+//!  name: Add: Default shell
+//
+//! defvar: defvarobjectclass
+//!  type: TYPE_STRING
+//!  name: LDAP: Attribute - objectClass
+//
+//! defvar: defaultobjectclass
+//!  type: TYPE_STRING_LIST
+//!  name: LDAP: Attribute - default object class
+//
+//! defvar: homedir
+//! The last / is mandatory
+//!  type: TYPE_STRING
+//!  name: Add: Base homedir used when creating new account
+//
+//! defvar: mail
+//! There are four case where email will be send:<ol><li>Account has been created successfully: email is sent to the administrator(s) and to the user<li>Account has not been created successfully: email is sent to the administrator(s)<li>Account has been upgrade successfully: email is sent to the administrator(s) and to the user<li>An error occured during the upgrade: an email is sent to the administrator(s) and to the user</ol>
+//!
+//!  type: TYPE_FLAG
+//!  name: Features: Send mail to the administrator(s)
+//
+//! defvar: allowupdate
+//! If set to yes, the users will be able to change to the last group you define<br />
+//!This feature is useful for example if you have one year accounts and you want to update some accounts from one year to another
+//!  type: TYPE_FLAG
+//!  name: Features: allow the user to update his account
+//
+//! defvar: currentgidnumber
+//! This is the latest gid you have. If the gid of users is not this number, they may update
+//!  type: TYPE_INT
+//!  name: Update: Current gidnumber
+//
+//! defvar: allowedgidupdates
+//! This is the list of gid numbers that can update to the current gid number. Leave empty or put 0 to allow every users to update.
+//!  type: TYPE_INT_LIST
+//!  name: Update: gid numbers allowed to update
+//
+//! defvar: allowedmodifyattribute
+//! This is the list of the attribute the user can modify
+//!  type: TYPE_STRING_LIST
+//!  name: Modify: Allowed attributes
+//
+//! defvar: maildomain
+//! The domain that will be used for sending mail
+//!
+//!  type: TYPE_STRING
+//!  name: Mail: Domain
+//
+//! defvar: mailadmin
+//! Specifing an alias can be useful to contact several people.
+//!
+//!  type: TYPE_STRING
+//!  name: Mail: email of the administrator(s)
+//
+//! defvar: mailserver
+//! For now this field is mandatory.
+//!
+//!  type: TYPE_STRING
+//!  name: Mail: Address of your mail server
+//
+//! defvar: badmailtouser
+//! You can use some replacements:<ul><li>$LOGIN: login if the user</li><li>$UID: uid of the user</li><li>$GID: gid of the user</li><li>$GECOS: gecos (user's name) of the user</li><li>$DATETIME: current date and time</li><li>$ADMIN: email of the administrator</li><li>$LAST_ERROR: backtrace</li></ul>
+//!  type: TYPE_TEXT_FIELD
+//!  name: Mail: Body of the message the user will receive if an error occured
+//
+//! defvar: badmailtoadmin
+//! You can use some replacements:<ul><li>$LOGIN: login if the use</li><li>$UID: uid of the user</li><li>$GID: gid of the user</li><li>$GECOS: gecos (user's name) of the user</li><li>$DATETIME: current date and time</li><li>$ADMIN: email of the administrator</li><li>$LAST_ERROR: backtrace</li></ul>
+//!  type: TYPE_TEXT_FIELD
+//!  name: Mail: Body of the message the administrator(s) will receive if an error occured
+//
+//! defvar: goodmailtouser
+//! You can use some replacements:<ul><li>$LOGIN: login if the user</li><li>$UID: uid of the user</li><li>$GID: gid of the user</li><li>$GECOS: gecos (user's name) of the user</li><li>$DATETIME: current date and time</li><li>$ADMIN: email of the administrator</li></ul>
+//!  type: TYPE_TEXT_FIELD
+//!  name: Mail: Body of the message the user will receive if no errors occured
+//
+//! defvar: goodmailtoadmin
+//! You can use some replacements:<ul><li>$LOGIN: login if the user</li><li>$UID: uid of the user</li><li>$GID: gid of the user</li><li>$GECOS: gecos (user's name) of the user</li><li>$DATETIME: current date and time</li><li>$ADMIN: email of the administrator</li></ul>
+//!  type: TYPE_TEXT_FIELD
+//!  name: Mail: Body of the message the admin will receive if no errors occured
+//
+//! defvar: ui_firstscreen
+//! $MOUNTPOINT will be replaced by the mountpoint of this module
+//!  type: TYPE_TEXT
+//!  name: User interface: First screen
+//
+//! defvar: ui_modify
+//! $MOUNTPOINT will be replace by the path of this module
+//!  type: TYPE_TEXT
+//!  name: User interface: Modify/Update - page that will be display after the user has modified his datas
+//
+//! defvar: ui_modify_error
+//! $LAST_ERROR will be replace by the backtrace<br />$MOUNTPOINT will be replace by the path of this module
+//!  type: TYPE_TEXT
+//!  name: User interface: Modify/Update - page that will be displayed when an error occured
+//
+//! defvar: ui_modify_inputs
+//! The following replacements are available:<ul><li><b>$MOUNTPOINT</b>: path to the mountpoint of this module (for use in form action=)</li><li><b>$LOGIN</b>: text for the login</li><li><b>$GECOS</b>: text or input for the gecos</li><li><b>$PASSWORD</b>: first text or input for the password</li><li><b>$PASSWORD2</b>: second text or input for the password (verify)</li><li><b>$MAILDROP</b>: text or input for maildrop</li><li><b>$MAILACCEPTINGGENERALID</b>: text or input for mailacceptinggeneralid</li></ul><br />inputs will be available only if you list the corresponding attribute in <i>Modify -> allowed attributes</i><br />for maildrop and mailacceptinggeneralid, text or input will appear only if they are in <i>LDAP -> Attribute - name of the attribute</i> 
+//!  type: TYPE_TEXT
+//!  name: User interface: Modify - form input
+//
+//! defvar: ui_update_input
+//! This is the code for the update form. There will be an error message if the user is not in the group you choose in update -> gid allowed to updates.<br />The following replacements are available:<ul><li><b>$LOGIN</b>: login name</li><li><b>$MOUNTPOINT</b>: path to the mountpoint of this module (for use in form action=)</li><li><b>$GECOS</b>: gecos of the account</li><li><b>$UIDNUMBER</b>: uid</li><li><b>$GIDNUMBER</b>: gid</li></ul>
+//!  type: TYPE_TEXT
+//!  name: User interface: Update - form input
+//
+//! defvar: ui_add_error
+//! $LAST_ERROR will be replace by the backtrace<br />$MOUNTPOINT will be replace by the path of this module
+//!  type: TYPE_TEXT
+//!  name: User interface: Add - page that will appear if an error occured after the user/admin add a user
+//
+//! defvar: ui_add
+//! $MOUNTPOINT will be replace by the path of this module
+//!  type: TYPE_TEXT
+//!  name: User interface: Add - page that will be display after the user has been successfully added into LDAP
+//
+//! defvar: ui_add_inputs
+//! <ul><li>$MOUNTPOINT: mountpoint of the current module</li></ul>
+//!  type: TYPE_TEXT
+//!  name: User interface: Add - form input
+//
+//! defvar: regexp_uid
+//! If uid don't match this, it will be reject. Leave empty to disable the check (not recommanded)
+//!  type: TYPE_STRING
+//!  name: Regexp: Uid
+//
+//! defvar: error_regexp_uid
+//! The string to display when the uid don't match the regexp
+//!  type: TYPE_STRING
+//!  name: Regexp: Uid - error string
+//
+//! defvar: regexp_gecos
+//! If gecos don't match this, it will be reject. Leave empty to disable the check (not recommanded)
+//!  type: TYPE_STRING
+//!  name: Regexp: Gecos
+//
+//! defvar: error_regexp_gecos
+//! The string to display when the gecos don't match the regexp
+//!  type: TYPE_STRING
+//!  name: Regexp: Gecos - error string
+//
+//! defvar: regexp_passwd
+//! If user password don't match this, it will be reject. Leave empty to disable the check (not recommanded)
+//!  type: TYPE_STRING
+//!  name: Regexp: Password
+//
+//! defvar: error_regexp_passwd
+//! The string to display when the password don't match the regexp
+//!  type: TYPE_STRING
+//!  name: Regexp: Password - error string
+//
+//! defvar: regexp_mail
+//! If a mail address don't match this, it will be reject. Leave empty to disable the check (not recommanded)
+//!  type: TYPE_STRING
+//!  name: Regexp: Mail
+//
+//! defvar: error_regexp_mail
+//! The string to display when the mail don't match the regexp
+//!  type: TYPE_STRING
+//!  name: Regexp: Mail - error string
+//
+//! defvar: debug
+//! If set to yes, mails and LDAP attribute will be write to caudium log file.
+//!Take care as userPassword will be also write to caudium log file.
+//!
+//!  type: TYPE_FLAG
+//!  name: Enable debugging
+//
+//! defvar: allowed_domains
+//! The domains allowed to access the module. Leave empty to disable this feature.
+//!  type: TYPE_STRING_LIST
+//!  name: DNS: Allowed domains
+//

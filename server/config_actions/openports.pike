@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -32,6 +32,7 @@ constant doc = ("Show all open ports on "+gethostname()+".");
 
 mixed page_1(object id)
 {
+  string res = "";
   array(string) path = (getenv("PATH")||"/sbin:/bin:/usr/sbin:/usr/bin")/":";
 
   array(string) lsofs =
@@ -42,14 +43,23 @@ mixed page_1(object id)
 			   (st[0] & 0111));
 		 });
   if (!sizeof(lsofs)) {
-    return("You will need to install <a href=\""
+    res += ("You will need to install <a href=\""
 	   "ftp://vic.cc.purdue.edu/pub/tools/unix/lsof/lsof.tar.gz\">"
 	   "'lsof'</a> for full info.\n");
   }
-  return(sprintf("Use this lsof binary:\n"
+  res += (sprintf("Use this lsof binary:\n"
 		 "<var type=select name=lsof default='%s'\n"
 		 "choices='%s'><p>\n", id->variables->lsof || lsofs[0],
 		 lsofs * ","));
+  // lsof does not display all informations if not launched as root
+    if(geteuid() != 0)
+         res += ("<p><font color=red>Caudium must run as root for this program "
+	         "to work if you have enabled HASSECURITY compile time option "
+		 "in lsof. This option is the default option for Debian "
+		 "GNU/Linux and other Unix flavor </font><br />"
+	         "Caudium currently does not run as root. You can continue but "
+		 "it may not work</p>\n");
+  return res;
 }
 
 mixed page_2(object id)

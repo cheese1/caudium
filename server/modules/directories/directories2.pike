@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -76,8 +76,9 @@ int dirlisting_not_set()
 
 void create()
 {
-  defvar("indexfiles", ({ "index.html", "Main.html", "welcome.html",
-			  "index.cgi", "index.lpc", "index.pike", "index.htm" }),
+  defvar("indexfiles", ({ "index.html", "Main.html", "welcome.html", "index.rxml",
+			  "index.cgi", "index.lpc", "index.pike", "index.htm",
+			  "index.php", "index.php3", "index.xhtml", "index.xht" }),
 	 "Index files", TYPE_STRING_LIST,
 	 "If one of these files is present in a directory, it will "
 	 "be returned instead of the directory listing.");
@@ -135,7 +136,7 @@ string tag_insert_quoted(string tag_name, mapping args, object request_id,
 			 mapping defines)
 {
   if (args->file) {
-    string s = caudium->try_get_file(args->file, request_id);
+    string s = request_id->conf->try_get_file(args->file, request_id);
 
     if (s) {
       return(quote_plain_text(s));
@@ -158,7 +159,7 @@ mapping query_tag_callers()
 string find_readme(string d, object id)
 {
   foreach(({ "README.html", "README"}), string f) {
-    string readme = caudium->try_get_file(d+f, id);
+    string readme = id->conf->try_get_file(d+f, id);
 
     if (readme) {
       if (f[strlen(f)-5..] != ".html") {
@@ -172,14 +173,16 @@ string find_readme(string d, object id)
 
 string describe_directory(string d, object id)
 {
+  // Clean the path...
+  d = combine_path(d, "./");
   array(string) path = d/"/" - ({ "" });
   array(string) dir;
   string result = "";
   int toplevel;
 
-  // werror(sprintf("describe_directory(%s)\n", d));
+//  werror(sprintf("describe_directory(%s)\n", d));
   
-  dir = caudium->find_dir(d, id);
+  dir = id->conf->find_dir(d, id);
 
   if (dir && sizeof(dir)) {
     dir = sort(dir);
@@ -215,7 +218,7 @@ string describe_directory(string d, object id)
   result += "<fl folded>\n";
 
   foreach(sort(dir), string file) {
-    array stats = caudium->stat_file(d + file, id);
+    array stats = id->conf->stat_file(d + file, id);
     string type = "Unknown";
     string icon;
     int len = stats?stats[1]:0;
@@ -307,7 +310,7 @@ string describe_directory(string d, object id)
     result +="</pre></body></html>\n";
   }
 
-  // werror(sprintf("describe_directory()=>\"%s\"\n", result));
+  //werror(sprintf("describe_directory()=>\"%s\"\n", result));
 
   return(result);
 }
@@ -333,7 +336,7 @@ string|mapping parse_directory(object id)
   if(old_file[-1]=='.') old_file = old_file[..strlen(old_file)-2];
   foreach(query("indexfiles")-({""}), file) { // Make recursion impossible
     id->not_query = old_file+file;
-    if(got = caudium->get_file(id))
+    if(got = id->conf->get_file(id))
       return got;
   }
   id->not_query = old_not_query;

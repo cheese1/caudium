@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -243,7 +243,10 @@ static mapping build_env_vars(string f, object id, string path_info)
   new["REQUEST_METHOD"]=id->method||"GET";
   new["SERVER_PORT"] = id->my_fd?
     ((id->my_fd->query_address(1)||"foo unknown")/" ")[1]: "Internal";
-    
+
+  if(id->ssl_accept_callback)
+    new["HTTPS"]="on";
+
   return new;
 }
 
@@ -874,6 +877,8 @@ static int is_safe_string(string in)
 
 //! method: string make_tag_attributes(mapping in)
 //!  Convert a mapping with key-value pairs to tag attribute format.
+//!  args whose value equals name -eg ([foo:"foo"])- are output as "foo",
+//!  not "foo=foo" 
 //! arg: mapping in
 //!  The mapping with the attributes
 //! returns:
@@ -881,22 +886,26 @@ static int is_safe_string(string in)
 //! name: make_tag_attributes - convert a mapping to tag attributes
 static string make_tag_attributes(mapping in)
 {
+  // remove "/" that can remain from the parsing of a <tag />
+  m_delete(in, "/");
   array a=indices(in), b=values(in);
   for(int i=0; i<sizeof(a); i++)
     if(lower_case(b[i]) != a[i])
       if(is_safe_string(b[i]))
-	a[i]+="="+b[i];
+        a[i]+="=\""+b[i]+"\"";
       else
-	// Bug inserted again. Grmbl.
-	a[i]+="=\""+replace(b[i], ({ "\"", "<", ">" //, "&"
-	}) ,
-			    ({ "&quot;", "&lt;", "&gt;" //, "&amp;"
-			    }))+"\"";
+        // Bug inserted again. Grmbl.
+        a[i]+="=\""+replace(b[i], ({ "\"", "<", ">" //, "&"
+        }) ,
+                            ({ "&quot;", "&lt;", "&gt;" //, "&amp;"
+                            }))+"\"";
   return a*" ";
 }
 
 //! method: string make_tag(string tag, mapping in)
 //!  Build a tag with the specified name and attributes.
+//!  args whose value equals name -eg ([foo:"foo"])- are output as "foo",
+//!  not "foo=foo" 
 //! arg: string tag
 //!  The name of the tag.
 //! arg: mapping in
@@ -913,6 +922,8 @@ static string make_tag(string tag,mapping in)
 
 //! method: string make_container(string tag, mapping in, string contents)
 //!  Build a container with the specified name, attributes and content.
+//!  args whose value equals name -eg ([foo:"foo"])- are output as "foo",
+//!  not "foo=foo" 
 //! arg: string tag
 //!  The name of the container.
 //! arg: mapping in
@@ -927,21 +938,6 @@ static string make_container(string tag,mapping in, string contents)
   return make_tag(tag,in)+contents+"</"+tag+">";
 }
 
-static string dirname( string file )
-{
-  if(!file) 
-    return "/";
-  mixed tmp;
-  if(file[-1] == '/')
-    if(strlen(file) > 1)
-      return file[0..strlen(file)-2];
-    else
-      return file;
-  tmp=file/"/";
-  if(sizeof(tmp)==2 && tmp[0]=="")
-    return "/";
-  return tmp[0..sizeof(tmp)-2]*"/";
-}
 
 static string conv_hex( int color )
 {
@@ -1025,6 +1021,18 @@ static string extension( string f )
 }
 #endif
 
+//! method: static int backup_extension(string f)
+//!  Check wether the filename f as a backup extension or not.
+//!  Backup extension files are files which finish by:
+//!    - #
+//!    - ~
+//!    - .old
+//!    - .bak
+//! arg: string f
+//!  The filename to check
+//! returns:
+//!  1 if the file as a backup extension or if the filename's empty
+//!  0 if the file don't have a backup extension
 static int backup_extension( string f )
 {
   if(!strlen(f)) 
@@ -1733,7 +1741,7 @@ mixed get_scope_var(string variable, void|string scope, object id)
 
   if (!id->misc->_scope_status) {
       if (id->variables && id->variables[variable])
-          return variable;
+          return id->variables[variable];
       return 0;
   }
   

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -104,7 +104,7 @@ void create()
 	 TYPE_FLAG,
 	 "A '&gt;' in a tag argument closes both the argument and "
 	 "the tag, even if the argument is quoted. ");
-  defvar("lazy_entity_end", 0, "Parse options: Lazy entity end",
+  defvar("lazy_entity_end", 1, "Parse options: Lazy entity end",
 	 TYPE_FLAG,
 	 "Normally, the parser search indefinitely for the entity end "
 	 "character (i.e. ';'). When this flag is set, the characters &amp;"
@@ -366,7 +366,8 @@ call_user_container(object parser, mapping args, string contents,
   if(QUERY(case_insensitive_tag))
     tag = lower_case(tag);
   id->misc->line = (string)parser->at_line();
-  args = id->misc->defaults[tag]|args;
+  if (id->misc->defaults)
+    args = id->misc->defaults[tag]|args;
   if(!id->misc->up_args) id->misc->up_args = ([]);
   if(args->preparse
      && (args->preparse=="preparse" || (int)args->preparse))
@@ -384,7 +385,7 @@ call_user_container(object parser, mapping args, string contents,
   array replace_to = (({make_tag_attributes( args  ),
 			contents })+
 		      values(args));
-  string r = replace(id->misc->containers[ tag ], replace_from, replace_to);
+  string r = replace((id->misc->containers[ tag ]?id->misc->containers[ tag ]:""), replace_from, replace_to);
   TRACE_LEAVE("");
   return r;
 }
@@ -491,7 +492,7 @@ mapping handle_file_extension( object file, string e, object id)
   }
   //   report_debug(sprintf("%O", id->misc->defines));
   return (["data":to_parse,
-	   "type":(id->misc->_content_type || "text/html"), 
+	   "type":(id->misc->_content_type || id->conf->type_from_filename(basename(id->not_query)) || "text/html"),
 	   "stat":_stat,
 	   "is_dynamic": (id->misc->is_dynamic ? 1 : 0),
 	   "error":_error,

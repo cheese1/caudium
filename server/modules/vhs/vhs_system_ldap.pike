@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,7 +29,7 @@
  *
  */
 
-//! module: VHS - Virtual Hosting System - SQL
+//! module: VHS - Virtual Hosting System - LDAP
 //!  Basic Virtual Hosting module (LDAP)
 //! inherits: module
 //! inherits: caudiumlib
@@ -142,6 +142,26 @@ void ldap_reconnect()
   if (!init_err) _initialized_ok = 1;
 }
 
+//! Gets the log file to use according of module configuration 
+//! LDAP parameters
+string get_ldap_logfile(string vpath, string hostname, mapping res) {
+  string logfile;
+
+  if(QUERY(log2vhs)) {
+    logfile = vpath + QUERY(logdir);
+  } else {
+    // We get 2 solutions 
+    // 1- don't use LDAP wwwDomain value 
+    // 2- use it if exist
+    if(QUERY(logwwwDomain) && stringp(res->wwwDomain[0])) 
+      logfile = combine_path(caudium->QUERY(logdirprefix)+"/",res->wwwDomain[0]);
+    else
+      logfile = combine_path(caudium->QUERY(logdirprefix)+"/",hostname);
+  }
+  return logfile;
+}
+
+
 string ldap_getvirt(string hostname, object id)
 {
 #ifdef THREADS
@@ -180,12 +200,12 @@ string ldap_getvirt(string hostname, object id)
 #ifdef THREADS
   destruct(key);
 #endif
-
-  if (res)
+ 
+  if (res->homeDirectory)
   {
      string vpath;
 
-     vpath = res->homeDirectory[0];
+     vpath = (string)res->homeDirectory[0];
 
      if (vpath[-1] != '/') vpath += "/";
 
@@ -194,7 +214,7 @@ string ldap_getvirt(string hostname, object id)
 				       hostname,
 				       vpath + QUERY(wwwdir),
 				       vpath + QUERY(cgidir),
-				       vpath + QUERY(logdir),
+				       get_ldap_logfile(vpath,hostname,res),
 				       vpath,
 				       res->uidNumber?(int)res->uidNumber[0]:QUERY(defaultuid),
 				       res->gidNumber?(int)res->gidNumber[0]:QUERY(defaultgid),
@@ -245,7 +265,7 @@ string ldap_getvirt(string hostname, object id)
                        			       hostname,
                        			       vpath + QUERY(wwwdir),
                        			       vpath + QUERY(cgidir),
-                       			       vpath + QUERY(logdir),
+                       			       get_ldap_logfile(vpath,hostname,res),
                        			       vpath,
                        			       res->uidNumber?(int)res->uidNumber[0]:QUERY(defaultuid),
                        			       res->gidNumber?(int)res->gidNumber[0]:QUERY(defaultgid),
@@ -415,6 +435,13 @@ void create()
   defvar("logdir", "logs/", "Logs directory", TYPE_STRING,
          "Directory, where are logfiles");
 
+  defvar("log2vhs", 1, "Logs using VHS parameters", TYPE_FLAG,
+         "Disable it to log to system wide configurated directory");
+
+  defvar("logwwwDomain", 0, "Logs using wwwDomain parameter", TYPE_FLAG,
+         "When enabled and when \"Logs using VHS parameters\" is disabled, when "
+         "filename used is FQDN given by wwwDomain LDAP attribute");
+
   defvar("ttl_positive", 1800, "TTL: Positive TTL", TYPE_INT,
          "Time to cache positive config hits.");
 
@@ -479,8 +506,9 @@ void precache_rewrite(object id)
   id->misc->vhs = vhs;
 }
 
-void start()
+void start(int count, object conf)
 {
+
   if (QUERY(lamers_mode)) lame_users = 1;
 
   ldapquery = QUERY(host_query);
@@ -618,6 +646,16 @@ string status()
 //!  type: TYPE_STRING
 //!  name: Logs directory
 //
+//! defvar: log2vhs
+//! Disable it to log to system wide configurated directory
+//!  type: TYPE_FLAG
+//!  name: Logs using VHS parameters
+//
+//! defvar: logwwDomain
+//! When enabled and when "Logs using VHS parameters" is disabled, when filename used is FQDN given by wwwDomain LDAP attribute
+//!  type: TYPE_FLAG
+//!  name: Logs using wwwDomain parameter
+//
 //! defvar: ttl_positive
 //! Time to cache positive config hits.
 //!  type: TYPE_INT
@@ -633,3 +671,17 @@ string status()
 //!  type: TYPE_FLAG
 //!  name: Enable lamers friendly mode
 //
+
+/*
+ * If you visit a file that doesn't contain these lines at its end, please
+ * cut and paste everything from here to that file.
+ */
+
+/*
+ * Local Variables:
+ * c-basic-offset: 2
+ * End:
+ *
+ * vim: softtabstop=2 tabstop=2 expandtab autoindent formatoptions=croqlt smartindent cindent shiftwidth=2
+ */
+

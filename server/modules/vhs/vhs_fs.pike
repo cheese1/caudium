@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,6 +17,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
+/*
+ * $Id$
+ */
+//! module: VHS - Virtual Filesystem
+//!  VHS - Virtual Filesystem
+//! type: MODULE_LOCATION
+//! inherits: modules/filesystems/filesystem
+//! cvs_version: $Id$
 
 // #define USERFS_DEBUG 
 // #define PASSWD_DISABLED ((us[1]=="") || (us[1][0]=='*'))
@@ -220,7 +228,7 @@ mixed find_dir(string f, object id)
 
 string status()
 {
-  string result = "<br>\n<h3>Module enabled<h3>\n";
+  string result = "<br>\n<h3>Module enabled</h3>\n";
 
   return result;
 }

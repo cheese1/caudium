@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -275,7 +275,7 @@ string do_parse(string to_parse, object id, object file, mapping defines,
 
   to_parse =
     parse_html_lines(to_parse, id->misc->_tags, id->misc->_containers,
-		     id, file, defines, my_fd);
+		    id, file, defines, my_fd);
   id->misc->parse_level --;
   return to_parse;
 }
@@ -366,7 +366,7 @@ mapping handle_file_extension( object file, string e, object id)
   }
   //   report_debug(sprintf("%O", id->misc->defines));
   return (["data":to_parse,
-	   "type":(id->misc->_content_type || "text/html"), 
+	   "type":(id->misc->_content_type || id->conf->type_from_filename(basename(id->not_query)) || "text/html"), 
 	   "stat":_stat,
 	   "is_dynamic": (id->misc->is_dynamic ? 1 : 0),
 	   "error":_error,

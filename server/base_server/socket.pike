@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -100,7 +100,7 @@ void async_connect(string host, int port, function|void callback,
 }
 
 
-private void my_pipe_done(object which)
+public void my_pipe_done(object which)
 {
   if(objectp(which))
   {

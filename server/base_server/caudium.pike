@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -77,9 +77,13 @@ constant pipe = Caudium.nbio;
 // This is the real Caudium version. It should be changed before each
 // release
 constant __caudium_version__ = "1.2";
-constant __caudium_build__ = "0";
+constant __caudium_build__ = "34";
+constant __caudium_state_ver__ = "STABLE";
 
-constant real_version = "Caudium/"+__caudium_version__+"."+__caudium_build__;
+// any code may _append_ to this string - NEVER replace it!
+string __caudium_extra_ver__ = "";
+
+constant real_version = "Caudium/"+__caudium_version__+"."+__caudium_build__+" "+__caudium_state_ver__;
 
 #if _DEBUG_HTTP_OBJECTS
 mapping httpobjects = ([]);
@@ -1250,6 +1254,12 @@ void post_create () {
 void create()
 {
   ::create();
+
+  //
+  // add the extra ver, if any
+  //
+  if (__caudium_extra_ver__ && sizeof(__caudium_extra_ver__))
+      real_version += " (" + __caudium_extra_ver__ + ")";
   
   catch
   {
@@ -2566,7 +2576,7 @@ private void define_global_variables( int argc, array (string) argv )
 	  "Client supports regexps", TYPE_TEXT_FIELD|VAR_MORE,
 	  "What do the different clients support?\n<br>"
 	  "The default information is normally fetched from the file "+
-	  getcwd()+"etc/supports, and the format is:<pre>"
+	  getcwd()+"/etc/supports, and the format is:<pre>"
 	  //"<a href=$docurl/configuration/regexp.html>regular-expression</a>"
 	  "regular-expression"
 	  " feature, -feature, ...\n"
@@ -3206,6 +3216,8 @@ void create_pid_file(string where)
 void shuffle(object from, object to,
 	      object|void to2, function(:void)|void callback)
 {
+  /*
+  Quick and dirty comment: if callback is void, there is a backtrace
   if(!to2)
   {
     object p = pipe();
@@ -3213,13 +3225,14 @@ void shuffle(object from, object to,
     p->set_done_callback(callback);
     p->output(to);
   } else {
+  */
     // Sad but we need Pipe.pipe here...
     object p = Pipe.pipe();
     if (callback) p->set_done_callback(callback);
     p->output(to);
     if(to2) p->output(to2);
     p->input(from);
-  }
+  //}
 }
 
 
@@ -3404,11 +3417,9 @@ int main(int|void argc, array (string)|void argv)
 
 
 
-#if 0
+#ifdef LOAD_CONFIGS_STARTUP
   foreach(configurations, object config)
-  {
     config->enable_all_modules(); 
-  };
 #endif
   enabling_configurations = 0;
 
