@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
+ * Copyright © 2000-2001 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -60,12 +60,6 @@ void create()
   defvar("readme", 1, "Include readme files", TYPE_FLAG,
 	 "If set, include readme files in directory listings");
 
-  defvar("override", 0, "Allow directory index file overrides", TYPE_FLAG,
-	 "If this variable is set, you can get a listing of all files "
-	 "in a directory by appending '.' or '/' to the directory name, like "
-	 "this: http://caudium.net//"
-	 ". It is _very_ useful for debugging, but some people regard it as a "
-	 "security hole.");
 }
 
 /*  Module specific stuff */
@@ -185,19 +179,9 @@ mapping parse_directory(object id)
 
   f=id->not_query;
 
-  if(strlen(f) > 1)
-  {
-    if(!((f[-1] == '/') ||
-	 (QUERY(override) && (f[-1] == '.') && (f[-2] == '/'))))
-      return http_redirect(id->not_query+"/", id);
-  } else {
-    if(f != "/" )
-      return http_redirect(id->not_query+"/", id);
-  }
+  if(strlen(f) > 1 ?  f[-1] != '/' : f != "/")
+    return http_redirect(id->not_query+"/", id);
 
-  // At this point the last character is either
-  // a '.' in which case we should give a directory listing,
-  // or a '/' in which case we should search for an index-file.
   if(f[-1] == '/') /* Handle indexfiles */
   {
     string file;
@@ -215,11 +199,6 @@ mapping parse_directory(object id)
     id->not_query = f;
   }
 
-  if (f[-1] == '.') {
-    // Remove the override '.'.
-    f = f[..sizeof(f)-2];
-  }
-  
   if(id->pragma["no-cache"] || !(dir = cache_lookup(key, f))) {
     cache_set(key, f, dir=new_dir(f, id));
   }
@@ -239,9 +218,4 @@ mapping parse_directory(object id)
 //! If set, include readme files in directory listings
 //!  type: TYPE_FLAG
 //!  name: Include readme files
-//
-//! defvar: override
-//! If this variable is set, you can get a listing of all files in a directory by appending '.' or '/' to the directory name, like this: http://caudium.net//. It is _very_ useful for debugging, but some people regard it as a security hole.
-//!  type: TYPE_FLAG
-//!  name: Allow directory index file overrides
 //

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
+ * Copyright © 2000-2001 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -209,13 +209,6 @@ void create()
 	 "If set, include the last user who modified the file in "
 	 "directory listings. This requires a user database module.");
 #endif
-
-  defvar("override", 0, "Allow directory index file overrides", TYPE_FLAG,
-	 "If this variable is set, you can get a listing of all files "
-	 "in a directory by appending '.' or '/' to the directory name, like"
-	 " this: <b>http://www.caudium.net//</b>"
-	 ". It is _very_ useful for debugging, but some people regard it as a"
-	 " security hole.");
 
   defvar ("sizes", 25, "Size of the listed filenames", TYPE_INT|VAR_MORE,
 	  "This is the width (in characters) of the filenames appearing"
@@ -463,38 +456,25 @@ mapping parse_directory(object id)
   object node;
   string f;
   mixed tmp;
+  string file, old_file;
+  mapping got;
   f=id->not_query;
 
-// If this prestate is set, do some folding/unfolding.
+  // If this prestate is set, do some folding/unfolding.
   if(!id->prestate->diract) 
   { 
-    if(strlen(f) > 1) // I check the last two characters.
-    {
-      if(!((f[-1] == '/') || ( (f[-1] == '.') && (f[-2] == '/') )))
-	return http_redirect(id->not_query+"/", id);
-    } else {
-      if(f != "/" )
-	return http_redirect(id->not_query+"/", id);
-    }
+    if(strlen(f) > 1 ?  f[-1] != '/' : f != "/")
+      return http_redirect(id->not_query+"/", id);
       
-    /* If the pathname ends with '.', and the 'override' variable
-     * is set, a directory listing should be sent instead of the
-     * indexfile.
-     */
-    if(!(f[-1]=='.' && QUERY(override))) /* Handle indexfiles */
+    old_file = id->not_query;
+    if(old_file[-1]=='.') old_file = old_file[..strlen(old_file)-2];
+    foreach(query("indexfiles")-({""}), file) // Make recursion impossible
     {
-      string file, old_file;
-      mapping got;
-      old_file = id->not_query;
-      if(old_file[-1]=='.') old_file = old_file[..strlen(old_file)-2];
-      foreach(query("indexfiles")-({""}), file) // Make recursion impossible
-      {
-	id->not_query = old_file+file;
-	if(got = id->conf->low_get_file(id))
-	  return got;
-      }
-      id->not_query=old_file;
+      id->not_query = old_file+file;
+      if(got = id->conf->low_get_file(id))
+	return got;
     }
+    id->not_query=old_file;
   }
 
   if(id->pragma["no-cache"] || !(node = find_finished_node(f,id)))
@@ -548,11 +528,6 @@ mapping parse_directory(object id)
 //! If set, include the last user who modified the file in directory listings. This requires a user database module.
 //!  type: TYPE_FLAG
 //!  name: Include file user
-//
-//! defvar: override
-//! If this variable is set, you can get a listing of all files in a directory by appending '.' or '/' to the directory name, like this: <b>http://www.caudium.net//</b>. It is _very_ useful for debugging, but some people regard it as a security hole.
-//!  type: TYPE_FLAG
-//!  name: Allow directory index file overrides
 //
 //! defvar: sizes
 //! This is the width (in characters) of the filenames appearing in the directory listings

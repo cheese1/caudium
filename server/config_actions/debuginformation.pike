@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -205,7 +205,7 @@ mixed page_0(object id, object mc)
 
 #if constant(_dump_obj_table)
   first += "<p><br><p>";
-  res += ("<table  border=0 cellspacing=0 ceellpadding=2 width=50%>"
+  res += ("<table  border=0 cellspacing=0 cellpadding=2 width=50%>"
 	  "<tr align=left bgcolor=lightblue><th  colspan=2>List of all "
 	  "programs with more than two clones:</th></tr>"
 	  "<tr align=left bgcolor=lightblue>"

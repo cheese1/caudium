@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -565,7 +565,7 @@ mapping std_redirect(object o, object id)
 
   if(!o)  o=root;
   
-  if(id->referrer)
+  if(id && id->referrer)
     loc=(((((id->referrer/"#")[0])/"?")[0])+"?"+(bar++)
 	 +"#"+o->path(1));
   else
@@ -790,7 +790,7 @@ string new_module_form(object id, object node)
  	if(b->sname != q)
  	  doubles += 
  	    ("<p><dt><b>"+a[q][0]+"</b><dd>" +
- 	     "<i>A module of the same type is already enabled ("+b->name+")"
+ 	     "<i>A module of the same type is already enabled ("+b->name+"). "
  	     "<a href=\"/(delete)"+ node->descend(b->name, 1)->path(1) +
 	     "?" + (bar++) +"\">Disable that module</a> if you want this one "
 	     "instead.</i>\n");
@@ -1169,11 +1169,11 @@ mapping auto_image(string in, object id)
   // if we have both PNG and GIF support we prefer PNG
   // GIF is just a fallback
   imgext = "";
-#if constant(Image.PNG.encode)
-  imgext = ".png";
-#endif
-#if constant(Image.GIF.encode) && !constant(Image.PNG.encode)
+#if constant(Image.GIF.encode)
   imgext = ".gif";
+#endif
+#if constant(Image.PNG.encode) && !constant(Image.GIF.encode)
+  imgext = ".png";
 #endif
 
   if (imgext == "")
@@ -1256,12 +1256,12 @@ mapping auto_image(string in, object id)
   else {perror("Cannot open file for "+in+"\n");}
 #endif
 
-#if constant(Image.PNG.encode)
-  return http_string_answer(e,"image/png");
+#if constant(Image.GIF.encode)
+  return http_string_answer(e,"image/gif");
 #endif
 
-#if constant(Image.GIF.encode) && !constant(Image.PNG.encode)
-  return http_string_answer(e,"image/gif");
+#if constant(Image.PNG.encode)
+  return http_string_answer(e,"image/png");
 #endif
 
   return 0;
@@ -1340,7 +1340,7 @@ string status_row(object node)
 	   " cellspacing=0>\n"
 	   "<tr><td valign=bottom align=left>"/*"<a href=\"$docurl"+
 	   node->path(1)+"\">"*/
-	   "<img border=0 src=\"/image/caudium-icon-gray.png\" alt=\"\">"/*"</a>"*/
+	   "<img border=0 src=\"/image/caudium-icon-gray.gif\" alt=\"\">"/*"</a>"*/
 	   "</td>\n<td>&nbsp;</td><td  width=100% height=39>"
 	   "<table cellpadding=0 cellspacing=0 width=100% border=0>\n"
 	   "<tr width=\"100%\">\n"
