@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
+ * Copyright © 2000-2001 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -66,7 +66,7 @@ constant module_unique = 1;
 
 void start( int num, object conf )
 {
-  module_dependencies (conf, ({ "flik", "htmlparse" }));
+  module_dependencies (conf, ({ "flik" }));
 }
 
 int dirlisting_not_set()

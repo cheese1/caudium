@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
+ * Copyright © 2000-2001 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -56,8 +56,9 @@ mapping locks = ([]);
 #define LOCKR(x) LOCK("report_"+x)
 #else
 #undef THREAD_SAFE
-#define LOCK() do {
-#define UNLOCK() } while(0)
+#define LOCK(X)
+#define UNLOCK() 
+#define LOCKR(x)
 #endif
 
 constant module_type = MODULE_LOCATION;
