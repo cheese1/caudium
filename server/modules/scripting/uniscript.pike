@@ -933,7 +933,7 @@ void create(object conf)
 	 "enabled, only UID's will work correctly. If unset, scripts will "
 	 "be run as nobody.", 0, getuid);
 
-  defvar("runowner", 1, "Run scripts as", TYPE_FLAG,
+  defvar("runowner", 1, "Run scripts as owner", TYPE_FLAG,
 	 "If enabled, scripts are run as owner.", 0, getuid);
 
   defvar("user", 1, "Run user scripts as owner", TYPE_FLAG,
@@ -1058,7 +1058,7 @@ void create(object conf)
 //! defvar: runowner
 //! If enabled, scripts are run as owner.
 //!  type: TYPE_FLAG
-//!  name: Run scripts as
+//!  name: Run scripts as owner
 //
 //! defvar: user
 //! If set, scripts in the home-dirs of users will be run as the user. This overrides the Run scripts as variable.
