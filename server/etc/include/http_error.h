@@ -162,8 +162,10 @@ class http_error_handler {
            error_name = _error_name;
         else if (id->misc->error_name)
            error_name = id->misc->error_name;
-        else
+        else if ( ( id->errors ) && ( id->errors[ error_code ] ) )
            error_name = id->errors[error_code];
+	else
+	   error_name = "No Error Message Supplied. Sorry.\n\n";
 
         if (_error_message)
            error_message = _error_message;
@@ -176,7 +178,7 @@ class http_error_handler {
               if (id->method != "GET" && id->method != "HEAD" && id->method != "POST")
                  error_message = "Method (" + html_encode_string (id->method) + ") not recognised.";
               else
-                 error_message = "Unable to locate the file: " + id->not_query + ".<br>\n" +
+                 error_message = "Unable to locate the file: " + html_encode_string (id->not_query) + ".<br />\n" +
                          "The page you are looking for may have moved or been removed.";
            }
         }
@@ -279,7 +281,11 @@ class http_error_handler {
     else 
     {
        /* check if they want old-style 404 */
+#ifdef ENABLE_NEW404
        if (id->conf->query("Old404") && error_code == 404)
+#else
+       if (error_code == 404)
+#endif /* ENABLE_NEW404 */
        {
           return http_low_answer (error_code,
                           replace (parse_rxml (id->conf->query ("ZNoSuchFile"), id ),
@@ -288,7 +294,11 @@ class http_error_handler {
                                    id->conf->query ("MyWorldLocation") })));
        }
 
+#ifdef ENABLE_NEW404
        local_template = get_template (id->conf->query ("ErrorTheme"), id);
+#else
+       local_template = get_template ("", id);
+#endif /* ENABLE_NEW404 */
     }
 
     if (!error_code)

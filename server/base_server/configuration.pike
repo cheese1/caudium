@@ -2302,11 +2302,24 @@ public string real_file(string file, object id)
   }
 }
 
-// Convenience functions used in quite a lot of modules. Tries to
-// read a file into memory, and then returns the resulting string.
 
-// NOTE: A 'file' can be a cgi script, which will be executed, resulting in
-// a horrible delay.
+//
+//! method: mixed try_get_file(string s, object id, int|void status, int|void nocache)
+//!  Convenience function used in quite a lot of modules. Tries to read a file
+//!  into memory, and then returns the resulting string. Note that a 'file' 
+//!  can be a CGI script, which will executed, resulting in a horrible delay.
+//! arg: string s
+//!  The file to read.
+//! arg: object id
+//!  The Caudium Object Id
+//! arg: int|void status
+//!  Ask the function to return 1 if file exist or 0 if it doesn't.
+//! arg: int|void nocache
+//!  Set to 1 if you don't want to cache or use the caudium cache for this
+//!  access.
+//! returns:
+//!  A string with the content of file or int if you ask a status of the file
+//
 
 public mixed try_get_file(string s, object id, int|void status, int|void nocache)
 {
@@ -3713,14 +3726,16 @@ void create(string config)
 	  "you can make this value lower. With a small cache and a small "
 	  "percentage the GC routine will run more often.",
 	  ({ 5, 10, 15, 20, 25, 30, 35, 40, 50 }));
-#endif
+#endif /* ENABLE_RAM_CACHE */
+#ifdef ENABLE_NEW404
   defvar("ErrorTheme", "", "Error Theme", TYPE_STRING,
 	 "This is the theme to apply to any error messages generated " +
 	 "automatically by this server. Please enter an absolute path on the virtual " +
          "filesystem(s), otherwise the system-wide default will be used." );
-  defvar("Old404", 0, "Old-style 404's", TYPE_FLAG,
+  defvar("Old404", 1, "Old-style 404's", TYPE_FLAG,
 	 "This allows you to override the new style error responses and use " +
          "the old fasioned 404 handling." );
+#endif /* ENABLE_NEW404 */
   defvar("ZNoSuchFile", "<title>Sorry. I cannot find this resource</title>\n"
 	 "<body background='/(internal,image)/cowfish-bg' bgcolor='#ffffff'\n"
 	 "text='#000000' alink='#ff0000' vlink='#00007f' link='#0000ff'>\n"
@@ -3927,7 +3942,7 @@ void create(string config)
 	 "be used for such purposes.  Simply select a location that you are "
 	 "not likely to use for regular resources.");
 	 
-  defvar("use_scopes", "Off/Conditional", "Scopes compatibility", TYPE_STRING_LIST,
+  defvar("use_scopes", "On/Conditional", "Scopes compatibility", TYPE_STRING_LIST,
          "<p>This compatibility option manages the new feature of the Caudium Webserver "
          "known as <em>scopes</em>.</p>"
          "<p>Under Roxen 1.3, variable names can contain periods "
