@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -48,7 +48,7 @@ inherit "module";
 constant module_type = MODULE_PRECACHE;
 constant module_name = "IP-Less virtual hosting (DEPRECATED)";
 constant module_doc  = "<b><font color=red>THIS MODULE IS DEPRECATED.</font> Please "
-	    "use the Virtaul Host Matcher module instead. It gives you the "
+	    "use the Virtual Host Matcher module instead. It gives you the "
 	    "ability to control how the host matching is done, using "
 	    "regular expressions.</b><p>"
 	    "This module adds support for IP-less virtual hosts, "
