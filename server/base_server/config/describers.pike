@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -138,7 +138,7 @@ string describe_error(string err, array (int) times)
   if(sizeof(times)==1 && times[0]/60==last_time) nt=1;
   last_time=times[0]/60;
   sscanf(err, "%d,%s", code, err);
-  return ("<table><tr><td valign=top><img src=/image/err_"+code+".png \n"
+  return ("<table><tr><td valign=top><img src=/image/err_"+code+".gif \n"
 	  "alt="+codetext[code-1]+">"
 	  "</td><td>"+(nt?"":describe_times(times)+"<br>")+
 	  replace(fix_err(err),"\n","<br>\n")+"</table>");

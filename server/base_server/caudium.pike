@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -77,7 +77,7 @@ constant pipe = Pipe.pipe;
 // This is the real Caudium version. It should be changed before each
 // release
 constant __caudium_version__ = "1.0";
-constant __caudium_build__ = "9";
+constant __caudium_build__ = "30";
 
 constant real_version = "Caudium/"+__caudium_version__+"."+__caudium_build__;
 
@@ -190,6 +190,7 @@ private static void really_low_shutdown(int exit_code)
 private static void low_shutdown(int exit_code)
 {
   // Change to root user if possible ( to kill the start script... )
+  
 #if constant(seteuid)
   seteuid(getuid());
   setegid(getgid());
@@ -257,7 +258,7 @@ mapping shutdown()
 			   ({"$docurl", "$PWD"}), ({caudium->docurl, getcwd()})),
 	    "type":"text/html" ]);
 } 
-
+static int shutting_down;
 // This is called for each incoming connection.
 private static void accept_callback( object port )
 {
@@ -291,7 +292,7 @@ private static void accept_callback( object port )
       switch(port->errno())
       {
        case 0:
-       case 11:
+       case system.EAGAIN:
 	return;
 
        default:
@@ -303,11 +304,14 @@ private static void accept_callback( object port )
 #endif /* DEBUG */
  	return;
 
-       case 24:
-        report_fatal(sprintf("Out of sockets (%d active). "
-			     "Restarting server gracefully.\n",
-			     sizeof(get_all_active_fd())));
-	low_shutdown(-1);
+       case system.EMFILE:
+	if(!shutting_down) {
+	  shutting_down=1;
+	  report_fatal(sprintf("Out of sockets (%d active). "
+			       "Restarting server gracefully.\n",
+			       sizeof(get_all_active_fd())));
+	  low_shutdown(-1);
+	}
 	return;
       }
     }
@@ -2459,7 +2463,7 @@ private void define_global_variables( int argc, array (string) argv )
 	    "headers and documentation for each module. There is also a "
 	    "compact mode which allows for addition of one or more modules "
 	    "simultaneously. This mode has no module documentation and is "
-	    "therefore ment for more advanced users.",
+	    "therefore meant for more advanced users.",
 	    ({ "Standard", "Compact" }));
     
 //   globvar("_v", CONFIGURATION_FILE_LEVEL, 0, TYPE_INT, 0, 0, 1);
@@ -2592,7 +2596,13 @@ private void define_global_variables( int argc, array (string) argv )
 	  "Do you want documentation? (this is an example of documentation)");
 
 
-  globvar("NumAccept", 1, "Number of accepts to attempt",
+#ifdef ENABLE_RAM_CACHE
+  globvar("RequestCacheTimeout", 30, "Request Tuning: Cache expiration value",
+          TYPE_INT|VAR_MORE,
+          "Time after which a single cached request is removed from the data cache");
+#endif		  
+  
+  globvar("NumAccept", 1, "Request Tuning: Number of accepts to attempt",
 	  TYPE_INT_LIST|VAR_MORE,
 	  "You can here state the maximum number of accepts to attempt for "
 	  "each read callback from the main socket. <p> Increasing this value "
@@ -3168,7 +3178,7 @@ void rescan_modules()
 {
   string file, path;
   mixed err;
-  report_notice("Scanning module directories for modules");
+  report_notice("Scanning module directories for modules.\n");
   if (!allmodules) {
     allmodules=copy_value(somemodules);
   }
@@ -3640,7 +3650,7 @@ string check_variable(string name, mixed value)
 //!  name: Range: Enable range handling
 //
 //! defvar: ModuleListType
-//! This variable decides how the <tt>Add Module</tt> page should look like. The standard mode is very verbose with graphical headers and documentation for each module. There is also a compact mode which allows for addition of one or more modules simultaneously. This mode has no module documentation and is therefore ment for more advanced users.
+//! This variable decides how the <tt>Add Module</tt> page should look like. The standard mode is very verbose with graphical headers and documentation for each module. There is also a compact mode which allows for addition of one or more modules simultaneously. This mode has no module documentation and is therefore meant for more advanced users.
 //!  type: TYPE_STRING_LIST
 //!  name: Configuration interface: Add module page layout
 //
@@ -3744,10 +3754,15 @@ string check_variable(string name, mixed value)
 //!  type: TYPE_FLAG|VAR_MORE
 //!  name: Configuration interface: Help texts
 //
+//! defvar: RequestCacheTimeout
+//! Time after which a single cached request is removed from the data cache
+//!  type: TYPE_INT|VAR_MORE
+//!  name: Request Tuning: Cache expiration value
+//
 //! defvar: NumAccept
 //! You can here state the maximum number of accepts to attempt for each read callback from the main socket. <p> Increasing this value will make the server faster for users making many simultaneous connections to it, or if you have a very busy server.</p><p>It won't work on some systems, though, eg. IBM AIX 3.2.</p><p> To see if it works, change this variable, <b> but don't press save</b>, and then try connecting to your server. If it works, come back here and press the save button.</p><p>If it doesn't work, just restart the server and be happy with having '1' in this field.</p><p>The higher you set this value, the less load balancing between virtual servers. (If there are 256 more or less simultaneous requests to server 1, and one to server 2, and this variable is set to 256, the 256 accesses to the first server might very well be handled before the one to the second server.)</p>
 //!  type: TYPE_INT_LIST|VAR_MORE
-//!  name: Number of accepts to attempt
+//!  name: Request Tuning: Number of accepts to attempt
 //
 //! defvar: ConfigPorts
 //! These are the ports through which you can configure the server.<br />Note that you should at least have one open port, since otherwise you won't be able to configure your server.

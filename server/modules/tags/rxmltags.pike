@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -965,6 +965,8 @@ string tag_use(string tag, mapping m, object id)
   if(!m->file && !m->package) 
     return "<use help>";
   
+  if(m->file)
+    m->file = fix_relative(m->file, nid);
   if(id->pragma["no-cache"] || 
      !(res = cache_lookup("macrofiles:"+ id->conf->name ,
 			  (m->file || m->package))))
@@ -972,7 +974,7 @@ string tag_use(string tag, mapping m, object id)
     res = ([]);
     string foo;
     if(m->file)
-      foo = nid->conf->try_get_file( fix_relative(m->file,nid), nid );
+      foo = nid->conf->try_get_file(m->file, nid );
     else 
       foo=Stdio.read_bytes("../rxml_packages/"+combine_path("/",m->package));
       
@@ -2386,7 +2388,7 @@ string tag_configimage(string f, mapping m)
     switch(q=indices(m)[0])
     {
      case "src":
-      args += " src=\"/internal-caudium-"+ (m->src-".png") + "\"";
+      args += " src=\"/internal-caudium-"+ (m->src-".gif") + "\"";
       break;
      default:
       args += " "+q+"=\""+m[q]+"\"";
@@ -2839,7 +2841,7 @@ mapping pr_sizes = ([]);
 string get_pr_size(string size, string color)
 {
   if(pr_sizes[size+color]) return pr_sizes[size+color];
-  object fd = open("caudium-images/power-"+size+"-"+color+".png", "r");
+  object fd = open("caudium-images/power-"+size+"-"+color+".gif", "r");
   if(!fd) return "NONEXISTANT COMBINATION";
   return pr_sizes[size+color] = gif_size( fd );
 }
@@ -2853,7 +2855,7 @@ string tag_pr(string tagname, mapping m)
     string res = "<table><tr><td><b>size</b></td><td><b>color</b></td></tr>";
     foreach(sort(get_dir("caudium-images")), string f)
       if(sscanf(f, "power-%s", f))
-	res += "<tr><td>"+replace(f-".png","-","</td><td>")+"</tr>";
+	res += "<tr><td>"+replace(f-".gif","-","</td><td>")+"</tr>";
     return res + "</table>";
   }
   m_delete(m, "color");
