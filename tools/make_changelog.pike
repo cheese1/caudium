@@ -1,23 +1,40 @@
 mapping (string:string) users = ([ ]);
 
+int rxml;
 string domain;
+int flag = 0;
 mapping user_list = ([
+  "uid35094": "Retired user",
+  "uid56983": "Retired user",
+  "uid22667": "Retired user",
   "neotron": "David Hedbor <david@caudium.net>",
   "grendel": "Marek Habersack <grendel@caudium.net>",
   "oliv3": " Olivier Girondel <oliv3@caudium.net>",
   "wilsonm": "Matthew Wilson <matthew@caudium.net>",
   "kiwi": "Xavier Beaudouin <kiwi@caudium.net>",
   "james_tyson": "James Tyson <james_tyson@caudium.net>",
-  "underley": "Daniel Podlejski <underley@users.sourceforge.net>",
+  "jnt": "James Tyson <james_tyson@caudium.net>",
+  "underley": "Daniel Podlejski <underley@caudium.net>",
   "h3x": "Justin Hannah <h3x@caudium.net>",
   "embee": "Martin Bähr <mbaehr@caudium.net>",
+  "mbaehr": "Martin Bähr <mbaehr@caudium.net>",
   "redax": "Zsolt Varga <redax@caudium.net>",
   "stenad": "Sten Eriksson <stenad@caudium.net>",
   "kvoigt": "Kai Voigt <k@caudium.net>",
   "mikeharris": "Mike A. Harris <mikeharris@caudium.net>",
   "nilkram": "Fred van Dijk <fred@caudium.net>",
   "duerrj": "Joseph Duerr <duerrj@caudium.net>",
-  "vee-eye": "Eric Lindvall <eric@caudium.net>"
+  "vee-eye": "Eric Lindvall <eric@caudium.net>",
+  "bertrand_lupart": "Bertrand Lupart <bertrand@caudium.net>",
+  "bertrand": "Bertrand Lupart <bertrand@caudium.net>",
+  "gourdelier": "David Gourdelier <vida@caudium.net>",
+  "vida": "David Gourdelier <vida@caudium.net>",
+  "hww3": "Bill Welliver <hww3@caudium.net>",
+  "ice": "Tamas Tevesz <ice@caudium.net>",
+  "kazmer": "Tamas Tevesz <ice@caudium.net>",
+  "tombolala": "Thomas Bopp <tombolala@caudium.net>",
+  "cd34": "Chris Davies <cd34@caudium.net>",
+  "maverick": "Benoit Plessis <maverick@caudium.net>",
 ]);
 void find_user(string u)
 {
@@ -48,15 +65,31 @@ string mymktime(string from)
   m->min = t[4];
   m->sec = t[5];
 //werror("%O\n", m);
-  return (ctime(mktime(m))-"\n"+" ");
+//  if(rxml) return "<date unix_time="+mktime(m)+">";
+ // return (ctime(mktime(m))-"\n"+" ");
+  return mydate(m);
 }
 
+string mydate(mapping t) {
+ string out = "";
+
+ if(flag != 0) out += "</li>";
+ else flag = 1;
+ if(rxml) out += "<li>";
+ out += ctime(mktime(t)) - "\n"+" ";
+ 
+ if(rxml) out += "<br \/>";
+
+ return out;
+}
 array ofiles = ({});
 void output_changelog_entry_header(array from)
 {
   string u = from[1];
   if(!users[u]) find_user(u);
-  write("\n"+mymktime(from[0])+" "+users[u]+"\n");
+  if (rxml)
+    write("\n"+mymktime(from[0])+" "+replace(users[u],({ "@","<",">","." }), ({" AT ", "&lt;", "&gt;", " -DOT- "}))+"<br\/>\n");
+  else write("\n"+mymktime(from[0])+" "+users[u]+"\n");
   ofiles = ({});
 }
 
@@ -95,8 +128,7 @@ string trim(string what)
   string res="";
   foreach(what/"\n", string l)
   {
-    l = reverse(l);
-    sscanf(l, "%*[ \t]%s", l);
+    sscanf( reverse(l), "%*[ \t]%s", l);
     l = reverse(l);
     res += l+"\n";
   }
@@ -111,7 +143,8 @@ void output_entry(array files, string message)
   message = reverse(message);
   if(equal(sort(files),sort(ofiles)))
   {
-    write(trim(sprintf("              %-=65s\n", message)));
+    if(rxml) write("<blockquote>"+qte(message)+"</blockquote>\n\n");
+    else write(trim(sprintf("              %-=65s\n", message)));
   }
   else
   {
@@ -124,11 +157,17 @@ void output_entry(array files, string message)
 	fh += f+", ";
       fh = fh[..sizeof(fh)-3]+":";
     }
+    if(rxml) {
+	write("<b><font color=darkblue>"+qte(fh)+"</font></b>"
+              "<blockquote>"+qte(message)+"</blockquote>\n\n");
+    } else {
+
     if(strlen(message+fh)<70)
       write("\t* "+fh+" "+message+"\n");
     else
 	write(trim(replace(sprintf("\t* %-=69s\n", fh),"\n   ","\n\t  ")+
 		   sprintf("            %-=65s\n", message)));
+    }
     ofiles = files;
   }
 }
@@ -151,16 +190,19 @@ void main(int argc, array (string) argv)
   thread_create(twiddle);
 #endif
   werror("Running CVS log ");
-  string data = Process.popen("cvs log");
+  string data = Process.popen("cvs -q -z3 log");
   werror("Done ["+strlen(data)/1024+" Kb]\n");
   array entries = ({});
-  if(argc>1)
+  rxml = argv[-1]=="--rxml";
+  if(argc>1 && argv[1] != "--rxml")
     domain = argv[1];
   else
   {
-    domain = "users.sourceforge.net";
+    domain = "caudium.net";
   }
   werror("Parsing data ... ");
+  if(rxml)
+    write("<body bgcolor=white text=black link=darkred><ul>");
   foreach(data/"=============================================================================\n", string file)
   {
     array foo = file/"----------------------------\nrevision ";

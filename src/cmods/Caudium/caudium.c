@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,7 +47,7 @@ static_strings strs;
 **!  scope: private
 */
 
-static INLINE unsigned char *char_decode_url(unsigned char *str, int len) {
+static unsigned char *char_decode_url(unsigned char *str, int len) {
   unsigned char *ptr, *end, *endl2;
   int i, nlen;
   ptr = str;
@@ -416,8 +416,8 @@ sval.u.string = value;
 mapping_insert(headermap, &skey, &sval);
 #endif
 
-INLINE static int get_next_header(unsigned char *heads, int len,
-                                  struct mapping *headermap)
+static int get_next_header(unsigned char *heads, int len,
+                           struct mapping *headermap)
 {
   int data, count, colon, count2=0;
   struct svalue skey, sval;
@@ -688,13 +688,13 @@ static void f_extension( INT32 args ) {
   }
   orig = src->str;
   for(i = src->len-1; i >= 0; i--) {
-    if(!(orig[i] & 0xD1)) {
+    if(orig[i] == 0x2E) {
       found = 1;
       i++;
       break;
     }
   }
-  pop_n_elems(args);
+  
   if(found) {
     int len = src->len - i;    
     switch(orig[src->len-1]) {
@@ -702,9 +702,11 @@ static void f_extension( INT32 args ) {
       /* Remove unix backup extension */
       len--;
     }
+    pop_n_elems(args);
     push_string(make_shared_binary_string(orig+i, len));
 
   } else {
+    pop_n_elems(args);
     push_text("");
   }
 }
@@ -747,7 +749,7 @@ static void f_create_process( INT32 args ) {
   int num_fds = 3;
   int wanted_gid=0, wanted_uid=0;
   int gid_request=0, uid_request=0;
-  char *tmp_cwd;
+  char *tmp_cwd = NULL;
   pid_t pid=-2;
 
   extern char **environ;
@@ -764,13 +766,13 @@ static void f_create_process( INT32 args ) {
   switch(args)
   {
     default:
-      optional=sp[1-args].u.mapping;
+      optional=Pike_sp[1-args].u.mapping;
       mapping_fix_type_field(optional);
 
       if(m_ind_types(optional) & ~BIT_STRING)
         Pike_error("Bad index type in argument 2 to Caudium.create_process()\n");
 
-    case 1: cmd=sp[-args].u.array;
+    case 1: cmd=Pike_sp[-args].u.array;
       if(cmd->size < 1)
         Pike_error("Too few elements in argument array.\n");
 
@@ -917,7 +919,7 @@ static void f_create_process( INT32 args ) {
           push_string(make_shared_string("="));
           ref_push_string(ITEM(v)[e].u.string);
           f_add(3);
-          storage.env[ptr++]=sp[-1].u.string->str;
+          storage.env[ptr++]=Pike_sp[-1].u.string->str;
         }
       }
       storage.env[ptr++]=0;

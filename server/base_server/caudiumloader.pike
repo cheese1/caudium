@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -398,7 +398,13 @@ string popen(string s, void|mapping env, int|void uid, int|void gid)
 #else
   object proc;
 #endif
-  proc = Process.create_process( ({"/bin/sh", "-c", s }), opts );
+  mixed err = catch { 
+     proc = Process.create_process( ({"/bin/sh", "-c", s }), opts );
+  };
+  if (err) {
+    perror("Cannot Process.popen() : %O\n", err);
+    proc = 0;
+  }
   p->close();
   destruct(p);
 
@@ -874,6 +880,11 @@ int main(mixed ... args)
 #if !constant(http_decode_string) && constant(_Roxen.http_decode_string)
   add_constant("http_decode_string", _Roxen.http_decode_string);
 #endif
+  // Some magic to handle name conflicts between Pike 7.0 without SSL.pmod
+  // and Pike 7.2 that have allready SSL.pmod inside...
+ #if !constant(SSL)
+  add_constant("SSL",CaudiumSSL);
+ #endif
   
 
   add_constant("mark_fd", mark_fd);

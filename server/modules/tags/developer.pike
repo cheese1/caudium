@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -97,6 +97,7 @@ mapping(string:array) developers = ([
   "oliv3":({"Olivier Girondel", "olivier.girondel@idealx.com", "1973-02-02", "France"}),
   "redax":({"Zsolt Varga", "redax@caudium.net", "1973-02-01", "Hungary"}),
   "underley":({"Daniel Podlejski", "underley@underley.eu.org", "1976-08-08", "Poland"}),
+  "vida":({"David Gourdelier", "vida@caudium.net", "1979-16-02", "France" }),
   "wilsonm":({"Matthew Wilson", "matthew@caudium.net", "1976-4-10", "USA"})
 ]);
 

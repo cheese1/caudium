@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,6 +17,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
+/*
+ * $Id$
+ */
 
 /*
  *
@@ -27,8 +30,18 @@
  *
  */
 
-string cvs_version = "$Id$";
-int thread_safe = 1;   /* Probably. Check _root */
+//! module: VHS - Directory parsing module
+//!  This is the default directory parsing module.
+//!  This one pretty prints a list of files, with
+//!  macintosh like fold and unfold buttons next to each
+//!  directory.
+//! inherits: module
+//! inherits: caudiumlib
+//! type: MODULE_DIRECTORIES
+//! cvs_version: $Id$
+
+constant cvs_version = "$Id$";
+constant thread_safe = 1;   /* Probably. Check _root */
 
 #include <module.h>
 inherit "module";

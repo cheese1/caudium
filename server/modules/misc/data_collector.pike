@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -25,10 +25,19 @@
 #include <module.h>
 inherit "module";
 inherit "caudiumlib";
+//! module: Data Collector Module
+//!  Module serving the purpose of collecting, preliminary processing and storing data 
+//!  from the forms that use this module as their action.<br />
+//!  For more information see the on-line documenation on Caudium Configuration
+//!  InterFace.
+//! type: MODULE_LOCATION|MODULE_PARSER
+//! inherits: module
+//! inherits: caudiumlib
+//! cvs_version: $Id$
 
 constant cvs_version = "$Id$";
 constant thread_safe = 1;
-constant module_type = MODULE_LOCATION | MODULE_PARSER;
+constant module_type = MODULE_LOCATION | MODULE_PARSER | MODULE_PROVIDER;
 constant module_name = "Data Collector Module";
 constant module_doc  = "Module serving the purpose of collecting, preliminary "
                        "processing and storing data from forms that use this "
@@ -141,7 +150,10 @@ void create()
          "module to process the collected data. The provider will be "
          "checked for the presence of all the required APIs and should they "
          "be missing, an error will be sent to the log. The plugin name can be "
-         "set by the form itself, by using the <em>dprovider</em> parameter.");
+         "set by the form itself, by using the <em>dprovider</em> parameter."
+         "set this to <em>dc_none</em> if you don't want to use such a module"
+         "at all. This will use a build in data processor which simply adds"
+         "submitted variables to the Session environment");
   defvar("dc_name", "dcoll", "Data collector name", TYPE_STRING,
          "This is the name used in the data part of the mapping built by this "
          "module to designate storage for this particular copy of the module. "
@@ -259,16 +271,16 @@ private mixed get_error_redirect(object id)
 }
 
 private void construct_defines(string which, object id,
-                               mapping variables,
+                               mapping vars,
                                mapping tags,
                                mapping containers)
 {
-    if (variables && sizeof(variables)) {
-        foreach(indices(variables), string idx) {
+    if (vars && sizeof(vars)) {
+        foreach(indices(vars), string idx) {
             if (VARIABLES(id)[idx])
                 warning("%s - variable '%s' in module '%s' redefined",
                         which, idx, QUERY(dc_name));
-            VARIABLES(id)[idx] = variables[idx];
+            VARIABLES(id)[idx] = vars[idx];
         }
     }
 
@@ -327,14 +339,14 @@ private mixed do_final(object id)
 
     collect_variables(id, "final");
     if (!zero_type(procobj) && objectp(procobj) && functionp(procobj->finale)) {
-        mapping variables = ([]);
+        mapping vars = ([]);
         mapping tags = ([]);
         mapping containers = ([]);
         mapping|int res;
         
-        res = procobj->finale(id, DATA(id), variables, tags, containers);
+        res = procobj->finale(id, DATA(id), vars, tags, containers);
         if (!res) {
-            construct_defines("final", id, variables, tags, containers);
+            construct_defines("final", id, vars, tags, containers);
         } else if (res < 0) {
             return get_redirect(id);
         } else if (mappingp(res)) {
@@ -357,14 +369,14 @@ private mixed do_process(object id)
 
     collect_variables(id, "process");    
     if (!zero_type(procobj) && objectp(procobj) && functionp(procobj->process)) {
-        mapping variables = ([]);
+        mapping vars = ([]);
         mapping tags = ([]);
         mapping containers = ([]);
         mapping|int res;
         
-        res = procobj->process(id, DATA(id), variables, tags, containers);
+        res = procobj->process(id, DATA(id), vars, tags, containers);
         if (!res) {
-            construct_defines("process", id, variables, tags, containers);
+            construct_defines("process", id, vars, tags, containers);
         } else if (res < 0) {  
             return get_redirect(id);
         } else if (mappingp(res)) {
@@ -471,7 +483,7 @@ string tag_dcdump(string tag, mapping m, object id,
     if (id->variables) {
         ret += "<strong>Collected variables:</strong><br><blockquote>";
         foreach(indices(id->variables), string idx)
-            ret += sprintf("<code>%s</code><br>", idx);
+            ret += sprintf("<code>%s = %s</code><br>", idx, id->variables[idx]);
         ret += "</blockquote><br>";
     }
     
@@ -513,3 +525,58 @@ mapping query_tag_callers()
         "dcdump" : tag_dcdump
     ]);
 }
+
+string query_provides()
+{
+    return("dc_none");
+}
+
+mapping|int finale(object id, mapping data, mapping vars, mapping tags, mapping containers)
+{
+    return process(id, data, vars, tags, containers);
+}
+
+mapping|int process(object id, mapping data, mapping vars, mapping tags, mapping containers)
+{
+    foreach(indices(data->parts[-1]), string idx)
+        VARIABLES(id)[idx] = data->parts[-1][idx];
+    data->parts = data->parts[0..(sizeof(data->parts)-2)];
+    return 0;
+}
+
+/* START AUTOGENERATED DEFVAR DOCS */
+
+//! defvar: mountpoint
+//! This is where the module will be inserted in the 
+//!  type: TYPE_LOCATION
+//!  name: Mount point
+//
+//! defvar: data_plugin
+//! Name of the provider module that exports APIs called by this module to process the collected data. The provider will be checked for the presence of all the required APIs and should they be missing, an error will be sent to the log. The plugin name can be set by the form itself, by using the <em>dprovider</em> parameter.set this to <em>dc_none</em> if you don't want to use such a moduleat all. This will use a build in data processor which simply addssubmitted variables to the Session environment
+//!  type: TYPE_STRING
+//!  name: Data Processing Provider
+//
+//! defvar: dc_name
+//! This is the name used in the data part of the mapping built by this module to designate storage for this particular copy of the module. This allows for co-existence of several copies of this module which can store their data without disturbing other copies of the module.
+//!  type: TYPE_STRING
+//!  name: Data collector name
+//
+//! defvar: debug
+//! Output some debugging information into the server log
+//!  type: TYPE_FLAG
+//!  name: Debugging mode
+//
+
+/*
+ * If you visit a file that doesn't contain these lines at its end, please
+ * cut and paste everything from here to that file.
+ */
+
+/*
+ * Local Variables:
+ * c-basic-offset: 2
+ * End:
+ *
+ * vim: softtabstop=2 tabstop=2 expandtab autoindent formatoptions=croqlt smartindent cindent shiftwidth=2
+ */
+

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -210,7 +210,15 @@ inline void do_post_processing()
 
        case "multipart/form-data":
 	//		perror("Multipart/form-data post detected\n");
-	object messg = MIME.Message(data, request_headers);
+        object messg;
+        mixed formdataerr;
+        formdataerr = catch {
+	  messg = MIME.Message(data, request_headers);
+        };
+        if (formdataerr) {
+          //perror("MIME Decode error...\n");
+          break;
+        }
 	foreach(messg->body_parts||({}), object part) {
 	  if(part->disp_params->filename) {
 	    variables[part->disp_params->name]=part->getdata();
@@ -391,6 +399,10 @@ inline void do_post_processing()
 
 #ifdef EXTRA_ROXEN_COMPAT
      case "content-type":
+      array ct_parts = request_headers[linename] / ";";
+      ct_parts[0] = lower_case(ct_parts[0]);
+      misc[linename] = ct_parts * ";";
+      break;
      case "connection":
       misc[linename] = lower_case(request_headers[linename]);
       misc[linename] = request_headers[linename];      
@@ -1075,35 +1087,42 @@ void send_result(mapping|void result)
   if(!file->raw)
   {
     heads = ([]);
-
     if(!file->len)
     {
-      array fstat;
+      array|object fstat;
+      
       if(objectp(file->file))
-	if(!file->stat && !(file->stat=misc->stat))
-	  file->stat = (array(int))file->file->stat();
-      if(arrayp(fstat = file->stat))
+        if(!file->stat && !(file->stat=misc->stat))
+          file->stat = (array(int))file->file->stat();
+
+      fstat = file->stat;
+      if(arrayp(fstat) || objectp(fstat))
       {
-	if(file->file && !file->len)
-	  file->len = fstat[1];
+        if(file->file && !file->len)
+          file->len = fstat[1];
     	
-	if(!file->is_dynamic && !misc->is_dynamic)
-	{
-	  heads["Last-Modified"] = http_date(fstat[3]);
-	  if(since)
-	  {
-	    if(is_modified(since, fstat[3], fstat[1]))
-	    {
-	      file->error = 304;
-	      file->file = 0;
-	      file->data="";
-	      // 	    method="";
-	    }
-	  }
-	} 
+        if(!file->is_dynamic && !misc->is_dynamic) {
+#ifdef SUPPORT_HTTP_09
+          if(prot != "HTTP/0.9") {
+#endif
+            heads["Last-Modified"] = http_date(fstat[3]);
+            if(since)
+            {
+              if(is_modified(since, fstat[3], fstat[1]))
+              {
+                file->error = 304;
+                file->file = 0;
+                file->data="";
+                // 	    method="";
+              }
+            }
+#ifdef SUPPORT_HTTP_09
+          }
+#endif
+        } 
       }
       if(stringp(file->data)) 
-	file->len += strlen(file->data);
+        file->len += strlen(file->data);
     }
 
     //

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -70,7 +70,7 @@ Stdio.File open_log_file( string logfile )
     object lf=Stdio.File( logfile, "wac");
     if(!lf) 
     {
-      mkdirhier(logfile);
+      Stdio.mkdirhier(logfile);
       if(!(lf=Stdio.File( logfile, "wac")))
       {
         report_error("Failed to open logfile. ("+logfile+"): "
@@ -658,7 +658,7 @@ class CGIScript
        stderr = Stdio.stderr;
        break;
      case "custom log file":
-       stderr = open_log_file( query( "cgilog" ) );
+       stderr = open_log_file( QUERY(cgilog) );
        break;
      case "browser":
        stderr = stdout;
@@ -818,7 +818,7 @@ void start(int n, object conf)
     global_env["SERVER_URL"]=conf->query("MyWorldLocation");
 
     array us = ({0,0});
-    foreach(query("extra_env")/"\n", tmp)
+    foreach(QUERY(extra_env)/"\n", tmp)
       if(sscanf(tmp, "%s=%s", us[0], us[1])==2)
         global_env[us[0]] = us[1];
   }
@@ -902,7 +902,7 @@ int|object(Stdio.File)|mapping find_file( string f, object id )
 */
 array (string) query_file_extensions()
 {
-  return query("ext");
+  return QUERY(ext);
 }
 
 int run_as_user_enabled() { return (getuid() || !QUERY(user)); }
@@ -1099,11 +1099,21 @@ void create(object conf)
 	 "killed. 0 means unlimited.", ({ 0, 1, 2, 3, 4, 5, 7, 10, 15 }));
 }
 
+int|string check_variable(string var, mixed value) {
+  if(var == "location") {
+    if(stringp(value)) {
+      if (value[-1] == '/') return 0;	// Location is correctly finished by /
+      else return "Must finish with a \"/\" at the end.";
+    }
+  }
+  return 0;
+}
+
 int|string tag_cgi( string tag, mapping args, object id )
 {
   DWERROR("CGI:tag_cgi()\n");
 
-  if(!query("cgi_tag")) 
+  if(!QUERY(cgi_tag)) 
     return 0;
 
   if(args->help)

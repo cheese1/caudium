@@ -120,4 +120,24 @@
  */
 #undef API_COMPAT
 
+/*
+ * Caudium 1.2 has a new error handler that allow you to create more
+ * sexy error handler that the one used in Caudium 1.0 or Roxen 1.3.xx.
+ * Because of XML-Compliant Parser is based on Pike's Parser.HTML that
+ * has the main problem to fails to parse so HTML standart tags and/or
+ * comment, sometime a 404 error is break the parser and give a 500 error
+ * (internal server error) when XML-Compliant parser is used.
+ */
+#ifndef DISABLE_NEW404
+# define ENABLE_NEW404
+#endif
+
+/*
+ * Load all configurations (virtual servers and their modules) at
+ * Caudium startup.
+ * This is not enabled for performance reasons (eg Caudium with lots of
+ * virtuals servers that are mostly unused.).
+ */
+#undef LOAD_CONFIGS_STARTUP
+
 #endif

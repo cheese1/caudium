@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -54,6 +54,9 @@ string describe_type(int type, mixed flag)
 
    case TYPE_FILE:
     return "(File name)";
+
+   case TYPE_EXISTING_FILE:
+    return "(Name of a file which must exist already)";
 
    case TYPE_DIR:
     return "(Directory name of existing directory)";
@@ -176,6 +179,7 @@ string describe_variable_as_text(array var, int|void verbose)
    case TYPE_STRING:
    case TYPE_LOCATION:
    case TYPE_FILE:
+   case TYPE_EXISTING_FILE:
    case TYPE_DIR:
     string s;
     if(!var[VAR_VALUE])
@@ -351,9 +355,12 @@ string encode_one_port(array port, int id)
     res += ("<tr><td colspan=3>"
 	    "<table width=100% cellspacing=0  border=0 bgcolor=#f0f0ff>\n"
 	    "<tr width=100%><td colspan=2 width=100%><b>SSL Options</b></td></tr>\n");
-    res += ("<tr><td>Certificate file:</td> <td><input size=30,1 "
+    res += ("<tr><td>Certificate file(s):"
+            "<br><i>A comma separated list of certificate files, server certificate last.</i>"
+            "</td> <td><input size=30,1 "
 	    "name=cert_"+id+" value="+html_encode_tag_value(cf||"")+
-	    "></td></tr>\n"
+	    ">"
+            "</td></tr>\n"
 	    "<tr><td>Key file: (OPTIONAL)</td><td><input size=30,1 "
 	    "name=key_"+id+"  value="+html_encode_tag_value(kf||"")+
 	    "></td></tr>\n");
@@ -516,6 +523,10 @@ string describe_variable_low(array var, mixed path, int really_short,
     break;
     
    case TYPE_FILE:
+    res=input(path, var[VAR_VALUE], 30)+"<input type=submit value=Ok>";
+    break;
+
+   case TYPE_EXISTING_FILE:
     res=input(path, var[VAR_VALUE], 30)+"<input type=submit value=Ok>";
     break;
     
