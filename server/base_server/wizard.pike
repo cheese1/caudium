@@ -330,7 +330,7 @@ string wizard_tag_var(string n, mapping m, mixed a, mixed b)
       "      name='"+m->name+".bar' width=16 height=128 border=0></td>"
       "  </table>\n"
       "</td>\n"
-      "<td width='8' rowspan='2'><img src='/(internal,image)/unit width='8'></td>\n"
+      "<td width='8' rowspan='2'><img src='/(internal,image)/unit' width='8'></td>\n"
       "<td>\n"
       "  <table bgcolor=black width=64 border=3 "
       "         cellpadding=1 cellspacing=0><tr>\n"
@@ -516,9 +516,10 @@ string parse_wizard_page(string form, object id, string wiz_name, void|string pa
   // both values are the same here; maybe it could be done better.)
   if (stringp (id->variables->action))
     id->variables->action = (id->variables->action/"\0")[0];
-
+  string formname="wizard";
+  if(id->misc->wizardformname) formname=id->misc->wizardformname;
   res = ("<!--Wizard-->\n"
-         "<form method=get>\n" +
+         "<form method=get name=\"" + formname + "\">\n" +
 	 (stringp (id->variables->action) ?
 	  " <input type=hidden name=action value=\""+id->variables->action+"\">\n" :
 	  "") +
