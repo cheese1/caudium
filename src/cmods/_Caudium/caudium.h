@@ -4,10 +4,9 @@ static void f_parse_headers( INT32 args );
 static void f_parse_query_string( INT32 args );
 void pike_module_init( void );
 void pike_module_exit( void );
-void free_buf_struct(struct object *);
 
 #define BUFSIZE 16535
-#define BUF ((buffer *)fp->current_object->storage)
+#define BUF ((buffer *)fp->current_storage)
 #define STRS(x) strs.x.u.string
 #define SVAL(x) (&(strs.x))
 typedef struct
@@ -34,8 +33,8 @@ typedef struct
 
 typedef struct
 {
-  char data[BUFSIZE];
-  char *pos;
+  unsigned char data[BUFSIZE];
+  unsigned char *pos;
   int free;
   struct mapping *headers;
   struct mapping *other;
