@@ -70,7 +70,7 @@ void create() {
   defvar("401msg","<hl>Authentication Failed.</h1>\n",
          "Authentication Failed - Error 401 message", TYPE_TEXT_FIELD,
          "What to return when authentication has failed.");
-  defvar("debug", 1, "Debug", TYPE_FLAG,
+  defvar("debug", 0, "Debug", TYPE_FLAG,
          "Debug the code into Caudium debug log");
 }
 
@@ -137,8 +137,13 @@ mapping|int handle_error(object id, void|mapping extra_heads)
   {
     if(QUERY(debug))
       report_debug("Error code is : "+error_code);
-    if(error_code = 401) 
+    if(error_code == 401) 
       error_text=QUERY(401msg); 
+    if(error_code == 404)
+      error_text=replace(parse_rxml(QUERY(404msg), id),
+                        ({"$File", "$Me"}),
+                        ({_Roxen.html_encode_string(id->not_query),
+                          id->conf->query("MyWorldLocation") }) );
     if(mappingp(extra_heads))
       return Caudium.HTTP.low_answer(error_code, error_text) +
          ([ "extra_heads": extra_heads ]);
