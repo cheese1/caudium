@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -371,6 +371,7 @@ mapping handle_file_extension( object file, string e, object id)
 void build_callers()
 {
    object o;
+   remove_call_out(build_callers);
    tag_callers=([]);
    container_callers=([]);
    real_tag_callers=([]);

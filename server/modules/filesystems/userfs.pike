@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -292,7 +292,7 @@ void create()
 	 "was started as root.",
 	 0, uid_was_zero);
 
-  defvar("pdir", "html/", "Public directory",
+  defvar("pdir", "public_html/", "Public directory",
 	 TYPE_STRING,
          "This is the directory in the home directory of the users which "
 	 "contains the files that will be shown on the web. "
@@ -534,7 +534,7 @@ static array(string) find_user(string f, object id)
   return ({ u, f });
 }
 
-int|mapping|Stdio.File find_file(string f, object id)
+int|mapping|object(Stdio.File) find_file(string f, object id)
 {
   string u, of = f;
 
