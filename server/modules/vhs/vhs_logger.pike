@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -18,6 +18,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
+/*
+ * $Id$
+ */
+//! module: VHS - Logger module
+//!  This module logs the accesses of each vitual in VHS
+//! inherits: module
+//! inherits: caudiumlib
+//! type: MODULE_LOGGER
+//! cvs_version: $Id$
 
 /* Based on user logging module */
 
@@ -42,7 +51,7 @@ inherit "caudiumlib";
 
 constant module_type = MODULE_LOGGER;
 constant module_name = "VHS - Logger module";
-constant module_doc  = "This module logs the accesses of each virtaul in VHS.";
+constant module_doc  = "This module logs the accesses of each virtual in VHS.";
 constant module_unique = 1;
 
 // Parse the logging format strings.
@@ -165,7 +174,8 @@ string create()
 	 "$length        -- The length of the data section of the reply<br />"
        "$bin-length    -- Same, but as an 32 bit iteger in network byteorder<br />"
 	 "$referer       -- the header 'referer' from the request, or '-'.<br />"
-      "$user_agent    -- the header 'User-Agent' from the request, or '-'.<br /><br />"
+      "$user_agent    -- the header 'User-Agent' from the request, or '-'.<br />"
+      "$agent_unquoted  -- the header 'User-Agent' from the request, or '-'.<br /><br />"
 	 "$user          -- the name of the auth user used, if any<br />"
 	 "$user_id       -- A unique user ID, if cookies are supported,<br />"
 	 "                  by the client, otherwise '0'<br />"
@@ -339,7 +349,7 @@ static void do_log(mapping file, object request_id, function log_function)
 		 "$ip_number", "$bin-ip_number", "$cern_date",
 		 "$bin-date", "$method", "$resource", "$protocol",
 		 "$response", "$bin-response", "$length", "$bin-length",
-		 "$referer", "$user_agent", "$user", "$user_id", "$virtname",
+		 "$referer", "$user_agent", "$agent_unquoted", "$user", "$user_id", "$virtname",
 	       }), ({
 		 (string)request_id->remoteaddr,
 		 host_ip_to_int(request_id->remoteaddr),
@@ -355,7 +365,8 @@ static void do_log(mapping file, object request_id, function log_function)
 		 (string)(file->len>=0?file->len:"?"),
 		 unsigned_to_bin(file->len),
 		 (string)(request_id->referrer||"-"),
-		 http_encode_string(request_id->useragent),
+		 http_encode_string(request_id->useragent||"-"),
+		 request_id->useragent||"-",
 		 extract_user(request_id->realauth),
 		 (string)request_id->cookies->CaudiumUserID,
 		 (string)request_id->misc->host,
@@ -363,7 +374,7 @@ static void do_log(mapping file, object request_id, function log_function)
   
   if(search(form, "host") != -1)
     caudium->ip_to_host(request_id->remoteaddr, write_to_log, form,
-		      request_id->remoteaddr, log_function);
+		      request_id->host||request_id->remoteaddr, log_function);
   else
     log_function(form);
 }
@@ -475,7 +486,7 @@ string status()
 //
 //! defvar: LogFormat
 //! What format to use for logging. The syntax is:
-//!<pre>response-code or *: Log format for that response acode<br /><br />Log format is normal characters, or one or more of the variables below:<br /><br />\n \t \r       -- As in C, newline, tab and linefeed<br />$char(int)     -- Insert the (1 byte) character specified by the integer.<br />$wchar(int)    -- Insert the (2 byte) word specified by the integer.<br />$int(int)      -- Insert the (4 byte) word specified by the integer.<br />$^             -- Supress newline at the end of the logentry<br />$host          -- The remote host name, or ip number.<br />$ip_number     -- The remote ip number.<br />$bin-ip_number -- The remote host id as a binary integer number.<br /><br />$cern_date     -- Cern Common Log file format date.<br />$bin-date      -- Time, but as an 32 bit iteger in network byteorder<br /><br />$method        -- Request method<br />$resource      -- Resource identifier<br />$protocol      -- The protocol used (normally HTTP/1.0)<br />$response      -- The response code sent<br />$bin-response  -- The response code sent as a binary short number<br />$length        -- The length of the data section of the reply<br />$bin-length    -- Same, but as an 32 bit iteger in network byteorder<br />$referer       -- the header 'referer' from the request, or '-'.<br />$user_agent    -- the header 'User-Agent' from the request, or '-'.<br /><br />$user          -- the name of the auth user used, if any<br />$user_id       -- A unique user ID, if cookies are supported,<br />                  by the client, otherwise '0'<br />$virtname      -- virtual host name<br /></pre>
+//!<pre>response-code or *: Log format for that response acode<br /><br />Log format is normal characters, or one or more of the variables below:<br /><br />\n \t \r       -- As in C, newline, tab and linefeed<br />$char(int)     -- Insert the (1 byte) character specified by the integer.<br />$wchar(int)    -- Insert the (2 byte) word specified by the integer.<br />$int(int)      -- Insert the (4 byte) word specified by the integer.<br />$^             -- Supress newline at the end of the logentry<br />$host          -- The remote host name, or ip number.<br />$ip_number     -- The remote ip number.<br />$bin-ip_number -- The remote host id as a binary integer number.<br /><br />$cern_date     -- Cern Common Log file format date.<br />$bin-date      -- Time, but as an 32 bit iteger in network byteorder<br /><br />$method        -- Request method<br />$resource      -- Resource identifier<br />$protocol      -- The protocol used (normally HTTP/1.0)<br />$response      -- The response code sent<br />$bin-response  -- The response code sent as a binary short number<br />$length        -- The length of the data section of the reply<br />$bin-length    -- Same, but as an 32 bit iteger in network byteorder<br />$referer       -- the header 'referer' from the request, or '-'.<br />$user_agent    -- the header 'User-Agent' from the request, or '-'.<br />$agent_unquoted  -- the header 'User-Agent' from the request, or '-'.<br /><br />$user          -- the name of the auth user used, if any<br />$user_id       -- A unique user ID, if cookies are supported,<br />                  by the client, otherwise '0'<br />$virtname      -- virtual host name<br /></pre>
 //!  type: TYPE_TEXT_FIELD
 //!  name: Logging Format
 //
@@ -489,3 +500,17 @@ string status()
 //!  type: TYPE_STRING
 //!  name: AccessLog filename
 //
+
+/*
+ * If you visit a file that doesn't contain these lines at its end, please
+ * cut and paste everything from here to that file.
+ */
+
+/*
+ * Local Variables:
+ * c-basic-offset: 2
+ * End:
+ *
+ * vim: softtabstop=2 tabstop=2 expandtab autoindent formatoptions=croqlt smartindent cindent shiftwidth=2
+ */
+

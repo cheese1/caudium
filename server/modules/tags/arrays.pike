@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Written by David Hedbor <david@caudium.net>
  *	      Rob Lanphier <robla@real.com>
  * 
@@ -29,7 +29,7 @@
 **! cvs_version: $Id$
 */
 
-string cvs_version = "$Id$";
+constant cvs_version = "$Id$";
 constant thread_safe = 1;
 
 #include <module.h>

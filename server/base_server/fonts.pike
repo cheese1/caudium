@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -253,6 +253,9 @@ object get_font(string f, int size, int bold, int italic,
   object fnt;
   string key, name;
   mixed err;
+
+  if(f == "")  f = "default";	// To load the default font if
+				// it is badly specified.
 
   key = f+size+bold+italic+justification+xspace+yspace;
   if(fnt=cache_lookup("fonts", key))

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -220,8 +220,7 @@ void cache_clean()
       if(!intp(cache[a][b][TIMESTAMP]))
 	error("Illegal timestamp in cache ("+a+":"+b+")\n");
 #endif
-      if(cache[a][b][TIMESTAMP]+cache[a][b][TIMEOUT] <
-	 (time(1) - (cache_time_out - get_size(cache[a][b][DATA])/100)))
+      if(cache[a][b][TIMESTAMP]+cache[a][b][TIMEOUT] < time(1))
       {
 #ifdef CACHE_DEBUG
 #if DEBUG_LEVEL > 40

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,16 +17,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
+/*
+ * $Id$
+ */
+
+// TODO autodocs this
 
 // This is a small sample module.  It is intended to show a simple example
 // of a container.
  
 // This variable is shown in the configinterface as the varion of the module.
-string cvs_version = "$Id$";
+constant cvs_version = "$Id$";
 
-// Tell Roxen that this module is threadsafe. That is there is no
+// Tell Caudium that this module is threadsafe. That is there is no
 // request specific data in global variables.
-int thread_safe=1;
+constant thread_safe=1;
 
 #include <module.h>
 inherit "module";

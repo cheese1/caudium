@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,7 +34,7 @@
  * Written by David Hedbor <david@hedbor.org>
  */
 
-string cvs_version = "$Id$";
+constant cvs_version = "$Id$";
 constant thread_safe = 1;
 
 #include <module.h>
@@ -92,7 +92,7 @@ string container_xslt(string tag, mapping args, string xml, object id)
     if(!key || !type)
       ERROR("Incorrect baseuri specification");
     switch(type) {
-     case "virt":  key = id->realfile(key, id);
+     case "virt":
      case "file":
       args->baseuri = key;
       break;
@@ -106,7 +106,11 @@ string container_xslt(string tag, mapping args, string xml, object id)
     ERROR("Incorrect or missing stylesheet");
   switch(type) {
   case "virt":
-    key = id->conf->realfile(key, id);
+    if(!args->baseuri)
+      xsl = id->conf->try_get_file(key,id);
+    else
+      xsl = id->conf->try_get_file(Stdio.append_path(args->baseuri,key),id);
+    break;
   case "file":
     xsl = Stdio.read_file(key);
     if(!args->baseuri) 

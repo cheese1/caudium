@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -84,7 +84,7 @@ void save_it(string cl)
 
   f = configuration_dir + replace(cl, " ", "_");
   mv(f, f+"~");
-  fd = open(f, "wc");
+  fd = open(f, "wc", 0600);
   if(!fd)
   {
     error("Creation of configuration file failed ("+f+") "

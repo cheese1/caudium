@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -466,7 +466,7 @@ mixed decode_form_result(string var, int type, object node, mapping allvars)
    case TYPE_DIR_LIST:
     array foo;
     foo=Array.map((var-" ")/",", lambda(string var, object node) {
-      if (!strlen( var ) || Stdio.file_size( var ) != -2)
+      if (!strlen( var ) || !Stdio.is_dir(var))
       {
 	if(node->error)	
 	  node->error += ", " +var + " is not a directory";
@@ -485,7 +485,7 @@ mixed decode_form_result(string var, int type, object node, mapping allvars)
     
    case TYPE_DIR:
     array st;
-    if (!strlen( var ) || !(st = file_stat( var )) || (st[1] != -2))
+    if (!strlen( var ) || !Stdio.is_dir(var))
     {
       node->error = var + " is not a directory";
       return 0;
@@ -494,6 +494,13 @@ mixed decode_form_result(string var, int type, object node, mapping allvars)
       return var + "/";
     return var;
     
+   case TYPE_EXISTING_FILE:
+     if (!strlen(var) || !Stdio.is_file(var)) {
+       node->error = "the file \"" +var + "\" cannot be found";
+       return 0;
+     }
+     return var;
+
    case TYPE_TEXT_FIELD:
     var -= "\r";
    case TYPE_FONT:
@@ -1023,9 +1030,11 @@ mapping initial_configuration(object id)
     }
   }
   
-  res = cif->head("Welcome to Caudium " + cif->body() +
+  res = cif->head("Welcome to Caudium " +
 		     caudium->__caudium_version__ + "." + caudium->__caudium_build__);
 
+  res += cif->body();
+  
   res += Stdio.read_bytes("etc/welcome.html");
   if(error && strlen(error))
     res += "<blockquote>\n<p><b>"+error+"</b>";
@@ -1043,6 +1052,8 @@ mapping initial_configuration(object id)
 	  "<tr><td align=left><input type=submit value=\" Ok \">\n</td>"
 	  "<td align=right><input type=submit name=nope value=\" Cancel \"></td></tr>\n"
 	  "</form></table></table></blockquote>");
+  
+  res += "</body></html>";
   
   return stores(res);
 }

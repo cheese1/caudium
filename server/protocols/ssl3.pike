@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -47,14 +47,15 @@ mapping parse_args(string options)
   foreach(options / "\n", line)
     {
       string key, value;
-      if (sscanf(line, "%*[ \t]%s%*[ \t]%s%*[ \t]", key, value) == 5)
-	res[key] = value-"\r";
+
+      if (sscanf(line, "%s%*[ \t]%s", key, value) == 3)
+        res[String.trim_whites(key)] = String.trim_all_whites(value);
     }
   return res;
 }
 
 class roxen_ssl_context {
-  inherit SSL.context;
+  inherit CaudiumSSL.context;
   int port; /* port number */
 }
 
@@ -107,20 +108,37 @@ array|void real_port(array port, object cfg)
     ({ report_error, throw }) ("ssl3: No 'cert-file' argument!\n");
   }
 
-  object privs = Privs ("Reading cert file");
-  string f = read_file(options["cert-file"]);
+  ctx->certificates=({});
+
+  object privs = Privs ("Reading cert file(s)");
+
+  object msg, part;
+  // we can read a chain of certificates, separated by commas
+  // with the server cert last in the list.
+
+  foreach((options["cert-file"]/",")-({}), string c)
+  {
+    c=String.trim_whites(c);
+    if(c!="")
+    {
+      string f = read_file(c);
+      if(!f)
+        ({ report_error, throw}) ("ssl3: Reading cert-file " + c + " failed.\n");
+
+      msg = Tools.PEM.pem_msg()->init(f);
+
+      part = msg->parts["CERTIFICATE"] || msg->parts["X509 CERTIFICATE"];
+
+      if(!part || !(cert = part->decoded_body()))
+        ({ report_error, throw}) ("ssl3: No certificate found.\n");
+
+      ctx->certificates += ({ cert });
+    }
+  }
+
+
   string f2 = options["key-file"] && read_file(options["key-file"]);
   destruct (privs);
-  if (!f)
-    ({ report_error, throw }) ("ssl3: Reading cert-file failed!\n");
-  
-  object msg = Tools.PEM.pem_msg()->init(f);
-
-  object part = msg->parts["CERTIFICATE"]
-    ||msg->parts["X509 CERTIFICATE"];
-  
-  if (!part || !(cert = part->decoded_body()))
-    ({ report_error, throw }) ("ssl3: No certificate found.\n");
   
   if (options["key-file"]) {
     if (!f2)
@@ -138,7 +156,7 @@ array|void real_port(array port, object cfg)
     ({ report_error, throw }) ("ssl3: Private key not valid.\n");
 
 #if constant(Standards.PKCS.Certificate.check_cert_rsa)
-  if (!Standards.PKCS.Certificate.check_cert_rsa (cert, rsa))
+  if (!Standards.PKCS.Certificate.check_cert_rsa (ctx->certificates[-1], rsa))
     ({ report_error, throw }) ("ssl3: Certificate and private key do not match.\n");
 #endif
 
@@ -155,7 +173,9 @@ array|void real_port(array port, object cfg)
 
     // ctx->long_rsa = Crypto.rsa()->generate_key(rsa->rsa_size(), r);
   }
-  ctx->certificates = ({ cert });
+
+  // we need the certificates to be in the opposite order (my cert first).
+  ctx->certificates = reverse(ctx->certificates);
   ctx->rsa = rsa;
   ctx->random = r;
 }
@@ -580,6 +600,8 @@ class fallback_redirect_request {
 
 void http_fallback(object alert, object|int n, string data)
 {
+  object ctx;
+  ctx = get_context(my_fd->config);
 #ifdef SSL3_DEBUG
   roxen_perror(sprintf("SSL3:http_fallback(X, %O, \"%s\")\n", n, data));
 #endif /* SSL3_DEBUG */
@@ -599,7 +621,7 @@ void http_fallback(object alert, object|int n, string data)
     fallback_redirect_request(my_fd->raw_file, data,
 			      my_fd->config && 
 			      my_fd->config->query("MyWorldLocation"),
-			      my_fd->context->port);
+			      ctx->port);
     destruct(my_fd);
     destruct(this_object());
 //    my_fd = 0; /* Forget ssl-object */
@@ -616,7 +638,7 @@ void ssl_accept_callback(object id)
 }
 
 class roxen_sslfile {
-  inherit SSL.sslfile : ssl;
+  inherit CaudiumSSL.sslfile : ssl;
 
   object raw_file;
   object config;
@@ -675,14 +697,6 @@ void create(void|object f, void|object c)
     object ctx;
     array port;
 
-#if 0
-    werror(sprintf("%O\n", indices(conf)));
-    werror(sprintf("port_open: %O\n", conf->port_open));
-    werror(sprintf("open_ports: %O\n", conf->open_ports));
-    if (sizeof(conf->open_ports) != 1)
-      report_error("ssl3->assign bug: Only one ssl port supported\n");
-    port = values(conf->open_ports)[0];
-#endif
     ctx = get_context(c);
     if (!ctx)
     {

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -49,7 +49,7 @@ static MH_ERROR mh_log(void *ud, SablotHandle sproc,
   return code;
 }
 
-INLINE static MH_ERROR low_mh_error(void *ud, SablotHandle sproc,
+static MH_ERROR low_mh_error(void *ud, SablotHandle sproc,
 			 MH_ERROR code, MH_LEVEL level, char **fields)
 {
   struct mapping *map = *(struct mapping **)ud;

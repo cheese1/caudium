@@ -1,5 +1,42 @@
+/*
+ * Caudium - An extensible World Wide Web server
+ * Copyright © 2000-2004 The Caudium Group
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
+/*
+ * $Id$
+ */
+//! module: Simple HTTP-Proxy
+//!  This is a complete rewrite of the proxy module. 
+//!  It currently does NOT cache, does not allow for 
+//!  external filters, and does not allow for proxy 
+//!  redirection.<br />
+//!  it can be used either as an HTTP proxy, or with 
+//!  the redirect module to transparently 'mount' 
+//!  other websites in your tree. <br /> Note that 
+//!  this module *REQUIRES* a Pike 7.2 and will not 
+//!  works with pike 7.0.
+//! inherits: module
+//! inherits: caudiumlib
+//! inherits: socket
+//! type: MODULE_FIRST | MODULE_LOCATION
+//! cvs_version: $Id$
 
-string cvs_version = "$Id$";
+constant cvs_version = "$Id$";
 
 #include <module.h>
 
@@ -15,8 +52,11 @@ constant module_doc = "This is a complete rewrite of the proxy module. "
                       "redirection.<br />\n"
                       "it can be used either as an HTTP proxy, or with "
                       "the redirect module to transparently 'mount' "
-                      "other websites in your tree";
+                      "other websites in your tree.<br />"
+		      "Note that this module *REQUIRES* a Pike 7.2 and will "
+                      "not works with pike 7.0.";
 constant module_unique = 0;
+//constant thread_safe = 0;	// Is this module not thread safe ?
 
 array status_requests = ({ });
 
@@ -51,7 +91,15 @@ void create ()
            "the mountpoint of your proxy on your virtual filesystem.<br><br>"
            "don't forget to set the \"<b>Proxy security</b>\" settings "
            "under <b>Builtin Variables</b>.");
-
+   defvar ("transparent", 0, "Transparent proxy", TYPE_FLAG,
+           "Set this to enable transparent proxy support. In this mode, "
+           "the module will use the HTTP host header to proxy the remote website"
+           "to the client. With the Virtual Host module and several virtual "
+           "servers defined, it can also be used as "
+           "a reverse proxy for multiple webservers.<br>"
+           "Please also note that checking only the host header for transparent "
+           "proxy has some security concerns as the proxy choose the destination"
+           " based on a DNS resolution.");
 }
 
 string info ()
@@ -141,6 +189,8 @@ class request
    void parse_url ()
    {
       string query = id->raw_url[sizeof (QUERY (mountpoint)) ..];
+      if(QUERY(transparent))
+        query = id->host + id->raw_url;
 
       while (query[0] == '/')
          query = query[1..];
@@ -439,3 +489,22 @@ class request
 //!  type: TYPE_LOCATION|VAR_MORE
 //!  name: Location
 //
+//! defvar: transparent
+//! Set this to enable transparent proxy support. In this mode, the module will use the HTTP host header to proxy the remote websiteto the client. With the Virtual Host module and several virtual servers defined, it can also be used as a reverse proxy for multiple webservers.<br />Please also note that checking only the host header for transparent proxy has some security concerns as the proxy choose the destination based on a DNS resolution.
+//!  type: TYPE_FLAG
+//!  name: Transparent proxy
+//
+
+/*
+ * If you visit a file that doesn't contain these lines at its end, please
+ * cut and paste everything from here to that file.
+ */
+
+/*
+ * Local Variables:
+ * c-basic-offset: 2
+ * End:
+ *
+ * vim: softtabstop=2 tabstop=2 expandtab autoindent formatoptions=croqlt smartindent cindent shiftwidth=2
+ */
+

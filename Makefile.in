@@ -144,6 +144,7 @@ install_alt:
 	@$(SRCDIR)/mkdir -p $(DESTDIR)/$(prefix)/lib/caudium$(EXTRAVER)/local_modules
 	@$(SRCDIR)/mkdir -p $(DESTDIR)/$(prefix)/share/caudium$(EXTRAVER)/local_fonts
 	@$(SRCDIR)/mkdir -p $(DESTDIR)/$(prefix)/share/doc/caudium$(EXTRAVER)
+	@$(SRCDIR)/mkdir -p $(DESTDIR)/$(prefix)/share/man/man1
 	@$(SRCDIR)/mkdir -p $(DESTDIR)/var/cache/caudium$(EXTRAVER)
 	@$(SRCDIR)/mkdir -p $(DESTDIR)/var/log/caudium$(EXTRAVER)
 	@$(SRCDIR)/mkdir -p $(DESTDIR)/var/run/caudium$(EXTRAVER)
@@ -205,6 +206,9 @@ install_alt:
 	    chmod 755 $(DESTDIR)/$(prefix)/lib/caudium$(EXTRAVER)/bin/$$f; \
 	  else :; fi; \
 	done
+	@cp -p doc/caudiumctl.1 $(DESTDIR)/$(prefix)/share/man/man1/
+	@cp -p doc/htpasswd-caudium.1 $(DESTDIR)/$(prefix)/share/man/man1/
+	@cp -p doc/pixsl.1 $(DESTDIR)/$(prefix)/share/man/man1/
 	@chmod 755 $(DESTDIR)/$(prefix)/lib/caudium$(EXTRAVER)/start
 	@(cd tools;$(MAKE) "prefix=$(prefix)" "CC=$(CC)" "LDFLAGS=$(LDFLAGS)" install)
 	@echo "Caudium installed."
@@ -220,6 +224,7 @@ spotless:  clean
 	"*.a" -o -name configure ')'  -print -exec /bin/rm '{}'  ';'
 	rm -rf server/logs
 	rm -rf logs
+	find . -name 'autom4te.cache' -print | xargs /bin/rm -rf
 
 ./Makefile: $(SRCDIR)/Makefile.in config.status
 	CONFIG_FILES=Makefile CONFIG_HEADERS="" ./config.status

@@ -1,7 +1,30 @@
+/*
+ * Caudium - An extensible World Wide Web server
+ * Copyright © 2000-2004 The Caudium Group
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
+/*
+ * $Id$
+ */
+
 inherit "module";
 #include <module.h>
 
-string cvs_version = "$Id$";
+constant cvs_version = "$Id$";
 
 //! module: Advanced Wizard
 //!  This module contains code that implements advanced wizard interface. You can
@@ -21,7 +44,8 @@ string cvs_version = "$Id$";
 //
 //! container: verify
 //!  Code enclosed within that container will be executed when leaving this
-//!  page.
+//!  page. use &lt;error&gt; error message &lt;/error&gt; containers inside
+//!  verify if you want to prohibit user to leave the page.
 //
 //! tag: button
 //!  Create a button that, when pressed, will transfer the user to either
@@ -47,7 +71,7 @@ string cvs_version = "$Id$";
 //! container: come-from
 //!  Contents of this container is executed whenever the user arrived from the given
 //!  page.
-//! attribute: page = page_name
+//! attribute: name = page_name
 //!  Sets the name of the previous page which will trigger execution of the associated
 //!  RXML code in this container.
 //!
@@ -60,12 +84,32 @@ string cvs_version = "$Id$";
 //
 //! container: warn
 //!  Display the contents of the container as a warning.
+//! attribute: quiet
+//!  no output, just sets warn_message variable
+//! attribute: silent
+//!  html commented output of the warning message
+//! attribute: solid
+//!  displays only the message without info sign.
 //
 //! container: notice
 //!  Display the contents of the container as a notice.
+//! attribute: quiet
+//!  no output, just sets notice_message variable
+//! attribute: silent
+//!  html commented output of the notice message
+//! attribute: solid
+//!  displays only the message without info sign.
 //
 //! container: error
-//!  Display the contents of the container as an error.
+//!  Display the contents of the container as an error, 
+//!  or prohibits leave a page if used inside a
+//!  verify container.
+//! attribute: quiet
+//!  no output, just sets error_message variable
+//! attribute: silent
+//!  html commented output of the error message
+//! attribute: solid
+//!  displays only the message without info sign.
 //
 constant module_type = MODULE_PARSER;
 constant module_name = "Advanced Wizards";
@@ -91,7 +135,6 @@ constant module_unique = 1;
 
 
 // Store (advanced wizards with procedures) module...
-
 // tags:
 //  <awizard title=...>
 //  <page [name=...]>
@@ -123,9 +166,16 @@ void init_tags()
 
 
 string ce = "";
-string container_awizard_pike(string t, mapping m, string c, int line, int i,
-			    object id)
+string container_awizard_pike(string t, mapping m, string c, int l, object id,
+			    object awiz)
 {
+
+  if( !query("allow_awizard_pike") ) {
+	report_warning("Awizard: &lt;awizard-pike&gt; called, '<b>%s</b>' on virtual server: <b>%s:%s</b> while awizard-pike is disabled for this virtualserver",
+		id->not_query, 
+		id->conf->this->name, id->conf->this->variables->name[0] );
+	return "<!-- awizard-pike is disabled -->";
+  }
   array err;
   string res;
   object e = ErrorContainer();
@@ -148,11 +198,11 @@ string container_awizard_pike(string t, mapping m, string c, int line, int i,
   }
   master()->set_inhibit_compile_errors(0);
   master()->clear_compilation_failures();
-  if(e) throw(e);
+  if(err) throw(err);
   return res||"";
 }
 
-string tag_goto(string t, mapping m, int q, int w, object id)
+string tag_goto(string t, mapping m, int l, object id, object awiz)
 {
   if(m->page)
     id->misc->return_me = ([ "page":m->page ]);
@@ -161,7 +211,7 @@ string tag_goto(string t, mapping m, int q, int w, object id)
   return "";
 }
 
-string tag_wizardbuttons(string t, mapping m, int q, int w, object id)
+string tag_wizardbuttons(string t, mapping m, int l, object id, object awiz)
 {
   return ("<p><table width=100%><tr width=100% >\n"
 	  "<td  width=50% align=left>"
@@ -171,7 +221,7 @@ string tag_wizardbuttons(string t, mapping m, int q, int w, object id)
 	  "</table>");
 }
 
-string tag_button(string t, mapping m, int q, int w, object id)
+string tag_button(string t, mapping m, int l, object id, object awiz)
 {
   mapping args = ([]);
   if(m->page)
@@ -194,6 +244,7 @@ string tag_button(string t, mapping m, int q, int w, object id)
   if(m->image) {
     args->type = "image";
     args->alt  = m->title||m->alt||m->page||"[ "+m->image+" ]";
+    args->title = args->alt;
     args->border="0";
     args->src = replace(m->image, ({" ","?"}), ({"%20", "%3f"}));
   } else {
@@ -203,7 +254,7 @@ string tag_button(string t, mapping m, int q, int w, object id)
   return make_tag("input", args);
 }
 
-string container_dbutton(string t, mapping m, string c, int q, int w, object id)
+string container_dbutton(string t, mapping m, string c, int l, object id, object awiz)
 {
   mapping args = ([]);
   if(m->page)
@@ -225,6 +276,8 @@ string container_dbutton(string t, mapping m, string c, int q, int w, object id)
     args->name = "goto_current_page/"+m->id;
   if(m->image) {
     args->type = "image";
+    args->alt  = m->title||m->alt||m->page||"[ "+m->image+" ]";
+    args->title = args->alt;
     args->border="0";
     args->src = replace(m->image, ({" ","?"}), ({"%20", "%3f"}));
   } else {
@@ -235,20 +288,37 @@ string container_dbutton(string t, mapping m, string c, int q, int w, object id)
   return make_tag("input", args);
 }
 
-string container_warn(string t, mapping m, string c, int q, int w, object id)
+string container_warn(string t, mapping m, string c, int l, object id, object awiz )
 {
+  id->variables->warn_message=c;
+
+  if( m->quiet ) return "";
+  if( m->silent) return "<!-- error: '"+c+"' -->";
+  if( m->solid ) return c;
+
   return html_warning( c, id );
 }
 
-string container_notice(string t, mapping m, string c, int q, int w, object id)
+string container_notice(string t, mapping m, string c, int q, object id, object awiz )
 {
+  id->variables->notice_message=c;
+
+  if( m->quiet ) return "";
+  if( m->silent) return "<!-- notice: '"+c+"' -->";
+  if( m->solid ) return c;
+
   return html_notice( c, id );
 }
 
-string container_error(string t, mapping m, string c, int q, int w, object id) 
+string container_error(string t, mapping m, string c, int q, object id, object awiz) 
 {
   id->variables->error_message = c;
-  return c;
+
+  if( m->quiet ) return "";
+  if( m->silent) return "<!-- error: '"+c+"' -->";
+  if( m->solid ) return c;
+
+  return html_error( c,id );
 }
 
   int num, id, button_id, line_offset;
@@ -285,7 +355,6 @@ string container_error(string t, mapping m, string c, int q, int w, object id)
       come_from[args->name] += c;
     return "";
   }
-
 
   mapping up_args = ([]);
 
@@ -336,14 +405,64 @@ string container_error(string t, mapping m, string c, int q, int w, object id)
 
     
     // WARNING: Needs new htmlparse.pike (at least version 1.103)
-    foreach(indices(my_tags), string s)
-      id->misc->_tags[ s ] = my_tags[ s ];
-    foreach(indices(my_containers), string s)
-      id->misc->_containers[ s ] = my_containers[ s ];
+    foreach(indices(my_tags), string s) {
+	id->misc->_tags[ s ] = call_tag_wrapper;
+    }
+    foreach(indices(my_containers), string s) {
+      	id->misc->_containers[ s ] = call_container_wrapper;
+    }
 
     return parse_rxml(parse_html(what,(["var":wizard_tag_var,]),
 				 (["cvar":wizard_tag_var]),id),id);
   }  
+
+  /* We need this dirty hack, 
+   * id->misc->_tags, id->misc->_containers called differently if we
+   * use Main RXML parser (compatibility) or if the XML compliant */
+  mixed call_tag_wrapper( mixed ... args ) {
+	object parser, id, awiz;
+	string tag;
+	mapping m, d;
+	int l;
+
+	// XML compliat parser
+	if( objectp( args[0] )) {
+		parser=args[0]; m=args[1]; id=args[2]; awiz=args[3];
+		d=args[4]; tag = parser->tag_name();
+		id->misc->line = (string)parser->at_line();
+		l=(int) id->misc->line;
+	} else {
+		tag=args[0]; m=args[1]; l=args[2]; id=args[3]; awiz=args[4];
+	}
+
+	if( my_tags[ tag ] )
+		return my_tags[ tag ]( tag, m, l, id, awiz );
+
+	return "";
+  }
+
+  mixed call_container_wrapper( mixed ... args ) {
+	object parser, id,awiz;
+	string tag,c;
+	mapping m,d;
+	int l;
+
+	// XML compliat parser
+	if( objectp( args[0] )) {
+		parser=args[0]; m=args[1]; c=args[2]; id=args[3]; awiz=args[4];
+		d=args[5]; tag = parser->tag_name();
+		id->misc->line = (string)parser->at_line();
+		l=(int) id->misc->line;
+	} else {
+		tag=args[0]; m=args[1]; c=args[2]; l=args[3];
+		id=args[4]; awiz=args[5];
+	}
+
+	if( my_containers[ tag ] )
+		return my_containers[ tag ]( tag, m, c, l, id, awiz );
+
+	return "";  
+  }
 
   mapping|int can_leave(object id, string eeval)
   {
@@ -363,7 +482,6 @@ string container_error(string t, mapping m, string c, int q, int w, object id)
     return contents;
   }
 }
-
 
 class Store
 {
@@ -560,6 +678,13 @@ void create()
   defvar("proc", "", "Procedure library", TYPE_FILE, 
 	 "If set, this variable points to a file with procedures that "
 	 "can be used by all stores. Use the real (physical) filename.");
+  defvar("allow_awizard_pike",0,"Awizard-Pike tag", TYPE_FLAG,
+         "If set, you can use, and additonal tag for scripting in AWizards: "
+	 "<b>&lt;awizard-pike&gt</b>...pike code...<b>&lt;/awizard-pike&gt;</b>"
+	 "in your pages, or procedures.<br>"
+	 "this is doing somewhat same like pike tag support.<br>"
+	 "<B>NOTE: Enabling awizard-pike is the same thing as letting your users"
+	 "run programs with the same right as the server!</b>" );
 }
 
 
@@ -608,4 +733,9 @@ mapping query_container_callers()
 //! If set, this variable points to a file with procedures that can be used by all stores. Use the real (physical) filename.
 //!  type: TYPE_FILE
 //!  name: Procedure library
+//
+//! defvar: allow_awizard_pike
+//! If set, you can use, and additonal tag for scripting in AWizards: <b>&lt;awizard-pike&gt</b>...pike code...<b>&lt;/awizard-pike&gt;</b>in your pages, or procedures.<br />this is doing somewhat same like pike tag support.<br /><B>NOTE: Enabling awizard-pike is the same thing as letting your usersrun programs with the same right as the server!</b>
+//!  type: TYPE_FLAG
+//!  name: Awizard-Pike tag
 //

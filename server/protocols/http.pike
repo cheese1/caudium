@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2004 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -155,12 +155,7 @@ string scan_for_query( string f )
 {
   if(sscanf(f,"%s?%s", f, query) == 2)
   {
-    string v, a, b;
-#if constant(Caudium.parse_query_string)
     Caudium.parse_query_string(query, variables);
-#else
-#error The Caudium.so module is missing!
-#endif
   }
   return f;
 }
@@ -389,7 +384,7 @@ private int parse_got()
 
   /* Fix %00 (NULL) bug */
   sscanf( f, "%s\0", f );
-  if (sscanf(f, "/<%s>/%s", a, f)==2)
+  if ((sscanf(f, "/<%s>/%s", a, f)==2) || (sscanf(f, "/%%3C%s%%3E%s", a, f)==2))
   {
     config_in_url = 1;
     mod_config = (a/",");
@@ -450,7 +445,15 @@ private int parse_got()
 
 	   case "multipart/form-data":
 	    //		perror("Multipart/form-data post detected\n");
-	    object messg = MIME.Message(data, request_headers);
+            object messg;
+            mixed formdataerr;
+            formdataerr = catch {
+	      messg = MIME.Message(data, request_headers);
+            };
+            if (formdataerr) {
+              //perror("MIME Decode error...\n");
+              break;
+            }
 	    foreach(messg->body_parts||({}), object part) {
 	      if(part->disp_params->filename) {
 			variables[part->disp_params->name]=part->getdata();
@@ -554,7 +557,9 @@ private int parse_got()
 #endif
        case "content-type":
 #ifdef EXTRA_ROXEN_COMPAT
-	misc[linename] = lower_case(request_headers[linename]);
+        array ct_parts = request_headers[linename] / ";";
+        ct_parts[0] = lower_case(ct_parts[0]);
+        misc[linename] = ct_parts * ";";
 #endif
 	break;
 
@@ -1280,37 +1285,40 @@ void send_result(mapping|void result)
     heads = ([]);
     if(!file->len)
     {
-      array fstat;
+      array|object fstat;
+      
       if(objectp(file->file))
-	if(!file->stat && !(file->stat=misc->stat))
-	  file->stat = (array(int))file->file->stat();
-      if(arrayp(fstat = file->stat))
-      {
-	if(file->file && !file->len)
-	  file->len = fstat[1];
+        if(!file->stat && !(file->stat=misc->stat))
+          file->stat = (array(int))file->file->stat();
+
+      fstat = file->stat;
+      if(arrayp(fstat) || objectp(fstat))
+      {        
+        if(file->file && !file->len)
+          file->len = fstat[1];
     	
-	if(!file->is_dynamic && !misc->is_dynamic) {
+        if(!file->is_dynamic && !misc->is_dynamic) {
 #ifdef SUPPORT_HTTP_09
-	  if(prot != "HTTP/0.9") {
+          if(prot != "HTTP/0.9") {
 #endif
-	    heads["Last-Modified"] = http_date(fstat[3]);
-	    if(since)
-	    {
-	      if(is_modified(since, fstat[3], fstat[1]))
-	      {
-		file->error = 304;
-		file->file = 0;
-		file->data="";
-		// 	    method="";
-	      }
-	    }
+            heads["Last-Modified"] = http_date(fstat[3]);
+            if(since)
+            {
+              if(is_modified(since, fstat[3], fstat[1]))
+              {
+                file->error = 304;
+                file->file = 0;
+                file->data="";
+                // 	    method="";
+              }
+            }
 #ifdef SUPPORT_HTTP_09
-	  }
+          }
 #endif
-	} 
+        } 
       }
       if(stringp(file->data)) 
-	file->len += strlen(file->data);
+        file->len += strlen(file->data);
     }
 
     //
