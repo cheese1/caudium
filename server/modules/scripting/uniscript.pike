@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2003 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -67,7 +67,7 @@ Stdio.File open_log_file( string logfile )
     object lf=Stdio.File( logfile, "wac");
     if(!lf) 
     {
-      mkdirhier(logfile);
+      Stdio.mkdirhier(logfile);
       if(!(lf=Stdio.File( logfile, "wac")))
       {
         report_error("Failed to open logfile. ("+logfile+"): "
@@ -376,6 +376,40 @@ class Wrapper
   }
 }
 
+/* RXML wrapper.
+**
+** Simply waits until the MODPHP-script is done, then
+** parses the result and sends it to the client.
+** Please note that the headers are also parsed.
+*/
+class RXMLWrapper
+{
+  inherit Wrapper;
+  constant name="RXMLWrapper";
+
+  string data="";
+
+  void done()
+  {
+    DWERROR("UNISCRIPT:RXMLWrapper::done()\n");
+
+    if(strlen(data))
+    {
+      output( parse_rxml( data, mid ) );
+      data="";
+    }
+    ::done();
+  }
+
+  void process( string what )
+  {
+    DWERROR(sprintf("RXMLWrapper::process(%O)\n", what));
+
+    data += what;
+  }
+}
+
+
 /* CGI wrapper.
 **
 ** Simply waits until the headers has been received, then 
@@ -554,6 +588,8 @@ class CGIScript
       Stdio.File fd = stdout;
       if( (command/"/")[-1][0..2] != "nph" )
         fd = CGIWrapper( fd,mid,kill_script )->get_fd();
+      if( QUERY(rxml) )
+        fd = RXMLWrapper( fd,mid,kill_script )->get_fd();
       stdout = 0;
       call_out( check_pid, 0.1 );
       return fd;
@@ -838,6 +874,11 @@ void create(object conf)
 	 "env<br>"
 	 "</pre>");
 
+  defvar("rxml", 0, "Parse RXML in uni-scripts", TYPE_FLAG,
+         "If this is set, the output from uni-scripts handled by this "
+         "module will be RXML parsed. NOTE: No data will be returned to the "
+         "client until the uni-script is fully parsed.",0,getuid);
+
   defvar("extra_env", "", "Extra environment variables", TYPE_TEXT_FIELD|VAR_MORE,
 	 "Extra variables to be sent to the script, format:<pre>"
 	 "NAME=value\n"
@@ -933,7 +974,7 @@ void create(object conf)
 	 "enabled, only UID's will work correctly. If unset, scripts will "
 	 "be run as nobody.", 0, getuid);
 
-  defvar("runowner", 1, "Run scripts as", TYPE_FLAG,
+  defvar("runowner", 1, "Run scripts as owner", TYPE_FLAG,
 	 "If enabled, scripts are run as owner.", 0, getuid);
 
   defvar("user", 1, "Run user scripts as owner", TYPE_FLAG,
@@ -1058,7 +1099,7 @@ void create(object conf)
 //! defvar: runowner
 //! If enabled, scripts are run as owner.
 //!  type: TYPE_FLAG
-//!  name: Run scripts as
+//!  name: Run scripts as owner
 //
 //! defvar: user
 //! If set, scripts in the home-dirs of users will be run as the user. This overrides the Run scripts as variable.

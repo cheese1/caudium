@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2003 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -688,7 +688,7 @@ static void f_extension( INT32 args ) {
   }
   orig = src->str;
   for(i = src->len-1; i >= 0; i--) {
-    if(!(orig[i] & 0xD1)) {
+    if(orig[i] == 0x2E) {
       found = 1;
       i++;
       break;
