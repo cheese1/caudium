@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -565,7 +565,7 @@ mapping std_redirect(object o, object id)
 
   if(!o)  o=root;
   
-  if(id->referrer)
+  if(id && id->referrer)
     loc=(((((id->referrer/"#")[0])/"?")[0])+"?"+(bar++)
 	 +"#"+o->path(1));
   else
@@ -790,7 +790,7 @@ string new_module_form(object id, object node)
  	if(b->sname != q)
  	  doubles += 
  	    ("<p><dt><b>"+a[q][0]+"</b><dd>" +
- 	     "<i>A module of the same type is already enabled ("+b->name+")"
+ 	     "<i>A module of the same type is already enabled ("+b->name+"). "
  	     "<a href=\"/(delete)"+ node->descend(b->name, 1)->path(1) +
 	     "?" + (bar++) +"\">Disable that module</a> if you want this one "
 	     "instead.</i>\n");

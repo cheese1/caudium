@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -718,7 +718,11 @@ class LSFile
     return(res);
   }
 
+#if constant(ADT.Stack)
+  static object(ADT.Stack) dir_stack = ADT.Stack();
+#else
   static object(Stack.stack) dir_stack = Stack.stack();
+#endif
   static int name_directories;
 
   static string fix_path(string s)
@@ -1679,7 +1683,7 @@ class FTPSession
       if ((err = catch(file = conf->get_file(session)))) {
 	report_error(sprintf("FTP: Error opening file \"%s\"\n"
 			     "%s\n", fname, describe_backtrace(err)));
-	send(550, ({ sprintf("%s: Error, can't open file.", fname) }));
+	send(550,({ sprintf("%s: Error, can't open file.", fname) }));
 	return 0;
       }
     } else if ((< "STOR", "APPE", "MKD", "MOVE" >)[cmd]) {
@@ -1695,6 +1699,7 @@ class FTPSession
     session->file = file;
 
     if (!file || (file->error && (file->error/100 != 2))) {
+      if(!file && session->misc->error_code) file = (["error": session->misc->error_code ]);
       DWRITE(sprintf("FTP: open_file(\"%s\") failed: %O\n", fname, file));
       send_error(cmd, fname, file, session);
       return 0;
