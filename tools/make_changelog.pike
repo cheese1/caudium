@@ -8,7 +8,7 @@ mapping user_list = ([
   "wilsonm": "Matthew Wilson <matthew@caudium.net>",
   "kiwi": "Xavier Beaudouin <kiwi@caudium.net>",
   "james_tyson": "James Tyson <james_tyson@caudium.net>",
-  "underley": "Daniel Podlejski <underley@users.sourceforge.net>",
+  "underley": "Daniel Podlejski <underley@caudium.net>",
   "h3x": "Justin Hannah <h3x@caudium.net>",
   "embee": "Martin Bähr <mbaehr@caudium.net>",
   "redax": "Zsolt Varga <redax@caudium.net>",
@@ -17,7 +17,12 @@ mapping user_list = ([
   "mikeharris": "Mike A. Harris <mikeharris@caudium.net>",
   "nilkram": "Fred van Dijk <fred@caudium.net>",
   "duerrj": "Joseph Duerr <duerrj@caudium.net>",
-  "vee-eye": "Eric Lindvall <eric@caudium.net>"
+  "vee-eye": "Eric Lindvall <eric@caudium.net>",
+  "bertrand_lupart": "Bertrand Lupart <bertrand@caudium.net>",
+  "gourdelier": "David Gourdelier <vida@caudium.net>",
+  "hww3": "Bill Welliver <hww3@caudium.net>",
+  "kazmer": "Tamas Tevesz <ice@caudium.net>",
+  "tombolala": "Thomas Bopp <tombolala@caudium.net>",
 ]);
 void find_user(string u)
 {

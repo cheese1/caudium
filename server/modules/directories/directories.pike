@@ -188,8 +188,9 @@ class Dirnode
 
 void create()
 {
-  defvar("indexfiles", ({ "index.html", "Main.html", "welcome.html",
-			  "index.cgi", "index.lpc","index.pike", "index.htm" }),
+  defvar("indexfiles", ({ "index.html", "Main.html", "welcome.html", "index.rxml",
+			  "index.cgi", "index.lpc", "index.pike", "index.htm",
+			  "index.php", "index.php3", "index.xhtml", "index.xht" }),
 	 "Index files", TYPE_STRING_LIST,
 	 "If one of these files is present in a directory, it will "
 	 "be returned instead of the directory listing.");

@@ -1,12 +1,42 @@
+/*
+ * Caudium - An extensible World Wide Web server
+ * Copyright © 2001-2002 The Caudium Group
+ * Copyright © 2002 David Gourdelier
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
+/*
+ * $Id$
+ */
 #include <module.h>
+
+//! module: User LDAP administration
+//!  With this module, your (or 'you' depending on what you want) user 
+//!  will be able to change some of their information. You will also be
+//!  able to create a basic account and update their gid to if you have
+//!  year related gid.
+//! inherits: module
+//! inherits: caudiumlib
+//! type: MODULE_LOCATION|MODULE_EXPERIMENTAL
+//! cvs_version: $Id$
 
 inherit "module";
 inherit "caudiumlib";
 
-// import Array;
-
 constant cvs_version = "$Id$";
-
 constant module_type = MODULE_LOCATION|MODULE_EXPERIMENTAL;
 constant module_name = "User LDAP administration";
 constant module_doc  = "With this module, your (or 'you' depending on what you want) user will be able to change some of their information. You will also be able to create a basic account and update their gid to if you have year related gid";
@@ -324,7 +354,7 @@ void create()
 	 "Specify the default gidnumber when new account is created\n");
   defvar("default_uid", 100, "Add: uid if no uidNumber found",
   	 TYPE_INT,
-	 "uidNumber should only happen if you don't have previously users in LDAP. Never put this to something < 1.\n");
+	 "uidNumber should only happen if you don't have previously users in LDAP. Never put this to something &lt; 1.\n");
   defvar("addlastslash", 0, "Add: add a slash to the home directory",
   	 TYPE_FLAG,
 	 "It can be useful to add a '/' to home directory for example to tell your MTA you have a Maildir box format");
@@ -1324,7 +1354,7 @@ mixed find_file(string path, object id)
 //!  name: Add: gidnumber for new accounts
 //
 //! defvar: default_uid
-//! uidNumber should only happen if you don't have previously users in LDAP. Never put this to something < 1.
+//! uidNumber should only happen if you don't have previously users in LDAP. Never put this to something &lt; 1.
 //!
 //!  type: TYPE_INT
 //!  name: Add: uid if no uidNumber found
