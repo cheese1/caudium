@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2002 The Caudium Group
+ * Copyright © 2000-2003 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,7 +29,7 @@
  *
  */
 
-//! module: VHS - Virtual Hosting System - SQL
+//! module: VHS - Virtual Hosting System - LDAP
 //!  Basic Virtual Hosting module (LDAP)
 //! inherits: module
 //! inherits: caudiumlib
@@ -194,7 +194,7 @@ string ldap_getvirt(string hostname, object id)
 				       hostname,
 				       vpath + QUERY(wwwdir),
 				       vpath + QUERY(cgidir),
-				       vpath + QUERY(logdir),
+				       (QUERY(log2vhs))?(vpath + QUERY(logdir)):combine_path(caudium->QUERY(logdirprefix)+"/",hostname),
 				       vpath,
 				       res->uidNumber?(int)res->uidNumber[0]:QUERY(defaultuid),
 				       res->gidNumber?(int)res->gidNumber[0]:QUERY(defaultgid),
@@ -245,7 +245,7 @@ string ldap_getvirt(string hostname, object id)
                        			       hostname,
                        			       vpath + QUERY(wwwdir),
                        			       vpath + QUERY(cgidir),
-                       			       vpath + QUERY(logdir),
+                       			       (QUERY(log2vhs))?(vpath + QUERY(logdir)):combine_path(caudium->QUERY(logdirprefix)+"/",hostname),
                        			       vpath,
                        			       res->uidNumber?(int)res->uidNumber[0]:QUERY(defaultuid),
                        			       res->gidNumber?(int)res->gidNumber[0]:QUERY(defaultgid),
@@ -414,6 +414,9 @@ void create()
 
   defvar("logdir", "logs/", "Logs directory", TYPE_STRING,
          "Directory, where are logfiles");
+
+  defvar("log2vhs", 1, "Logs using VHS parameters", TYPE_FLAG,
+         "Disable it to log to system wide configurated directory");
 
   defvar("ttl_positive", 1800, "TTL: Positive TTL", TYPE_INT,
          "Time to cache positive config hits.");
@@ -617,6 +620,11 @@ string status()
 //! Directory, where are logfiles
 //!  type: TYPE_STRING
 //!  name: Logs directory
+//
+//! defvar: log2vhs
+//! Disable it to log to system wide configurated directory
+//!  type: TYPE_FLAG
+//!  name: Logs using VHS parameters
 //
 //! defvar: ttl_positive
 //! Time to cache positive config hits.
