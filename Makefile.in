@@ -223,10 +223,7 @@ spotless:  clean
 	@echo "Run make again"
 	@exit 1
 
-bump_version.stamp:
-	@touch bump_version.stamp
-
-bump_version: bump_version.stamp
+only_bump_version: force
 	@if test -f $(SRCDIR)/server/base_server/caudium.pike.new; then \
 	  echo Deleting old $(SRCDIR)/server/base_server/caudium.pike.new...; \
 	  rm $(SRCDIR)/server/base_server/caudium.pike.new || exit 1; \
@@ -249,11 +246,14 @@ bump_version: bump_version.stamp
 	  echo "Caudium $$version.$$newbuild" >../../VERSION; \
 	  cat ../../VERSION; \
 	)
+
+bump_version: force only_bump_version
 	@(cd $(SRCDIR); \
 	  echo Tagging...; \
 	  cvs tag `cat VERSION | tr 'A-Z. ' 'a-z__'`||exit 1; \
 	)
 	@touch bump_version
+
 
 same_version: force
 	@cd $(SRCDIR)/server/base_server; \
@@ -333,6 +333,7 @@ tar_dist:
 	echo "done."; \
 	rm $$version.tar
 
-dist: copy_dist tar_dist
-	@echo Distribution build complete.
+dist: copy_dist tar_dist 
+	@echo "Distribution build complete. Don't forget to run"
+	@echo "'make only_bump_version' if this is not a test release."
 

@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -59,7 +59,6 @@ int req_time = HRTIME();
 constant decode        = MIME.decode_base64;
 constant find_supports = caudium->find_supports;
 constant version       = caudium->version;
-constant handle        = caudium->handle;
 constant _query        = caudium->query;
 constant thepipe       = caudium->pipe;
 constant _time         = predef::time;
@@ -374,15 +373,6 @@ private int parse_got()
   
   REQUEST_WERR(sprintf("RAW_URL:%O", raw_url));
 
-  if(!remoteaddr)
-  {
-    if(my_fd) sscanf(my_fd->query_address()||"", "%s ", remoteaddr);
-    if(!remoteaddr) {
-      end();
-      return 0;
-    }
-  }
-
   if(sscanf(f,"%s?%s", f, query) == 2)
     Caudium.parse_query_string(query, variables);
   
@@ -448,7 +438,7 @@ private int parse_got()
 	   case "multipart/form-data":
 	    //		perror("Multipart/form-data post detected\n");
 	    object messg = MIME.Message(data, request_headers);
-	    foreach(messg->body_parts, object part) {
+	    foreach(messg->body_parts||({}), object part) {
 	      if(part->disp_params->filename) {
 		variables[part->disp_params->name]=part->getdata();
 		variables[part->disp_params->name+".filename"]=
@@ -619,6 +609,12 @@ private int parse_got()
       }
     }
 #endif
+  }
+  if(prestate->nocache) {
+    // This allows you to "reload" a page with MSIE by setting the
+    // (nocache) prestate.
+    pragma["no-cache"] = 1;
+    misc->cacheable = 0;
   }
 #ifdef ENABLE_SUPPORTS    
   if(useragent == "unknown") {
@@ -815,7 +811,7 @@ string format_backtrace(array bt, int eid)
 		"<table width=\"100%\" border=0 cellpadding=0 cellspacing=0>"
 		"<tr><td valign=bottom align=left><img border=0 "
 		"src=\""+(conf?"/internal-caudium-":"/img/")+
-		"caudium-icon-gray.png\" alt=\"\"></td>"
+		"caudium-icon-gray.gif\" alt=\"\"></td>"
 		"<td>&nbsp;</td><td width=100% height=39>"
 		"<table cellpadding=0 cellspacing=0 width=100% border=0>"
 		"<td width=\"100%\" align=right valigh=center height=28>"
@@ -827,7 +823,7 @@ string format_backtrace(array bt, int eid)
 		"<p>\n\n"
 		"<font size=+2 color=darkred>"
 		"<img alt=\"\" hspace=10 align=left src="+
-		(conf?"/internal-caudium-":"/img/") +"manual-warning.png>"
+		(conf?"/internal-caudium-":"/img/") +"manual-warning.gif>"
 		+bt[0]+"</font><br>\n"
 		"The error occured while calling <b>"+bt[1]+"</b><p>\n"
 		+(reason?reason+"<p>":"")
@@ -982,13 +978,28 @@ void do_log()
   return;
 }
 
-#ifdef FD_DEBUG
-void timer(int start)
+static void pipe_timeout() {
+#if defined(FD_DEBUG) || defined(DEBUG)
+  werror("Sending of data (piping) timed out.\n");
+#endif
+  end("");
+}
+
+static void timer(int start, int|void last_sent, int|void called_out)
 {
   if(pipe) {
-    // FIXME: Disconnect if no data has been sent for a long while
-    //   (30min?)
-    MARK_FD(sprintf("HTTP_piping_%d_%d_%d_%d_(%s)",
+    if(pipe->sent != last_sent) {
+      if(called_out) {
+	remove_call_out(pipe_timeout);
+	called_out = 0;
+      }
+      last_sent = pipe->sent;
+    } else if(!called_out) {
+      call_out(pipe_timeout, 300);
+      called_out = 1;
+    }
+    
+    MARK_FD(sprintf("HTTP piping (st=%d, ln=%d, lc=%d, tm=%d, fl=%s)",
 		    pipe->sent,
 		    stringp(pipe->current_input) ?
 		    strlen(pipe->current_input) : -1,
@@ -996,11 +1007,10 @@ void timer(int start)
 		    _time(1) - start, 
 		    not_query));
   } else {
-    MARK_FD("HTTP piping, but no pipe for "+not_query);
+    MARK_FD("HTTP piping, but no pipe for "+not_query); 
   }
-  call_out(timer, 30, start);
+  call_out(timer, 60, start, last_sent, called_out);
 }
-#endif
 
 string handle_error_file_request(array err, int eid)
 {
@@ -1450,9 +1460,12 @@ void send_result(mapping|void result)
     file->len = 1; // Keep those alive, please...
   if (pipe) {
     MARK_FD("HTTP really handled, piping "+not_query);
-#ifdef FD_DEBUG
-    call_out(timer, 30, _time(1)); // Update FD with time...
-#endif
+    //  The timer function keeps track of the data sending. If no data
+    //  has been sent for 360 seconds, the connection is closed.
+    //  It seems like sometimes, when using poll() at least, Pike doesn't
+    //  detect that the remote end closed which w/o this function would
+    //  leave stale sockets.
+    call_out(timer, 60, _time(1), 0, 0); 
     pipe->set_done_callback( do_log );
     pipe->output(my_fd);
   } else {
@@ -1569,7 +1582,7 @@ void got_data(mixed fdid, string s)
    */
   if(conf)  conf->handle_precache(this_object());
 #ifdef THREADS
-  handle(handle_request);
+  caudium->handle(handle_request);
 #else
   handle_request();
 #endif
@@ -1649,6 +1662,7 @@ void create(void|object f, void|object c)
     // No need to wait more than 30 seconds to get more data.
     call_out(do_timeout, 30);
     time = _time(1);
+    remoteaddr = Caudium.get_address(my_fd->query_address()||"");
   }
 }
 
