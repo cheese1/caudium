@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
+ * Copyright © 2000-2001 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -164,7 +164,7 @@ void start()
   config_cache = ([]);
   rewrite_info = ([]);  
   regexp_pairs = ({});
-  lines = QUERY(matches) / "\n" - ({});
+  lines = QUERY(matches) / "\n" - ({""}); // Remove empty lines..
   foreach(lines, string l)
   {
     array pair = replace(l, "\t", " ") / " " - ({""});
