@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000 The Caudium Group
- * Copyright © 1994-2000 Roxen Internet Software
+ * Copyright © 2000-2001 The Caudium Group
+ * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -317,7 +317,11 @@ private object *_toparse_modules = ({});
 // entirely by log-modules in the future, since this would be much
 // cleaner.
 
-function log_function;
+int|function log_function;
+
+// The last time an item was logged. Used to determine if the log file
+// descriptor should be closed 
+int last_log_time;
 
 // The logging format used. This will probably move the the above
 // mentioned module in the future.
@@ -661,29 +665,37 @@ array filter_modules(object id)
   return filter_module_cache;
 }
 
-
-void init_log_file()
+string cache_hostname=gethostname();
+int init_log_file(int|void force_open)
 {
+  int t = time(1);
   remove_call_out(init_log_file);
-
-  if(log_function)
+  
+  if(functionp(log_function))
   {
     destruct(function_object(log_function)); 
     // Free the old one.
   }
-  
+  // Here we close the log file since it hasn't been used for
+  // 'max_open_time' seconds, and we don't need it open, i.e
+  // this open call is not from the logging.p
+  if(!force_open && QUERY(max_open_time) && 
+     (t - last_log_time) > QUERY(max_open_time)) {
+    log_function = 0;
+    return 0;
+  }
   if(query("Log")) // Only try to open the log file if logging is enabled!!
   {
-    mapping m = localtime(time());
-    string logfile = query("LogFile");
+    mapping m = localtime(t);
+    string logfile = QUERY(LogFile);
     m->year += 1900;	/* Adjust for years being counted since 1900 */
     m->mon++;		/* Adjust for months being counted 0-11 */
     if(m->mon < 10) m->mon = "0"+m->mon;
     if(m->mday < 10) m->mday = "0"+m->mday;
     if(m->hour < 10) m->hour = "0"+m->hour;
-    logfile = replace(logfile,({"%d","%m","%y","%h" }),
+    logfile = replace(logfile,({"%d","%m","%y","%h","%H"}),
 		      ({ (string)m->mday, (string)(m->mon),
-			 (string)(m->year),(string)m->hour,}));
+			 (string)(m->year),(string)m->hour,cache_hostname}));
     if(strlen(logfile))
     {
       do {
@@ -693,19 +705,29 @@ void init_log_file()
 	  if(!(lf=open( logfile, "wac"))) {
 	    report_error("Failed to open logfile. ("+logfile+")\n" +
 			 "No logging will take place!\n");
-	    log_function=0;
-	    break;
+	    log_function=-1;
+	    return 0;
 	  }
 	}
 	log_function=lf->write;	
 	// Function pointer, speeds everything up (a little..).
 	lf=0;
       } while(0);
-    } else
-      log_function=0;	
-    call_out(init_log_file, 60);
-  } else
-    log_function=0;	
+    } else {
+      log_function=-1;
+      return 0;
+    }
+    // Call out to this to reopen or close (if that feature is enabled)
+    // the log file. reopening is done in case the file name has changed
+    // or in case the file has been removed. A random(20) is added to avoid
+    // getting ALL virtual servers calling this at the same time. Reopening
+    // 500 files at once is expensive. :-)
+    call_out(init_log_file, 60 + random(20));
+    return 1;
+  } else {
+    log_function=-1;
+    return 0;
+  }
 }
 
 // Parse the logging format strings.
@@ -793,7 +815,9 @@ nomask private inline string extract_user(string from)
   
   return tmp[0];      // username only, no password
 }
-
+#ifdef THREADS
+private object log_file_mutex = Thread.Mutex();
+#endif
 public void log(mapping file, object request_id)
 {
 //    _debug(2);
@@ -805,62 +829,33 @@ public void log(mapping file, object request_id)
   foreach(logger_modules(request_id), f) // Call all logging functions
     if(f(request_id,file)) return;
 
-  if(!log_function || !request_id) return;// No file is open for logging.
-
-
-  if(QUERY(NoLog) && _match(request_id->remoteaddr, QUERY(NoLog)))
+  if(log_function == -1 || !request_id ||
+     (QUERY(NoLog) && _match(request_id->remoteaddr, QUERY(NoLog))))
     return;
-  
-#ifdef OLD_LOGGING
-  if(!(form=log_format[(string)file->error]))
-    form = log_format["*"];
-  
-  if(!form) return;
-  form = replace(form, 
-		 ({ 
-		   "$ip_number", "$bin-ip_number", "$cern_date",
-		   "$bin-date", "$method", "$resource", "$full_resource", "$protocol",
-		   "$response", "$bin-response", "$length", "$bin-length",
-		   "$referer", "$user_agent", "$agent_unquoted", "$user", "$user_id",
-		   "$request-time"
-		 }), ({
-		   (string)request_id->remoteaddr,
-		   host_ip_to_int(request_id->remoteaddr),
-		   cern_http_date(time(1)),
-		   unsigned_to_bin(time(1)),
-		   (string)request_id->method,
-		   http_encode_string((string)request_id->not_query),
-		   (string)request_id->raw_url,
-		   (string)request_id->prot,
-		   (string)(file->error||200),
-		   unsigned_short_to_bin(file->error||200),
-		   (string)(file->len>=0?file->len:"?"),
-		   unsigned_to_bin(file->len),
-		   (string)(request_id->referrer||"-"), 
-		   http_encode_string(request_id->useragent), 
-		   request_id->useragent, 
-		   extract_user(request_id->realauth),
-		   (string)request_id->cookies->CaudiumUserID,
-		   (string)(time(1)-request_id->time)
-	       }));
-
-  if(search(form, "host") != -1)
-    caudium->ip_to_host(request_id->remoteaddr, write_to_log, form,
-		      request_id->remoteaddr, log_function);
-  else
-    log_function(form);
-#else
-  if(!(fobj = log_format_objs[(string)file->error]))
-    if(!(fobj = log_format_objs["*"]))
-      return; // no logging for this one.
-  if(fobj->hashost)
-    caudium->ip_to_host(request_id->remoteaddr, write_to_log,
-			fobj->format_log(file, request_id),
-			request_id->remoteaddr, log_function);
-  else
-    log_function(fobj->format_log(file, request_id));
+  if(!log_function) {
+#ifdef THREADS
+    object key = log_file_mutex->lock(1);
+    // Second if to avoid call the function if it was already done by previous
+    // locker, if any. 
+    if(!log_function)
 #endif
-  //    _debug(0);
+      init_log_file(1);
+#ifdef THREADS
+    destruct(key);
+#endif
+  }
+  if(functionp(log_function)) {
+    if(!(fobj = log_format_objs[(string)file->error]))
+      if(!(fobj = log_format_objs["*"]))
+	return; // no logging for this one.
+    last_log_time = time(1);
+    if(fobj->hashost)
+      caudium->ip_to_host(request_id->remoteaddr, write_to_log,
+			  fobj->format_log(file, request_id),
+			  request_id->remoteaddr, log_function);
+    else
+      log_function(fobj->format_log(file, request_id));
+  }
 }
 
 // These are here for statistics and debug reasons only.
@@ -887,6 +882,28 @@ public string status()
 		 "<td>%8d</td><td>%.2f/min</td>"
 		 "<td><b>Received data:</b></td><td>%.2fMB</td></tr>\n",
 		 requests, (float)tmp/(float)10, received->mb());
+
+
+#ifdef ENABLE_RAM_CACHE
+  if(datacache && (datacache->hits || datacache->misses)) {
+    res += sprintf("<tr align=right><td><b>Cache Requests:</b></td>"
+		   "<td>%d hits</td><td>%d misses</td></td>"
+		   "<td><b>Cache Hitrate:</b></td>"
+		   "<td>%.1f%%</td></tr>",
+		   datacache->hits, datacache->misses,
+		   datacache->misses ?
+		   (datacache->hits / (float)(datacache->hits +
+					      datacache->misses))*100 :  100);
+    
+    res += sprintf("<tr align=right><td><b>Cache Utilization:</b></td>"
+		   "<td>%s</td><td>%.1f%% free</td>"
+		   "<td><b>Cache Entries:</b></td>"
+		   "<td>%d</td></tr>",
+		   sizetostring(datacache->current_size),
+		   ((datacache->max_size - datacache->current_size)/
+		    (float)datacache->max_size)*100, sizeof(datacache->cache));
+  }
+#endif
 
   if (!zero_type(misc->ftp_users)) {
     tmp = (((float)misc->ftp_users*(float)600)/
@@ -2330,10 +2347,12 @@ void start(int num, void|object conf_id, array|void args)
 #ifdef ENABLE_RAM_CACHE
   if(!datacache)
     datacache = DataCache(query( "data_cache_size" ) * 1024,
-			  query( "data_cache_file_max_size" ) * 1024);
+			  query( "data_cache_file_max_size" ) * 1024,
+			  query( "data_cache_gc_cleanup") / 100.0);
   else
     datacache->init_from_variables(query( "data_cache_size" ) * 1024,
-				   query( "data_cache_file_max_size" ) * 1024);
+				   query( "data_cache_file_max_size" ) * 1024,
+				   query( "data_cache_gc_cleanup") / 100.0);
 #endif
 
 #if 0
@@ -2465,7 +2484,10 @@ void start(int num, void|object conf_id, array|void args)
 			     })*"");
   }
   parse_log_formats();
-  init_log_file();
+  // We are not automatically opening the logfile until it's needed
+  // to save file descriptors.
+  // init_log_file();
+  log_function = 0;
 }
 
 
@@ -3306,9 +3328,10 @@ int unload_module(string module_file)
 
 int add_modules (array(string) mods)
 {
-  foreach (mods, string mod)
+  foreach (mods, string mod) {
     if(!modules[mod] || !modules[mod]->copies && !modules[mod]->master)
       enable_module(mod+"#0");
+  }
   if(caudium->root)
     caudium->configuration_interface()->build_root(caudium->root);
 }
@@ -3466,8 +3489,8 @@ void enable_all_modules()
   string tmp_string;
 
   parse_log_formats();
-  init_log_file();
-
+  // Don't automatically open the log file until it's used.
+  //  init_log_file();
   perror("\nEnabling all modules for "+query_name()+"... \n");
 
 #if constant(_compiler_trace)
@@ -3487,6 +3510,7 @@ void enable_all_modules()
                     +describe_backtrace(err)+"\n"
 #endif
 	);
+  if(parse_module) parse_module->build_callers();
   caudium->current_configuration = 0;
 #if constant(gethrtime)
   perror("\nAll modules for %s enabled in %4.3f seconds\n\n", query_name(),
@@ -3501,19 +3525,20 @@ class DataCache
   mapping(string:array(string|mapping(string:mixed))) cache = ([]);
 
   int current_size;
-  int max_size;
+  int max_size, gc_size;
   int max_file_size;
-
+  
   int hits, misses;
 
   static void clear_some_cache()
   {
+    int i;
     array q = indices( cache );
-    for( int i = 0; i<sizeof( cache)/10; i++ )
+    while(current_size > gc_size && i < sizeof(q))
     {
-      string ent = q[random(sizeof(q))];
-      current_size -= strlen( cache[ent][0] );
-      m_delete( cache, q[random(sizeof(q))] );
+      current_size -= strlen( cache[ q[i] ][0] );
+      m_delete( cache, q[i] );
+      i++;
     }
   }
 
@@ -3528,41 +3553,44 @@ class DataCache
 
   void set( string url, string data, mapping meta, int expire )
   {
-//     if( strlen( data ) > max_file_size ) // checked in conf
-//       return 0;
+    remove_call_out(url);
     call_out( expire_entry, expire, url );
-    while( (strlen( data ) + current_size) > max_size )
+    current_size += strlen(data);
+    if(current_size > max_size)
       clear_some_cache();
-    current_size += strlen( data );
     cache[url] = ({ data, meta });
   }
   
-  array(string|mapping(string:mixed)) get( string url )
+  array(string|mapping(string:mixed)) get( string url, mapping request_headers )
   {
     mixed res;
-    if( res = cache[ url ] )  
+    
+    if( res = cache[ url ] ) {
+      // Fixme: we need ETag (If-Match, If-None-Match and Vary) processing here
       hits++;
-    else
+    } else
       misses++;
     return res;
   }
 
-  void init_from_variables(int _size, int _fsize)
+  void init_from_variables(int _size, int _fsize, float gc_cleanup)
   {
     max_size = _size;
     max_file_size = _fsize;
+    gc_size = (int)(max_size * (1 - gc_cleanup));
     while( current_size > max_size )
       clear_some_cache();
   }
 
-  static void create(int _size, int _fsize )
+  static void create(int _size, int _fsize, float gc_cleanup )
   {
-    init_from_variables(_size,_fsize);
+    init_from_variables(_size,_fsize, gc_cleanup);
   }
 };
 
 object(DataCache) datacache;
 #endif
+
 void create(string config)
 {
   caudium->current_configuration = this;
@@ -3579,6 +3607,12 @@ void create(string config)
   defvar( "data_cache_file_max_size", 50, "Data Cache:Max file size",
           TYPE_INT, "The maximum size of a file that is to be "
 	  "considered for the cache");
+  defvar( "data_cache_gc_cleanup", 25, "Data Cache:Garbage Collection Percentage",
+          TYPE_INT_LIST, "The amount of the cache space to clean up during "
+	  "a garbage collection run in percent. If you have a large cache, "
+	  "you can make this value lower. With a small cache and a small "
+	  "percentage the GC routine will run more often.",
+	  ({ 5, 10, 15, 20, 25, 30, 35, 40, 50 }));
 #endif
   defvar("ZNoSuchFile", "<title>Sorry. I cannot find this resource</title>\n"
 	 "<body bgcolor='#ffffff' text='#000000' alink='#ff0000' "
@@ -3616,7 +3650,6 @@ void create(string config)
 	 "This is the name that will be used in the configuration "
 	 "interface. If this is left empty, the actual name of the "
 	 "virtual server will be used");
-  
   defvar("LogFormat", 
 	 "404: $host $referer - [$cern_date] \"$method $resource $protocol\" 404 -\n"
 	 "500: $host $referer ERROR [$cern_date] \"$method $resource $protocol\" 500 -\n"
@@ -3654,6 +3687,13 @@ void create(string config)
 	 "                  by the client, otherwise '0'\n"
 	 "</pre>", 0, log_is_not_enabled);
   
+  defvar("max_open_time", 300, "Logging: Maximum idle time before closing",
+	 TYPE_INT_LIST,
+	 "This variables sets the idle timeout before in seconds an opened "
+	 "log file is closed. The benefit of this variable is that little "
+	 "used virtual servers won't waste file descriptors. Set to zero "
+	 "to disable this feature.", ({ 0, 60, 120, 180,240,300,400,500,600 }),
+	 log_is_not_enabled);
   defvar("Log", 1, "Logging: Enabled", TYPE_FLAG, "Log requests");
   
   defvar("LogFile", caudium->QUERY(logdirprefix)+
@@ -3667,7 +3707,9 @@ void create(string config)
 	 "%y    Year  (i.e. '1997')\n"
 	 "%m    Month (i.e. '08')\n"
 	 "%d    Date  (i.e. '10' for the tenth)\n"
-	 "%h    Hour  (i.e. '00')\n</pre>"
+	 "%h    Hour  (i.e. '00')\n"
+	 "%H    The hostname of the server machine.\n"
+	 "</pre>"
 	 ,0, log_is_not_enabled);
   
   defvar("NoLog", ({ }), 
@@ -3681,7 +3723,6 @@ void create(string config)
 	 "enter the correct domain name here, and send a bug report to "
 	 "<a href=\"mailto:caudium-bugs@caudium.net\">caudium-bugs@caudium.net"
 	 "</a>");
-  
 
   defvar("Ports", ({ }), 
 	 "Listen ports", TYPE_PORTS,
