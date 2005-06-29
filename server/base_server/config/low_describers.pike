@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -115,8 +115,6 @@ string describe_type(int type, mixed flag)
   }
   return "";
 }
-
-string encode_ports(array from);
 
 //!
 string strip_html(string from)
@@ -256,6 +254,11 @@ void init_ip_list()
  
   array new_ip_number_list = ({ "ANY",  });
  
+#if constant(Caudium.getip)
+  foreach(values(_Caudium.getip()), string ip) {
+    new_ip_number_list |= ({ to_hostname(ip) });
+  }
+#else /* constant(Caudium.getip) */
   if(!ifconfig) ifconfig = "ifconfig";
 
   // LINUX
@@ -287,6 +290,7 @@ void init_ip_list()
       new_ip_number_list |= ({ to_hostname(ip) });
     }
   }
+#endif /* constant(Caudium.getip) */
     
   sort(new_ip_number_list);
   if(sizeof(new_ip_number_list) == 2)

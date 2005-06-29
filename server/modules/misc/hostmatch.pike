@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -166,7 +166,7 @@ void precache_rewrite(object id)
 
     config_cache[host] = id->conf;
   }
-  if (id->conf != old_conf && id->get_user()) {
+  if (id->conf != old_conf && id->rawauth) {
     /* Need to re-authenticate with the new server */    
     array(string) y = id->rawauth / " ";
     

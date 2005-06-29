@@ -1,7 +1,7 @@
 /* I'm -*-Pike-*-, dude 
  *
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -125,7 +125,11 @@ class InternalResolver
             file = "/" + file;
         
         if (sscanf("%s?%s", file, query) == 2)
+	{
           Caudium.parse_query_string(query, qvars, qemptyvars);
+	  foreach(indices(qemptyvars), string varname)
+	    qvars[varname] = "";
+	}
 	
         switch(method) {
             case "HTML":
