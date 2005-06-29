@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,6 +45,22 @@ RCSID("$Id$");
 #  include <time.h>
 # endif
 #endif
+
+/*
+ * Includes *BSD netincludes only if we are sure we have a BSD
+ */
+#ifdef HAVE_NET_IF_DL_H && HAVE_IF_ADDRS_H && HAVE_NETINET_IN_H && HAVE_GETIFADDRS && HAVE_GETNAMEINFO
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <net/if.h>
+# include <net/if_dl.h>
+# include <arpa/inet.h>
+# include <assert.h>
+# include <ifaddrs.h>
+# include <netdb.h>
+# define BSD_NET_FLAVOR 1
+#endif /* HAVE_NET_IF_DL_H && HAVE_IF_ADDRS_H && HAVE_NETINET_IN_H && HAVE_GETIFADDRS && HAVE_GETNAMEINFO */
 
 #define THISOBJ (Pike_fp->current_object)
 
@@ -668,6 +684,10 @@ static struct pike_string *url_decode(unsigned char *str, int len, int exist,
   unsigned char *endl2; /* == end-2 - to speed up a bit */
   struct pike_string *newstr;
 
+  /* test if len is >0 */
+  if (len < 0)
+    return (struct pike_string *)NULL;
+
   if (!str)
     return (struct pike_string *)NULL;
   
@@ -972,12 +992,16 @@ static void f_parse_query_string( INT32 args )
   name = ptr = (unsigned char *)query->str;
   equal = NULL;
   for(; ptr <= end; ptr++) {
+    /* printf("ptr:%c\t(%d)\n", *ptr, ptr); */
     switch(*ptr)
     {
         case '=':
           /* Allow an unencoded '=' in the value. It's invalid but... */
           if(equal == NULL)
+          {
             equal=ptr;
+            /* printf("found '=', setting equal:%s\n", equal); */
+          }
           break;
         case '\0':
           if(ptr != end)
@@ -985,7 +1009,14 @@ static void f_parse_query_string( INT32 args )
         case ';': /* It's recommended to support ';'
                      instead of '&' in query strings... */
         case '&':
+          if (name && (!*name || *name == '&')) {
+            /* printf("ignoring &=\n"); */
+            ptr++;
+            break; /* &=, ignore */
+          }
+	  
           if (equal == NULL) { /* valueless variable, these go to the */
+            /* printf("equal is NULL\n"); */
             if (ptr == (unsigned char*)query->str) {
               ptr++;
               break;
@@ -1005,14 +1036,18 @@ static void f_parse_query_string( INT32 args )
             if (name < (unsigned char*)query->str)
               name++;
             namelen = ptr - name;
+            /* printf("name:%s, namelen:%d\n", name, namelen); */
           } else {
+            /* printf("equal:%s, name:%s\n", equal, name); */
             namelen = equal - name;
             valulen = ptr - ++equal;
+            /* printf("namelen:%d, valuelen: %d\n", namelen, valulen); */
           }
           
           skey.u.string = url_decode(name, namelen, 0, 0);
+          /* printf("skey.u.string: %s\n", skey.u.string); */
           if (!skey.u.string) /* OOM. Bail out */
-            Pike_error(" Out of memory.\n");
+            Pike_error("Out of memory.\n");
 
           if (!valulen) {
             /* valueless, add the name to the multiset */
@@ -1022,6 +1057,7 @@ static void f_parse_query_string( INT32 args )
               Pike_error("Out of memory.\n");
             multiset_insert(emptyvars, &sval);
             name = ptr + 1;
+            equal = NULL;
             break;
           }
           
@@ -1604,15 +1640,18 @@ static void f_cern_http_date(INT32 args)
   struct tm *tm;
   char date[sizeof "01/Dec/2002:16:22:43 +0100"];
   struct pike_string *ret;
-  INT_TYPE timestamp;
-
+  INT_TYPE timestamp = 0;
+#if !defined(HAVE_STRFTIME) || !defined(STRFTIME_SUPPORTS_Z)
+   long diff;
+   int sign;
+#endif
   switch(args) {
    default:
      Pike_error("Wrong number of arguments _Caudium.cern_http_date(). Expected at most 1 argument.\n");
      break;
 
      case 1:
-       get_all_args("_Caudium.cern_http_date", args, "%d", &timestamp);
+       get_all_args("_Caudium.cern_http_date", args, "%i", &timestamp);
        break;
 
      case 0:
@@ -1652,7 +1691,7 @@ static void f_cern_http_date(INT32 args)
      }
    }
 
-#if !defined(HAVE_STRFTIME)
+#if !defined(HAVE_STRFTIME) || !defined(STRFTIME_SUPPORTS_Z)
 #ifdef STRUCT_TM_TM_GMTOFF
   diff = -(tm->tm_gmtoff) / 60L;
 #elif defined(HAVE_SCALAR_TIMEZONE)
@@ -1740,7 +1779,7 @@ static void f_http_date(INT32 args)
   struct tm *tm;
   char date[sizeof "Wed, 11 Dec 2002 17:13:15 GMT"];
   struct pike_string *ret;
-  INT_TYPE timestamp;
+  INT_TYPE timestamp = 0;
   int hour;
 
   switch(args) {
@@ -1749,7 +1788,7 @@ static void f_http_date(INT32 args)
      break;
 
      case 1:
-       get_all_args("_Caudium.http_date", args, "%d", &timestamp);
+       get_all_args("_Caudium.http_date", args, "%i", &timestamp);
        break;
 
      case 0:
@@ -1896,6 +1935,42 @@ static void f_program_object_memory_usage(INT32 args)
   }
 }
 
+#ifdef BSD_NET_FLAVOR
+static void f_getip(INT32 args) 
+{
+  struct mapping	*result;
+  struct pike_string	*key = NULL, *val = NULL;
+  struct ifaddrs 	*ifaddr;
+  struct sockaddr 	*a;
+  int			ret;
+
+  ifaddr = malloc(sizeof(struct ifaddrs));
+  assert (ifaddr != NULL);
+
+  ret = getifaddrs(&ifaddr);
+  if (ret != 0) {
+    Pike_error("_Caudium.getip(): error in getifaddrs()\n");
+  }
+  /*
+   * We have some result, so we can allocate the mapping
+   */
+  result = allocate_mapping(1);
+  for (a = ifaddr->ifa_addr; ifaddr->ifa_next;
+       ifaddr = ifaddr->ifa_next, a = ifaddr->ifa_addr)
+     if(a->sa_family == AF_INET) {
+          char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+
+          getnameinfo(a, a->sa_len, hbuf, sizeof(hbuf), sbuf, sizeof(sbuf),
+                      NI_NUMERICHOST | NI_NUMERICSERV);
+          /*printf("%s inet %s\n", ifaddr->ifa_name, hbuf);*/
+          key = (make_shared_string(ifaddr->ifa_name));
+          val = (make_shared_string(hbuf));
+          mapping_string_insert_string(result, key, val);
+     } 
+
+  push_mapping(result);
+}
+#endif
   
 /* Initialize and start module */
 void pike_module_init( void )
@@ -1984,6 +2059,11 @@ void pike_module_init( void )
   add_function_constant( "program_object_memory_usage", f_program_object_memory_usage,
 	                 "function(void:mapping)", 0);
 
+  /* Function to get ips from BSD stacks */
+#ifdef BSD_NET_FLAVOR
+  add_function_constant( "getip", f_getip,
+                         "function(void:mapping)", 0);
+#endif
   init_datetime();
 
   start_new_program();

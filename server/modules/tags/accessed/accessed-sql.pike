@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -335,8 +335,8 @@ string tag_accessed(string tag, mapping m, object id)
     if (objectp(rxmltags_module))
     {
      if(m->database)
-      return rxmltags_module->api_tagtime(counter->creation_date(), m, id, language); // From rxmltags
-     return rxmltags_module->api_tagtime(counter->creation_date(m->file), m, id, language);
+      return rxmltags_module->api_tagtime(id, counter->creation_date(), m, language); // From rxmltags
+     return rxmltags_module->api_tagtime(id, counter->creation_date(m->file), m, language);
     }
     return "<!-- No RXML Tag module ? -->";
   }

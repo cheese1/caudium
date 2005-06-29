@@ -36,18 +36,20 @@ SCRIPTS=protocols/tetris.pike bin/pdbi.pike bin/sqladduser.pike \
 	bin/indexer.pike bin/searcher.pike
 
 PACKAGES=caudium caudium-modules caudium-pixsl caudium-ultralog
+REMOVEFONTS=lucida_unicode.ttf lucida_unicode.txt verdana.ttf verdana.txt
 
+CFLAGS = -fPIC
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-CFLAGS=-O0
+CFLAGS += -O0
 CFARGSEXTRA=--with-rtldebug --with-cdebug --with-debug --without-copt
 else
-CFLAGS=-O2
+CFLAGS += -O2
 CFARGSEXTRA=--without-rtldebug --without-cdebug --without-debug
 endif
 
 # Temporary workaround for hppa linker issues
 ifeq ($(DEB_BUILD_ARCH),hppa)
-CFLAGS+=-ffunction-sections
+CFLAGS += -ffunction-sections
 endif
 
 ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
@@ -55,7 +57,8 @@ CFLAGS += -g3 -ggdb3
 endif
 
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
+INSTALL_PROGRAM += -s
+CFLAGS += -s
 endif
 
 export CFLAGS
@@ -162,6 +165,12 @@ install: build
 	mv debian/caudium/usr/lib/caudium$(EXTVER)/caudium-images debian/caudium/usr/share/caudium$(EXTVER)/
 
 	install -d -m 755 -o root -g root $(CURDIR)/debian/caudium/usr/share/pike_packages/apps/modules/
+	# Remove non-dfsg fonts
+	for f in $(REMOVEFONTS); do \
+	 if [ -f debian/caudium/usr/lib/caudium$(EXTVER)/fonts/ttf/$f ]; then \
+	   rm -f debian/caudium/usr/lib/caudium$(EXTVER)/fonts/ttf/$f; \
+	 fi \
+	done
 
 	#
 	# copy perl
@@ -186,6 +195,7 @@ install: build
 	# move all the arch independent files to /usr/share and symlink them from their original location
 	# in /usr/lib/caudium/u	
 
+	chmod 755 $(CURDIR)/debian/reflect.sh
 	for p in $(PACKAGES); do \
 	(cd $(CURDIR)/debian/$$p/; find usr/lib/caudium/ \
 	     -name "*.pike" -type f -print \

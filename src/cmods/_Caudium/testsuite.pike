@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -258,7 +258,8 @@ int TEST4_parse_entities()
 int TEST_http_date() {
   int tmstmp = time();
   prtest("http_date");
-  mapping tst = ([ tmstmp: Calendar.ISO_UTC.Second(tmstmp)->format_http() ]);
+  mapping tst = ([ tmstmp: Calendar.ISO_UTC.Second(tmstmp)->format_http(),
+  		   0: Calendar.ISO_UTC.Second(0)->format_http() ]);
 
   return mapping_test(tst, _Caudium.http_date);
 }
