@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,6 +21,10 @@
 // $Id$
 import "..";
 import UltraLog;
+
+#ifndef report_debug
+# define report_debug werror
+#endif
 
 int modified;
 array data = ({

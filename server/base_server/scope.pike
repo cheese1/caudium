@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -40,7 +40,7 @@ int set(string name, mixed value, mixed ... args) {
 
 //!  Get the value of an entity in the scope.
 //! @param name
-//!  The name of tne entity to retrieve.
+//!  The name of the entity to retrieve.
 //! @param args
 //!  Various extra arguments passed by the parser.
 //! @returns

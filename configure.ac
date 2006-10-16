@@ -2,7 +2,7 @@
 # $Id$
 #
 AC_PREREQ(2.53)
-AC_INIT(Caudium, 1.3.31, bugs@caudium.net)
+AC_INIT(Caudium, 1.4.6, bugs@caudium.net)
 
 AC_REVISION($Revision$)
 
@@ -12,7 +12,7 @@ AC_REVISION($Revision$)
 # The oldest version of Pike we run
 REQ_MIN_PIKE_MAJOR=7
 REQ_MIN_PIKE_MINOR=6
-REQ_MIN_PIKE_BUILD=12
+REQ_MIN_PIKE_BUILD=24
 # But on the other end we can't run Pike above or equal this one
 REQ_MAX_PIKE_MAJOR=7
 REQ_MAX_PIKE_MINOR=7
@@ -444,12 +444,15 @@ for PIKE in $DEFPIKE $PREFIXPIKE $pathpike /usr/local/bin/pike /opt/pike/bin/pik
                   $PIKE_INCDIR/include/pike$THIS_PIKE_VER \
                   $PIKE_INCDIR/include/pike${THIS_PIKE_MAJOR}.${THIS_PIKE_MINOR}\
                   $PIKE_INCDIR/include/pike/${THIS_PIKE_MAJOR}.${THIS_PIKE_MINOR} \
+                  $PIKE_INCDIR/include/pike/pike${THIS_PIKE_MAJOR}.${THIS_PIKE_MINOR} \
                   $PIKE_INCDIR/include/pike \
                   $PIKE_INCDIR/src ; do
 
 	if test ! -f $INCDIR/version.h; then
+					echo "No version.h in $INCDIR"
           continue
         else
+					echo "Using $INCDIR as the C include directory"
           cd $INCDIR
           INCLUDE_DIR=`pwd`
 	fi
@@ -462,7 +465,7 @@ for PIKE in $DEFPIKE $PREFIXPIKE $pathpike /usr/local/bin/pike /opt/pike/bin/pik
 	    echo -n
 	    break
 	  fi
-	  echo ", $INCLUDE_DIR"
+	  echo "$INCLUDE_DIR"
 	  FOUND_PIKE=1
 	  PIKE_VERSION=$THIS_PIKE_VER
 	  PIKE_INCLUDE_DIRS="$PIKE_INCLUDE_DIRS -I$INCLUDE_DIR"
@@ -695,13 +698,26 @@ if test -z "$LDSHARED" ; then
     OSF*) LDSHARED="ld -expect_unresolved '*' -shared -msym -O3";;
     DYNIX/ptx*) LDSHARED="ld -G";;
     next*) LDSHARED="$CC $CFLAGS -nostdlib -r";;
-    Linux*) LDSHARED="$CC -shared";;
+    Linux*) 
+      LDSHARED="$CC -shared"
+      if test "$GCC" = yes ; then
+       # Necessary since we're passing -fPIC to the compiler, and the docs
+       # say that the PIC generation options must be passed to both the 
+       # compiler and the linker
+       LDSHARED="$LDSHARED -fPIC" 
+      fi 
+      ;;
     GNU*) LDSHARED="ld -Bshareable";;
     FreeBSD*) LDSHARED="$CC -Wl,-Bshareable";;
     NetBSD*) LDSHARED="ld -Bshareable";;
     OpenBSD*) LDSHARED="ld -Bshareable";;
     BSD/OS*) LDSHARED="shlicc -r";;
-    Darwin*) LDSHARED="$CC -bundle -undefined error -bundle_loader $PIKE";;
+    Darwin*) 
+      LDSHARED="$CC -bundle -undefined error -bundle_loader $PIKE"
+      if test "$GCC" = yes ; then
+        LDSHARED="$LDSHARED -fPIC"
+      fi
+      ;;
     UNIX_SV*) LDSHARED="ld -G";;
     SCO_SV*) LDSHARED="cc -G -KPIC -Wl,-Bexport";;
     UnixWare*)
@@ -730,6 +746,7 @@ if test -z "$CCSHARED" ; then
     case $caudium_cv_sys_os in
 	BSD/OS*) CCSHARED="";;
 	Darwin*) CCSHARED="-fPIC";;
+	Linux*) CCSHARED="-fPIC" ;;
 	*) CCSHARED="-fpic";;
     esac
   else
@@ -791,7 +808,7 @@ export CC CFLAGS CPPFLAGS LDFLAGS LDSHARED SO CLIBRARY_LINK CAUDIUM_SERVERDIR
 
 AC_CONFIG_SUBDIRS(src tools)
 AC_CONFIG_COMMANDS([hail_epita],[sh tools/fixperms])
-AC_OUTPUT(Makefile server/start-caudium server/bin/install.pike)
+AC_OUTPUT(Makefile server/start-caudium server/bin/install)
 
 echo "
 

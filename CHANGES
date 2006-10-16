@@ -1,3 +1,199 @@
+Changes in Caudium 1.4.8 since Caudium 1.4.5
+--------------------------------------------
+- Added --enable-nbio, defaulting to 'yes'
+   (Marek Habersack)
+- The CIF can now show the system limits set for Caudium.
+  See http://bertrand.gotpike.org/space/start/2006-02-27/1 for more
+  informations.
+    (Bertrand LUPART)
+- Fixed a bug where some CGI/uniscript pages where not fully displayed to the
+   client. See http://bertrand.gotpike.org/space/start/2006-02-15/1 for more
+   informations.
+   (Bertrand LUPART)
+- Fixed cgi when USE_SHUFFLER is used.
+    (Bill Welliver)
+- Added quiet option to EMIT SQL, so that sql backtraces don't get
+  sent to the browser.
+    (Bill Welliver)
+- Added quoting capabilities to EMIT, so that you can do &foo.bar:mysql;
+  to get your entity replacements properly quoted.
+    (Bill Welliver)
+- 123sessions: added force_include_urls to be able to specify urls you
+  wish to trigger a redirect to include the session identifier. if left
+  empty, normal behavior is used. this augments include_urls and exclude
+  urls, which are used to specify url subtrees where session processing
+  is either performed or not performed.
+    (Bill Welliver)
+- Added --with-shuffler and --shuffler options for running with
+   Pike Shuffler
+    (Bertrand LUPART)
+- Fixed a Virtual Host Matcher bug where the port number was not properly 
+   identified from the hostname.
+   (Bernd Shoeller)
+- Fixed some Caudium.nbio code that where still used in socket.pike
+   (Xavier Beaudouin)
+- Properly decode UTF-8 requests that have been HTTP encoded.
+   (Bill Welliver)
+- Fix for the 2GB file limit in Caudium.nbio, which should allow
+  big files to be transmitted now.
+   (Bill Welliver)
+- Fix in protocols/http that inadvertantly caused modules using
+  HTTP.pipe_in_progress() to drop the connection with the client.
+  In particular, this should fix problems in proxy modules,
+  but other modules may see an impact as well.
+   (Bill Welliver)
+- Streaming mode now works in HTTP Relay Module.
+   (Bill Welliver)
+- Added support for Bonjour Advertisement of virtual servers.
+  Available under Virtual Server Global Variables. Uses either
+  the virtual server config name, or the "virtual server name"
+  setting under Global Variables (click on "More Options to
+  show this option.) Available when Pike is compiled with
+  DNS_SD support, available on MacOSX/Darwin and systems with
+  Howl installed.
+   (Bill Welliver)
+- Added new showcolumns argument for <sqltable> (Caudium bug id #19, patch
+  by Hex).
+   (Xavier Beaudouin)
+- Fixed errors in russian translations (Caudium bug id #18)
+   (Xavier Beaudouin)
+- Attempting to fix like RIS did on 4.1 the CGI when using Nagios
+   (Xavier Beaudouin)
+- Fixed _Caudium C module to compile with a non threaded Pike.
+   (Xavier Beaudouin / Michel Luczak) 
+- FastCGI module automatically kills any FastCGIs it created when 
+   the module stops. This should eliminate "stranded" FCGIs.
+   (Bill Welliver)
+- Fixes for <user> tag when working with new authentication system.
+   (Bill Welliver)
+- Group functionality can be disabled in SQL Authentication Provider
+   (Bill Welliver)
+- Fixed a bug that prevents streamed answers from working in ssl mode.
+   (Bill Welliver)
+- Added vhs_syslogger module to log using Syslog to local or distant host
+   (Xavier Beaudouin)
+- Make syslog function work as it is advertised on CIF.
+   (Xavier Beaudouin)
+
+Changes in Caudium 1.4.5 since Caudium 1.4.4
+--------------------------------------------
+- Caudium 1.4 RELEASE
+   (Xavier Beaudouin)
+- Fixed emit->maxrows and emit->skiprows
+   (Bill Welliver)
+- Added emit->sort_function and emit->sort_key to sort query results
+   Example usage: sort_function="Array.oid_sort_func" sort_key="version"
+   where sort_function is the name of a function compatible with 
+   Array.sort_array, and sort_key is the name of a field in the resultset 
+   to sort by.
+   (Bill Welliver)
+- Backported: PikeGraphy uses Caudium's authentication system for 
+  user authentication. Security levels are still stored in the 
+  user table. 
+   (Bill Welliver)
+- Backported VHS - SQLlogger (untested since Pike is unstable on FreeBSD
+  and it cannot be compiled on OS X Tiger....)
+   (Xavier Beaudouin)
+- Fix bug #0000011
+   (Xavier Beaudouin)
+- Fix bug #0000009 that prevents ultralog to run in command line
+  because of report_debug don't exist on command line.
+   (Xavier Beaudouin)
+- Because of changes in Pike 7.6.24+ that have been not compatible with
+  it self, we requires now 7.6.24 now.
+   (Xavier Beaudouin)
+- Fix installation script that has been stop to work with pike 7.6.24+
+   (Xavier Beaudouin)
+- Add Index redirect files option that allow people that use L7 load balancers
+  to redirect to files that have been specified instead of listing the
+  directory.
+   (Xavier Beaudouin)
+- Fix error in start-caudium which doesn't look in lib/ for c-modules, which
+  seems to be where they're put on OSX.
+   (James Tyson)
+- Fix error on vhs_dirparser when there is no files on directory and that
+  option "show dot files" is set to no
+   (Xavier Beaudouin)
+- The watchdog now really take care of the port configuration for each virtual
+  server instead of guessing it from the server URI. As a consequence, the
+  watchdog can now check multiple HTTP ports for a virtual server.
+  Checks are made on the protocol used as well as on the binded interface
+  before adding a new virtual server/port to the watch list.
+  This fixes a bug where the watchdog would restart Caudium ever and ever on a
+  fresh install until some virtual server binds to the port 80.
+   (Bertrand LUPART)
+- Fixed a watchdog backtrace on fresh install when there are no virtual server
+  set up in the CIF, yet.
+   (Bertrand LUPART)
+- Starting Caudium with --gdb now turns the watchdog off.
+   (Bertrand LUPART)
+- On *BSD flavors we don't use /sbin/ifconfig to get all IP addresses from
+  the system. An internal C function is used (_Caudium.getip()).
+   (Xavier Beaudouin)
+- <if> no longer evaluates true if using the "element is value" syntax and the 
+  element is not present.
+   (Bill Welliver)
+- Fixed a backtrace when loading the WebApp module.
+   (Bill Welliver)
+
+Changes in Caudium 1.4.4 since Caudium 1.4.2
+--------------------------------------------
+- Backport of Watchdog stuff from the development branch:
+  - Watchdog debug can be enabled using --watchdog-debug
+  - If set using HTTP GET, the watchdog can now be set up either to check every
+    1st level virtual server or either only the first one.
+  - The watchdog can now check virtual servers using HTTP GET
+   (Bertrand Lupart)
+- The id->variables isn't set as before regarding variables with emtpy values,
+  this broke the screen for adding a new virtual server.
+	 (Bertrand Lupart)
+- Watchdog PID check can now be disabled with --without-watchdog-pidcheck
+  It is disabled by default on Linuxes < 2.6, since their threads
+	implementations assigned different PIDs for each thread.
+	 (Bertrand Lupart)
+- Fixed backtrace when using <accessed since> or <accessed help> when accessed
+  was handled by accessed-sql or accessed-memory.
+	 (Bertrand Lupart)
+- Not using strftime on solaris as it does not support the POSIX %z flag
+  which rendered Caudium.cern_http_date() unusable.
+   (Marek Habersack)
+- The id->variables wasn't set as before regarding empty values, this broke
+  some applications and most notably lead to internal server error when
+  reseting a variable in the configuration interface.
+   (David Gourdelier)
+- Comparing of empty strings didn't work in RXML so this lead to wrong 
+  <if match...>
+   (David Gourdelier)
+- Fix for the RXML parsers sending the wrong content-type header when parsing
+  a non-html document.
+   (James Tyson)
+- Error code was incorrectly set to 401 for every error.
+   (David Gourdelier)
+- Pikegraphy now likes filenames with spaces.
+   (Bill Welliver)
+- Watchdog should now work with servers that change uid.
+   (Bill Welliver)
+- Stopping/restarting of server should work properly now, especially for 
+ servers that change uid.
+   (Bill Welliver)
+- Fix a backtrace in Config-Action openports when there is no lsof located 
+  on the hosted machine.
+   (Xavier Beaudouin)
+- Fixed loading of Crypto related Configuration Actions in CIF.
+   (Xavier Beaudouin)
+- Fixed a segfault in Caudium C module when broken variable assignments
+  in the query part of the url are parsed (eg ?foo=too&hop=&gazon=zz - hop= 
+  is the invalid syntax), SF bug #1028622
+   (Marek Habersack)
+
+Changes in Caudium 1.4.1 since Caudium 1.3.31
+---------------------------------------------
+- Fixed a prehistoric bug where Caudium couldn't write to log file because 
+  it was creating a directory instead of a file. 
+   (David Gourdelier)
+- Released Caudium 1.4 in stable_1_4 branch
+   (Xavier Beaudouin)
+
 Changes in Caudium 1.3.31 since Caudium 1.3.23
 ----------------------------------------------
 - Modified config.html and mainconfig.pike to show the current version

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2006 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,27 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
  */
+
 /*
  * $Id$
  */
 
-//! Logging format support functions.
+inherit "wizard";
+constant name= "Status//Limits Status";
 
-//!
-inline string host_ip_to_int(string s)
+constant doc = ("Show data on the limits set by the operating system.");
+
+constant more=1;
+
+constant ok_label = " Refresh ";
+constant cancel_label = " Done ";
+
+int verify_0()
 {
-  int a, b, c, d;
-  sscanf(s, "%d.%d.%d.%d", a, b, c, d);
-  return sprintf("%c%c%c%c",a, b, c, d);
+  return 1;
 }
 
-//!
-inline string extract_user(string from)
+mixed page_0(object id, object conf)
 {
-  array tmp;
-  if (!from || sizeof(tmp = from/":")<2)
-    return "-";
-  
-  return tmp[0];      // username only, no password
+	string out = "";
+
+	out += "<table>";
+	out += "<tr><th>Resource</th><th>Soft</th><th>Hard</th></tr>";
+	foreach(System.getrlimits(); mixed resource; mixed limits)
+	{
+		out += sprintf("<tr><td>%s</td><td align='right'>%s</td><td align='right'>%s</td></tr>", (string)resource, ((string)limits[0]||""), ((string)limits[1]||"") );
+	}
+	out += "</table>";
+
+	return out;
 }
+
+mixed handle(object id) { return wizard_for(id,0); }

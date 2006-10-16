@@ -306,8 +306,6 @@ array(int) stat_file( string path, object id )
 	    0 /* gid */ });
 } 
 
-string|void real_file( string path, object id );
-
 array(string)|void find_dir( string path, object id )
 {
   return ({ });
@@ -406,3 +404,4 @@ class RPCSystem {
  *
  * vim: softtabstop=2 tabstop=2 expandtab autoindent formatoptions=croqlt smartindent cindent shiftwidth=2
  */
+

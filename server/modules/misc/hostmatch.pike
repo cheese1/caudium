@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -147,11 +147,12 @@ void precache_rewrite(object id)
 
     foreach(caudium->configurations, object s)
     {
-      array h = array_sscanf(lower_case(s->query("MyWorldLocation")), "%s://%s/");
-      if(sizeof(h)!=2)
-        h=array_sscanf(lower_case(s->query("MyWorldLocation")), "%s://%s:%s/");
-      else
-        h += ({ (["http":"80","https":"443"])[h[0]] });
+			array h=array_sscanf(lower_case(s->query("MyWorldLocation")), "%s://%s:%s/");
+			if(sizeof(h)!=3)
+			{
+				h = array_sscanf(lower_case(s->query("MyWorldLocation")), "%s://%s/");
+				h += ({ (["http":"80","https":"443"])[h[0]] });
+			}
 
       DWERR(sprintf(" %s://%s:%s/", h[0], h[1], h[2]||""));
       if(host == h[1] &&
@@ -166,7 +167,7 @@ void precache_rewrite(object id)
 
     config_cache[host] = id->conf;
   }
-  if (id->conf != old_conf && id->get_user()) {
+  if (id->conf != old_conf && id->rawauth) {
     /* Need to re-authenticate with the new server */    
     array(string) y = id->rawauth / " ";
     

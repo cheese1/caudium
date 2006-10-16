@@ -1,3 +1,220 @@
+caudium (2:1.4.7-15.1) unstable; urgency=low
+
+  * NMU
+  * Make caudium-pixsl replaces caudium (<= 2:1.2.35.1-1), to fix upgrades
+    from the version in sarge, which contained /usr/bin/pixsl. Closes: #392825
+  * Don't die if /usr/local/share/caudium/modules/ cannot be created.
+    Closes: #392506
+
+ -- Joey Hess <joeyh@debian.org>  Sat, 14 Oct 2006 23:00:54 -0400
+
+caudium (2:1.4.7-15) unstable; urgency=low
+
+  * New Pike version dependency
+  * Uninstallable due to unmet dep on pike7.6-core (<= 7.6.75-99) and
+    pike7.6-image (<= 7.6.75-99) (Closes: #381819)
+  * FTBFS with GCC 4.1: Not using -fPIC to make shared lib. (Closes:
+    #358261)
+  * diff for 2:1.4.7-14.1 NMU (Closes: #378255)
+  * [INTL:pt_BR] Please use the attached debconf template translation
+    (Closes: #374024)
+
+ -- Marek Habersack <grendel@debian.org>  Thu, 10 Aug 2006 11:48:06 +0200
+
+caudium (2:1.4.7-14.1) unstable; urgency=high
+ 
+  * Non-maintainer upload.
+  * Copy code from top-level configure.ac to src/cmods/configure.ac to work
+    around changes in autoconf 2.59c; patch from Niko Tynui, fixes FTBFS.
+    (Closes: #376516)
+
+ -- Steinar H. Gunderson <sesse@debian.org>  Fri, 14 Jul 2006 19:36:00 +0200
+
+caudium (2:1.4.7-14) unstable; urgency=low
+
+  * New Pike version dependency
+
+ -- Marek Habersack <grendel@debian.org>  Wed,  5 Apr 2006 13:02:22 +0200
+
+caudium (2:1.4.7-13) unstable; urgency=low
+
+  * Depend on newer Pike
+  * FTBFS: Not using -fPIC to make shared lib. (Closes: #358261)
+    Modified configure.ac to add -fPIC to the linker flags
+  * htpasswd-caudium has dangerous rpath /usr/local/devel/lib (Closes:
+    #359229)
+    Made the src/tools/ compilation use smartlink
+  * [INTL:nl] Dutch po-debconf translation (Closes: #354599)
+    Thanks to Bart Cornelis <cobaco@linux.be> for submitting the translation
+
+ -- Marek Habersack <grendel@debian.org>  Thu, 30 Mar 2006 14:30:50 +0200
+
+caudium (2:1.4.7-12) unstable; urgency=low
+
+  * [INTL:nl] Dutch po-debconf translation (Closes: #354599). 
+    Contributed by Bart Cornelis <cobaco@linux.be>, thanks.
+
+ -- Marek Habersack <grendel@debian.org>  Mon, 27 Feb 2006 20:12:19 +0100
+
+caudium (2:1.4.7-11) unstable; urgency=low
+
+  * New pike dependency
+
+ -- Marek Habersack <grendel@debian.org>  Tue, 31 Jan 2006 22:27:23 +0100
+
+caudium (2:1.4.7-10) unstable; urgency=low
+
+  * Depends on newer pike
+
+ -- Marek Habersack <grendel@debian.org>  Fri, 30 Dec 2005 15:06:39 +0100
+
+caudium (2:1.4.7-9) unstable; urgency=low
+
+  * Build depends on pike7.6 7.6.55 now
+
+ -- Marek Habersack <grendel@debian.org>  Sat,  3 Dec 2005 23:42:32 +0100
+
+caudium (2:1.4.7-8) unstable; urgency=low
+
+  * Build-depends on Pike 7.6.51 now
+
+ -- Marek Habersack <grendel@debian.org>  Sat, 19 Nov 2005 01:29:41 +0100
+
+caudium (2:1.4.7-7) unstable; urgency=low
+
+  * Note to self: don't work when half asleep. Thanks Mario for noticing
+    my braindamage :) - fixed the postrm/prerm files.
+  * please remove files created in postinst (Closes: #336383)
+  * please support delayed compressed logs for webalizer (Closes:
+    #336742). Added the 'delaycompress' option to the logrotate config
+    file
+
+ -- Marek Habersack <grendel@debian.org>  Tue,  1 Nov 2005 11:35:36 +0100
+
+caudium (2:1.4.7-6) unstable; urgency=low
+
+  * [INTL:sv] Swedish debconf templates translation (Closes: #332777)
+    Contributed by Daniel Nylander <yeager@lidkoping.net>, thanks
+  * Spanish debconf translation (Closes: #334389)
+    Contributed by "César Gómez Martín" <cesar.gomez@gmail.com>, thanks
+  * chown www-data.www-data /var/cache/caudium/cache (Closes: #336369)
+  * please remove files created in postinst (Closes: #336383).
+    The changes:
+     - don't make backups of the config files anymore
+     - try to remove the dirs in /usr/local/share, if they're empty
+     - correctly handle the /usr/lib/caudium/caudium-images case
+  * Should use start-stop-daemon (Closes: #234554)
+
+ -- Marek Habersack <grendel@debian.org>  Sun, 30 Oct 2005 02:35:19 +0100
+
+caudium (2:1.4.7-5) unstable; urgency=low
+
+  * caudium depends on debconf without | debconf-2.0 alternate; blocks
+    cdebconf transition (Closes: #331771)
+  * cleaned up the package build process a bit
+  * moved some files to correct packages (for PiXSL and UltraLog)
+
+ -- Marek Habersack <grendel@debian.org>  Wed,  5 Oct 2005 08:49:34 +0200
+
+caudium (2:1.4.7-4) unstable; urgency=low
+
+  * The latest upstream snapshot
+  * [l10n] Czech translation for caudium (Closes: #331131)
+    Updated translation submitted by Martin Šín <martin.sin@seznam.cz>
+    thanks a lot.
+  * Updated Standards-Version. No changes.
+
+ -- Marek Habersack <grendel@debian.org>  Tue,  4 Oct 2005 07:54:56 +0200
+
+caudium (2:1.4.7-3) unstable; urgency=high
+
+  * Caudium takes over from Apache (Closes: #295921). Really closing the
+    bug now.
+  * urgency high to force recompile and test (once again...) whether the 
+    RC bug 309191 can be closed now that Pike 7.6 was compiled for the 
+    most important architectures.
+
+ -- Marek Habersack <grendel@debian.org>  Sat, 13 Aug 2005 00:52:07 +0200
+
+caudium (2:1.4.7-2) unstable; urgency=high
+
+  * Minor bugfix for the syslog support
+  * Urgency high to rush the recompile in order to test whether the
+    RC bug 309191 can be closed.
+
+ -- Marek Habersack <grendel@debian.org>  Sat, 23 Jul 2005 02:21:50 +0200
+
+caudium (2:1.4.7-1) unstable; urgency=high
+
+  * The latest released version of the server
+  * Closes: #306070: bug at line 83 (missing eval command) and cosmetic
+    changes in postinstall
+  * Closes: #283847: /etc/init.d/caudium fails to stop caudium. Caudium
+    1.4 uses a different start/stop mechanism which does not exhibit the
+    problem (even though the init.d script is mostly the same)
+  * Closes: #315805: INTL:vi. Added the Vietnamese translation.
+  * Closes: #294975: config access is open on all interfaces by default
+    setup. Changed to allow connections only from 127.0.0.1. The only
+    issue with that is that you will need to use ssh forwarding to access
+    the configuration port from a remote location for initial config
+    (or use /e/links locally)
+  * Closes: #315288: French debconf templates translation update
+  * Closes: #304880: [l10n] Czech translation for caudium
+  * Closes: #297830: when purging caudium tries to remove /var/state
+
+ -- Marek Habersack <grendel@debian.org>  Tue, 19 Jul 2005 11:49:10 +0200
+
+caudium (2:1.4.5.2-4) experimental; urgency=low
+
+  * Updated for the new pike7.6
+
+ -- Marek Habersack <grendel@debian.org>  Sun, 19 Jun 2005 03:32:09 +0200
+
+caudium (2:1.4.5.2-3) experimental; urgency=low
+
+  * Closes: #306070: bug at line 83 (missing eval command) and cosmetic
+    changes in postinstall. Reported and patch contributed by
+    Alban Browaeys <browaeys.alban@wanadoo.fr>, thank you.
+  * Czech translation for caudium, contributed by 
+    Martin Šín <martin.sin@seznam.cz>, thanks a lot.
+
+ -- Marek Habersack <grendel@debian.org>  Tue, 14 Jun 2005 02:18:24 +0200
+
+caudium (2:1.4.5.2-2) experimental; urgency=low
+
+  * Added the Vietnamese translation contributed by Clytie Siddall, 
+    thanks a lot.
+  * Fixed a few typos in the debconf templates, also submitted by 
+    Clytie Siddall, thanks again.
+
+ -- Marek Habersack <grendel@debian.org>  Mon, 13 Jun 2005 20:50:46 +0200
+
+caudium (2:1.4.5.2-1) experimental; urgency=medium
+
+  * Getting rid of the non-dfsg fonts
+  * Depends on ttf-bistream-vera now
+  * Using a fake version to force upgrade of .orig.tar.gz
+
+ -- Marek Habersack <grendel@debian.org>  Fri, 22 Apr 2005 01:31:35 +0200
+
+caudium (2:1.4.5-1) experimental; urgency=low
+
+  * The latest upstream version
+
+ -- Marek Habersack <grendel@debian.org>  Thu, 16 Dec 2004 01:58:09 +0100
+
+caudium (2:1.4.3-1) experimental; urgency=low
+
+  * The latest upstream snapshot (RC1)
+
+ -- Marek Habersack <grendel@debian.org>  Mon, 20 Sep 2004 15:17:19 +0200
+
+caudium (2:1.4.1-1+rc1) experimental; urgency=low
+
+  * The first Release Candidate for caudium 1.4
+
+ -- Marek Habersack <grendel@debian.org>  Tue, 14 Sep 2004 12:51:28 +0200
+
 caudium (2:1.3.31-2) experimental; urgency=low
 
   * The latest cvs snapshot
