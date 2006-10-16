@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -334,6 +334,8 @@ mixed first_try(object id)
 {
   id->misc->session_id = 0;
 
+  SESSDEBUG("first_try");
+  
   if (cur_storage)
     cur_storage->setup(id);
     
@@ -1390,6 +1392,9 @@ private void setup_compat(object id)
   }
 
   id->misc->session_variables = SettableWrapper(id, id->misc->session_id, "session");
+
+  SESSDEBUG(sprintf("id->misc->session_variables: %O\n", id->misc->session_variables));
+  
   id->misc->user_variables = SettableWrapper(id, id->misc->session_id, "user");
 }
 

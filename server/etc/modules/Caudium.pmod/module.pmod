@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -815,7 +815,7 @@ int _match(string w, array (string) a) {
   if (!stringp(w)) // Internal request..
     return -1;
   foreach (a, q) 
-    if (stringp(q) && strlen(q) && glob(q, w)) 
+    if (stringp(q) && glob(q, w)) 
       return 1; 
 }
 

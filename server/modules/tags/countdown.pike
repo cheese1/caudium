@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -524,7 +524,7 @@ string tag_countdown(string t, mapping m, object id)
   if(m->years) return  show_number((int)(delay/(3600*24*365.25)),m);
   if(m->months) return show_number((int)(delay/((3600*24*365.25)/12)),m);
   if(m->weeks) return  show_number(delay/(3600*24*7),m);
-  if(m->days) return   show_number(delay/(3600*24),m);
+  if(m->days) return   show_number(delay/(3600*24)+1,m);
   if(m->hours) return  show_number(delay/3600, m);
   if(m->minutes) return show_number(delay/60,m);
   if(m->seconds) return show_number(delay,m);

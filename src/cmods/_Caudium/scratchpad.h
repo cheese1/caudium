@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -104,7 +104,7 @@ static inline unsigned char *scratchpad_get(size_t wanted_size)
 
         case -2:
           Pike_error("Wanted size (%lu) exceeds the maximum scratchpad size (%lu)\n",
-                     wanted_size, __scratch_pad->buf_max_size);
+                     wanted_size, __scratch_pad->buf_max);
     }
   }
   

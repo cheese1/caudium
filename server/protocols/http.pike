@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
+ * Copyright © 2000-2005 The Caudium Group
  * Copyright © 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
@@ -108,6 +108,8 @@ string scan_for_query( string f )
 {
   if(sscanf(f,"%s?%s", f, query) == 2) {
     Caudium.parse_query_string(query, variables, empty_variables);
+    foreach(indices(empty_variables), string varname)
+      variables[varname] = "";
     rest_query = indices(empty_variables) * ";";
   }
   
@@ -200,6 +202,8 @@ void handle_body_encoding(int content_length)
       if(content_length < 200000) {
         Caudium.parse_query_string(replace(data, ({ "\n", "\r"}),
                                            ({"", ""})), variables, empty_variables);
+        foreach(indices(empty_variables), string varname)
+          variables[varname] = "";
         rest_query = indices(empty_variables) * ";";
       }
       break;
@@ -423,12 +427,16 @@ private int parse_got()
   
   if(sscanf(f,"%s?%s", f, query) == 2) {
     Caudium.parse_query_string(query, variables, empty_variables);
+    foreach(indices(empty_variables), string varname)
+      variables[varname] = "";
     rest_query = indices(empty_variables) * ";";
   }
   
   REQUEST_WERR(sprintf("After query scan:%O", f));
 
   f = _Roxen.http_decode_string( f );
+
+  catch(f = utf8_to_string(f));
 
   /* Fix %00 (NULL) bug */
   sscanf( f, "%s\0", f );
@@ -1376,7 +1384,10 @@ void send_result(mapping|void result)
         file = pipe = 0;
         return;
       }
-      my_fd = file = 0;
+      // it doesn't make sense to do a streaming pipe if we're just going to kill
+      // the connection to the client ...
+      // my_fd = 
+      file = 0;
       return;
     }
 
@@ -1391,28 +1402,18 @@ void send_result(mapping|void result)
     heads = ([]);
     if(!file->len)
     {
-      array|object fstat;
+      object fstat;
       if(objectp(file->file))
         if(!file->stat && !(file->stat=misc->stat))
-          file->stat = (array(int))file->file->stat();
+          file->stat = file->file->stat();
       
-      //
-      // I think it's the highest time to decide on which pike we support...
-      // I vote for 7.2 onwards only
-      // /grendel
-      //
       fstat = file->stat;
-      if(arrayp(fstat) || objectp(fstat))
+      if(objectp(fstat))
       {
         int fsize, fmtime;
 	
-        if (objectp(fstat)) {
-          fsize = fstat->size;
-          fmtime = fstat->mtime;
-        } else {
-          fsize = fstat[1];
-          fmtime = fstat[3];
-        }
+        fsize = fstat->size;
+        fmtime = fstat->mtime;
 	
         if(file->file && !file->len)
           file->len = fsize;

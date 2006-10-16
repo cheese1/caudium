@@ -289,9 +289,14 @@ class Relay
 #ifdef RELAY_DEBUG
 			werror("RELAY: Request sent OK\n");
 #endif
-			Stdio.sendfile( 0, fd, 0, 0, 0, id->my_fd );
+			Stdio.sendfile( 0, fd, 0, -1, 0, id->my_fd, lambda(int q){ 
+id->conf->log(([]), id);
+destruct(id->my_fd); 
+ destruct(id);
+destruct(); 
+ } );
 		      } );
-      destruct();
+
     }
     else
     {
