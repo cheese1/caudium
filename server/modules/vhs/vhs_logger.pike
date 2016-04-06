@@ -251,7 +251,7 @@ string start()
   logger->parse_log_formats(QUERY(LogFormat));
 }
 
-static void do_log(mapping file, object request_id, function log_function)
+protected void do_log(mapping file, object request_id, function log_function)
 {
   string a;
   string form;

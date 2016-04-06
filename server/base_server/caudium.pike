@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -77,7 +77,7 @@ object shuffler = Shuffler.Shuffler();
 
 #if _DEBUG_HTTP_OBJECTS
 mapping httpobjects = ([]);
-static int idcount;
+protected int idcount;
 int new_id(){ return idcount++; }
 #endif
 
@@ -214,7 +214,7 @@ void watchdog_off()
 //! @seealso
 //!   @[low_shutdown()]
 
-private static void really_low_shutdown(int exit_code)
+private protected void really_low_shutdown(int exit_code)
 {
   // Die nicely.
 #ifdef SOCKET_DEBUG
@@ -287,7 +287,7 @@ private static void really_low_shutdown(int exit_code)
 //     Restart the process.
 //  @endint
 
-private static void low_shutdown(int exit_type)
+private protected void low_shutdown(int exit_type)
 {
   // Change to root user if possible ( to kill the start script... )
   
@@ -400,7 +400,7 @@ mapping shutdown()
 }
 
 // non-RIS
-static void create_snmp_agent()
+protected void create_snmp_agent()
 {
   if(snmp_agent)
     snmp_agent=0;
@@ -416,7 +416,7 @@ static void create_snmp_agent()
 //!   a string describing the event trap to send.
 //!   currently "server_restart", "server_shutdown", "server_startup"
 //!   and abs_engaged are supported.
-static void send_trap(string trapname)
+protected void send_trap(string trapname)
 {
   // is snmp enabled and do we have trap recipients?
   if (GLOBVAR(snmp_enable) && GLOBVAR(snmp_trap_recipients)!="")
@@ -435,7 +435,7 @@ static void send_trap(string trapname)
 }
 
 // non-RIS
-static void create_js_context()
+protected void create_js_context()
 {
 #if constant(SpiderMonkey.Context)
   if (GLOBVAR(js_enable)) {
@@ -459,14 +459,14 @@ static void create_js_context()
 #endif
 }
 
-static int shutting_down;
+protected int shutting_down;
 
 // This is called for each incoming connection.
 //
 // @param port
 //  Represents the object that handled the connection.
 
-private static void accept_callback( Stdio.Port port )
+private protected void accept_callback( Stdio.Port port )
 {
   Stdio.File file;
   int    q = QUERY(NumAccept);
@@ -511,7 +511,7 @@ private static void accept_callback( Stdio.Port port )
             if (!shutting_down) {
               shutting_down=1;
               report_fatal("Out of sockets (%d active). Restarting server gracefully.\n",
-                           sizeof(spider.get_all_active_fd()));
+                           sizeof(Stdio.get_all_active_fd()));
               low_shutdown(-1);
             }
             return;
@@ -564,10 +564,10 @@ object do_thread_create(string id, function f, mixed ... args)
 
 //! Queue of things to handle.
 //! An entry consists of an array(function fp, array args)
-static object (Thread.Queue) handle_queue = Thread.Queue();
+protected object (Thread.Queue) handle_queue = Thread.Queue();
 
 //! Number of handler threads that are alive.
-static int thread_reap_cnt;
+protected int thread_reap_cnt;
 
 //! This is the main handler thread. It peeks the next message from the
 //! queue and executes the function indicated in the message.
@@ -887,7 +887,7 @@ mapping (string:array (array (object|multiset))) supports;
 
 private multiset default_supports = (< >);
 
-private static inline array positive_supports(array from)
+private protected inline array positive_supports(array from)
 {
   array res = copy_value(from);
   int i;
@@ -909,9 +909,9 @@ private inline array negative_supports(array from)
   return res - ({ 0 });
 }
 
-private static mapping foo_defines = ([ ]);
+private protected mapping foo_defines = ([ ]);
 // '#define' in the 'supports' file.
-static private string current_section; // Used below.
+protected private string current_section; // Used below.
 // '#section' in the 'supports' file.
 
 private void parse_supports_string(string what)
@@ -1367,7 +1367,7 @@ mixed try_get_file(string s, object id, int|void status, int|void nocache)
 
 int config_ports_changed = 0;
 
-static string MKPORTKEY(array(string) p)
+protected string MKPORTKEY(array(string) p)
 {
   if (sizeof(p[3])) {
     return(sprintf("%s://%s:%s/(%s)",
@@ -1508,7 +1508,7 @@ private void handle_sigalrm(int sig)
   // locked up
 }
 
-static int abs_started;
+protected int abs_started;
 void restart_if_stuck (int force) 
 {  
 
@@ -1741,7 +1741,7 @@ int set_u_and_gid()
   return 0;
 }
 
-static mapping __vars = ([ ]);
+protected mapping __vars = ([ ]);
 
 //! Set a global (non-persistent, though) variable. This mechanism,
 //! together with the @[query_var()] function, can be
@@ -1981,26 +1981,26 @@ class ImageCache
   function draw_function;
   object mycache;
 
-  static mapping meta_cache_insert(string i, mapping what)
+  protected mapping meta_cache_insert(string i, mapping what)
   {
     mycache->store(cache_pike(what, sprintf("meta://%s", i), -1));
     return what;
   }
   
-  static string data_cache_insert(string i, string what)
+  protected string data_cache_insert(string i, string what)
   {
     mycache->store(cache_pike(what, sprintf("data://%s", i), -1));
     return what;
   }
 
-  static mixed frommapp(mapping what)
+  protected mixed frommapp(mapping what)
   {
     if (!zero_type(what[""]))
       return what[""];
     return what;
   }
 
-  static void draw(string name, object id)
+  protected void draw(string name, object id)
   {
     if (!name)
       return;
@@ -2306,19 +2306,19 @@ class ImageCache
   }
 
 
-  static void store_meta(string id, mapping meta) {
+  protected void store_meta(string id, mapping meta) {
     meta_cache_insert(id, meta);
   }
 
-  static void store_data(string id, string data) {
+  protected void store_data(string id, string data) {
     data_cache_insert(id, data);
   }
 
-  static mapping restore_meta(string id) {
+  protected mapping restore_meta(string id) {
     return mycache->retrieve(sprintf("meta://%s", id));
   }
 
-  static void|mapping restore(string id) {
+  protected void|mapping restore(string id) {
     if (!id)
       return 0;
     mapping m = restore_meta(id);
@@ -3235,7 +3235,7 @@ void create_pid_file(string where)
     report_error("I cannot create the pid file (%s).\n",where);
 }
 
-static private int _recurse;
+protected private int _recurse;
 
 private void __close_connections(function me)
 { 

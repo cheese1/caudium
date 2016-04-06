@@ -26,15 +26,15 @@
 
 //!   This is the DB handler itself. 
 class DB {
-  static private int last_db_access = 0;	// Last time when 
+  protected private int last_db_access = 0;	// Last time when 
 						// db was accessed
-  static private int db_access = 0;		// Number of DB access
-  static private int db_close = 0;		// Number of DB closes
-  static private object db = 0;			// The database object
+  protected private int db_access = 0;		// Number of DB access
+  protected private int db_close = 0;		// Number of DB closes
+  protected private object db = 0;			// The database object
 
-  static private int timeout = 0;		// Timeout to close the
+  protected private int timeout = 0;		// Timeout to close the
 						// DB.
-  static private string dburl;			// The SqlURL
+  protected private string dburl;			// The SqlURL
   object id;					// The Caudium Id
 
   //!  Create and open the database

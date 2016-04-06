@@ -24,8 +24,8 @@
 inherit "module";
 inherit "caudiumlib";
 
-static Filesystem.Tar tarfs;
-static int req_files, req_dirs, req_stats;
+protected Filesystem.Tar tarfs;
+protected int req_files, req_dirs, req_stats;
 
 #define TRACE_ENTER(A,B) do{if(id->misc->trace_enter)id->misc->trace_enter((A),(B));}while(0)
 #define TRACE_LEAVE(A) do{if(id->misc->trace_leave)id->misc->trace_leave((A));}while(0)
@@ -102,8 +102,8 @@ string query_location () {
 
 class WrapperFile
 {
-  static private int pos, len;
-  static object my_fd;
+  protected private int pos, len;
+  protected object my_fd;
   
   string read(int|void n)
   {

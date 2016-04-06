@@ -26,9 +26,9 @@
 //! @fixme
 //!  Docs!!!
 
-static private array __vars=({});
+protected private array __vars=({});
 
-static private array save_variables()
+protected private array save_variables()
 {
   mixed b, a;
   array res = ({ }), variable;
@@ -49,7 +49,7 @@ static private array save_variables()
 }
 
 
-static private void restore_variables(array var)
+protected private void restore_variables(array var)
 {
   if(var)
     foreach(var, var)

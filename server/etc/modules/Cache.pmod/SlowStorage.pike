@@ -375,7 +375,7 @@ int object_count() {
 //!
 //! @param var
 //! The pike datatype being encoded.
-static string _encode_value( mixed var ) {
+protected string _encode_value( mixed var ) {
   if (programp(var) && master()->Encoder)
     return encode_value( var, master()->Encoder(var) );
   else

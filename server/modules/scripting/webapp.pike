@@ -14,7 +14,7 @@ constant cvs_version = "$Id: webapp.pike,v 1.4 2004-10-28 15:33:55 hww3 Exp $";
 constant thread_safe=1;
 constant module_unique = 0;
 
-static inherit "http";
+protected inherit "http";
 
 #define WEBAPP_CHAINING
 #define WEBAPP_DEBUG 1
@@ -89,7 +89,7 @@ array(string) rxmlmap;
 // stuff from roxen filesystem
 string normalized_path,mountpoint;
 
-static mapping http_low_answer(int errno, string data, string|void desc)
+protected mapping http_low_answer(int errno, string data, string|void desc)
 {
   mapping res = Caudium.HTTP.low_answer(errno, data);
 
@@ -133,7 +133,7 @@ void stop()
   ]);
 }
 
-static mapping(string:string) make_initparam_mapping(mapping(string:string) p)
+protected mapping(string:string) make_initparam_mapping(mapping(string:string) p)
 {
   if (!p)
     p = ([ ]);
@@ -317,7 +317,7 @@ void parse_webapp(Node c)
   }
 }
 
-static int is_unavailable_exception(mixed e)
+protected int is_unavailable_exception(mixed e)
 {
   if (arrayp(e) && sizeof(e)==4 && e[0] == "UnavailableException\n")
     return 1;
@@ -697,20 +697,20 @@ void load_all()
 }
 
 
-static int ident=1;
+protected int ident=1;
 
 class BaseWrapper
 {
-  static constant clazz = "BaseWrapper";
-  static object _file;
-  static object _id;
-  static string _data;
-  static string header;
-  static string retcode;
-  static string rettext;
+  protected constant clazz = "BaseWrapper";
+  protected object _file;
+  protected object _id;
+  protected string _data;
+  protected string header;
+  protected string retcode;
+  protected string rettext;
   mapping(string:string) headermap = ([ ]);
-  static int _ident;
-  static int first=1;
+  protected int _ident;
+  protected int first=1;
   int collect=0;
   string content_type;
   multiset ignore_heads = (<
@@ -883,7 +883,7 @@ class RXMLParseWrapper
 {
   inherit BaseWrapper;
   
-  static constant clazz = "RXMLWrapper";
+  protected constant clazz = "RXMLWrapper";
 
   string _sprintf()
   {
@@ -945,7 +945,7 @@ class ServletChainingWrapper
 {
   inherit BaseWrapper;
   
-  static constant clazz = "ChainingWrapper";
+  protected constant clazz = "ChainingWrapper";
 
   string _sprintf()
   {
@@ -1604,7 +1604,7 @@ mixed find_file( string f, RequestID id )
 
 
 // NOTE: base is modified destructably!
-static private array(string) my_combine_path_array(array(string) base, string part)
+protected private array(string) my_combine_path_array(array(string) base, string part)
 {
   if ((part == ".") || (part == "")) {
     if ((part == "") && (!sizeof(base))) {
@@ -1621,7 +1621,7 @@ static private array(string) my_combine_path_array(array(string) base, string pa
   }
 }
 
-static private array(string) glob_expand(string glob_path)
+protected private array(string) glob_expand(string glob_path)
 {
   WEBAPP_WERR(sprintf("glob_expand(%s)",glob_path));
   string|array(string) ret_path = glob_path;
@@ -1788,12 +1788,12 @@ class WARPath
 */
 
 // goes along with the getvars below.
-static int invisible_cb(mixed ... args)
+protected int invisible_cb(mixed ... args)
 {
   return 1;
 }
 
-static string isprint(int c)
+protected string isprint(int c)
 {
   if (c>=0x20 && c<0x80)
     return sprintf("%c", c);
@@ -1801,7 +1801,7 @@ static string isprint(int c)
   return ".";
 }
 
-static string hexdump(string s)
+protected string hexdump(string s)
 {
   int count = 0;
   string ret = "";

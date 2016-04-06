@@ -37,9 +37,9 @@ constant module_doc  = "This tag generates tables.<p>"
 "<tt>&lt;tablify help&gt;&lt;/tablify&gt;</tt> gives help.\n\n<p>"; //+doc();
 constant module_unique = 1;
 
-static private int loaded;
+protected private int loaded;
 
-static private constant old_doc =
+protected private constant old_doc =
   ("Generates tables from, as an example, tab separated fields in newline"
    " separated records (this is the default)."
    "<p>This module defines a tag, {tablify}<p>Arguments:<br>"
@@ -51,7 +51,7 @@ static private constant old_doc =
    "cellalign=left|right|center: Align the contents of the cells<br>\n"
    "rowalign=left|right|center: Align the contents of the rows<br>\n");
 
-static private string doc()
+protected private string doc()
 {
   return !loaded?"":replace(Stdio.read_bytes("modules/tags/doc/tablify")||
 			    old_doc,

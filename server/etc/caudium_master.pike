@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -197,7 +197,7 @@ void name_program(program foo, string name)
   programs[name] = foo;
 }
 
-private static int mid = 0;
+private protected int mid = 0;
 
 mapping _vars = ([]);
 
@@ -362,7 +362,7 @@ mixed resolv(mixed ... args)
 // messages.
 
 // For low_findprog();
-#if constant(_static_modules.Builtin.mutex)
+#if constant(_protected_modules.Builtin.mutex)
 #define THREADED
 #endif
 

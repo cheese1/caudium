@@ -46,13 +46,13 @@ constant storage_default = "mysql://localhost/caudium";
 #define DB get_database
 
 //!
-static string sqlurl;
+protected string sqlurl;
 
 //!
-static string version = sprintf("%d.%d.%d", __MAJOR__, __MINOR__, __BUILD__); 
+protected string version = sprintf("%d.%d.%d", __MAJOR__, __MINOR__, __BUILD__); 
 
 //!
-static object db;
+protected object db;
 
 //!
 void create(string _sqlurl) {
@@ -109,14 +109,14 @@ void unlink_regexp(string namespace, string regexp) {
 }
 
 //!
-static object get_database() {
+protected object get_database() {
   if (!objectp(db))
     db = Sql.Sql(sqlurl);
   return db;
 }
 
 //!
-static object init_tables() {
+protected object init_tables() {
 #ifdef STORAGE_DEBUG
   werror("Storage.Methods.SQL->init_tables()\n");
 #endif

@@ -121,11 +121,11 @@ class CGIScript
   }
 
   // HUP, PIPE, INT, TERM, KILL
-  static constant kill_signals = ({ signum("HUP"), signum("PIPE"),
+  protected constant kill_signals = ({ signum("HUP"), signum("PIPE"),
 				    signum("INT"), signum("TERM"),
 				    signum("KILL") });
-  static constant kill_interval = 3;
-  static int next_kill;
+  protected constant kill_interval = 3;
+  protected int next_kill;
 
   void kill_script()
   {

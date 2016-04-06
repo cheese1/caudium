@@ -52,14 +52,14 @@ constant module_doc =
 
 constant thread_safe = 1;
 
-static string recent_error = 0;
-static int parsed_tags = 0, script_calls = 0, script_errors = 0;
+protected string recent_error = 0;
+protected int parsed_tags = 0, script_calls = 0, script_errors = 0;
 
-static mapping handler_settings = ([ ]);
+protected mapping handler_settings = ([ ]);
 
 
 #ifdef THREADS
-static object mutex = Thread.Mutex();
+protected object mutex = Thread.Mutex();
 #endif
 
 void create()
@@ -134,13 +134,13 @@ string status()
   return s;
 }
 
-static object gethandler()
+protected object gethandler()
 {
   return ExtScript.getscripthandler(QUERY(bindir)+"/perlrun",
                                     QUERY(parallel), handler_settings);
 }
 
-static void fix_settings()
+protected void fix_settings()
 {
   string u, g;
   mapping s = ([ ]);
@@ -161,7 +161,7 @@ static void fix_settings()
   handler_settings = s;
 }
 
-static void periodic()
+protected void periodic()
 {
   fix_settings();
   ExtScript.periodic_cleanup();

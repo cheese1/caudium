@@ -128,16 +128,16 @@ class Property {
   string _sprintf() {
     return "Property("+prop+","+describe_namespace()+")";
   }
-  static string  prop;
-  static string value;
-  static NameSpace ns;
+  protected string  prop;
+  protected string value;
+  protected NameSpace ns;
 }
 
 
 //!
 class NameSpace {
-  static array(Property) props;
-  static string       name, id;
+  protected array(Property) props;
+  protected string       name, id;
 
   //!
   string get_name() { 
@@ -178,7 +178,7 @@ class NameSpace {
 }
 
 //! Available namespaces
-static mapping mNameSpaces;
+protected mapping mNameSpaces;
 
 //!
 void create()
@@ -240,12 +240,12 @@ class WebdavHandler {
 }
 
 
-static mapping properties = ([
+protected mapping properties = ([
     "getlastmodified":3|TYPE_DATE,
     "creationdate":2|TYPE_DATE,
     ]);
 
-static array _props = ({"getcontenttype","resourcetype", "getcontentlength", "href"})+indices(properties);
+protected array _props = ({"getcontenttype","resourcetype", "getcontentlength", "href"})+indices(properties);
 			    
 //!
 array(string) get_dav_properties(array fstat)

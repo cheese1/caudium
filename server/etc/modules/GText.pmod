@@ -5,7 +5,7 @@
 #define MAX(a,b) ((a)<(b)?(b):(a))
 
 #if !efun(make_matrix)
-static private mapping (int:array(array(int))) matrixes = ([]);
+protected private mapping (int:array(array(int))) matrixes = ([]);
 array (array(int)) make_matrix(int size)
 {
   if(matrixes[size]) return matrixes[size];
@@ -61,9 +61,9 @@ object  bevel(object  in, int width, int|void invert)
   int h=in->ysize();
   int w=in->xsize();
 
-  object corner = Image.image(width+1,width+1);
-  object corner2 = Image.image(width+1,width+1);
-  object pix = Image.image(1,1);
+  object corner = Image.Image(width+1,width+1);
+  object corner2 = Image.Image(width+1,width+1);
+  object pix = Image.Image(1,1);
 
   for(int i=-1; i<=width; i++) {
     corner->line(i,width-i,i,-1, @white);
@@ -73,17 +73,17 @@ object  bevel(object  in, int width, int|void invert)
 
   if(!invert)
   {
-    in->paste_alpha(Image.image(width,h-width*2,@white), 160, 0, width);
-    in->paste_alpha(Image.image(width,h-width*2,@black), 128, in->xsize()-width, width);
-    in->paste_alpha(Image.image(w-width,width,@white), 160, 0, 0);
-    in->paste_alpha(Image.image(w-width,width,@black), 128, width, in->ysize()-width);
+    in->paste_alpha(Image.Image(width,h-width*2,@white), 160, 0, width);
+    in->paste_alpha(Image.Image(width,h-width*2,@black), 128, in->xsize()-width, width);
+    in->paste_alpha(Image.Image(w-width,width,@white), 160, 0, 0);
+    in->paste_alpha(Image.Image(w-width,width,@black), 128, width, in->ysize()-width);
   } else  {
     corner=corner->invert();
     corner2=corner2->invert();
-    in->paste_alpha(Image.image(width,h-width*2,@black), 160, 0, width);
-    in->paste_alpha(Image.image(width,h-width*2,@white), 128, in->xsize()-width, width);
-    in->paste_alpha(Image.image(w-width,width,@black), 160, 0, 0);
-    in->paste_alpha(Image.image(w-width,width,@white), 128, width, in->ysize()-width);
+    in->paste_alpha(Image.Image(width,h-width*2,@black), 160, 0, width);
+    in->paste_alpha(Image.Image(width,h-width*2,@white), 128, in->xsize()-width, width);
+    in->paste_alpha(Image.Image(w-width,width,@black), 160, 0, 0);
+    in->paste_alpha(Image.Image(w-width,width,@white), 128, width, in->ysize()-width);
   }
 
   in->paste_mask(corner, corner->color(95,95,95), in->xsize()-width,-1);
@@ -118,7 +118,7 @@ object load_image(string f,string bd, object|void id)
   object file;
   object img
 #if !constant(Image.PNM)
-  =Image.image()
+  =Image.Image()
 #endif
     ;
 #if constant(roxen)  
@@ -151,7 +151,7 @@ object make_text_image(mapping args, object font, string text,string basedir,
   int xoffset=0, yoffset=0;
 
   if(!text_alpha->xsize() || !text_alpha->ysize())
-    text_alpha = Image.image(10,10, 0,0,0);
+    text_alpha = Image.Image(10,10, 0,0,0);
   
 //  perror("Making image of '%s', args=%O\n", text, args);
 
@@ -249,14 +249,14 @@ object make_text_image(mapping args, object font, string text,string basedir,
     foreground = load_image(args->texture,basedir,id);
     if(args->tile)
     {
-      object b2 = Image.image(xsize,ysize);
+      object b2 = Image.Image(xsize,ysize);
       for(int x=0; x<xsize; x+=foreground->xsize())
 	for(int y=0; y<ysize; y+=foreground->ysize())
 	  b2->paste(foreground, x, y);
       foreground = b2;
     } else if(args->mirrortile) {
-      object b2 = Image.image(xsize,ysize);
-      object b3 = Image.image(foreground->xsize()*2,foreground->ysize()*2);
+      object b2 = Image.Image(xsize,ysize);
+      object b3 = Image.Image(foreground->xsize()*2,foreground->ysize()*2);
       b3->paste(foreground,0,0);
       b3->paste(foreground->mirrorx(),foreground->xsize(),0);
       b3->paste(foreground->mirrory(),0,foreground->ysize());
@@ -284,14 +284,14 @@ object make_text_image(mapping args, object font, string text,string basedir,
 
     if(args->tile)
     {
-      object b2 = Image.image(xsize,ysize);
+      object b2 = Image.Image(xsize,ysize);
       for(int x=0; x<xsize; x+=background->xsize())
 	for(int y=0; y<ysize; y+=background->ysize())
 	  b2->paste(background, x, y);
       background = b2;
     } else if(args->mirrortile) {
-      object b2 = Image.image(xsize,ysize);
-      object b3 = Image.image(background->xsize()*2,background->ysize()*2);
+      object b2 = Image.Image(xsize,ysize);
+      object b3 = Image.Image(background->xsize()*2,background->ysize()*2);
       b3->paste(background,0,0);
       b3->paste(background->mirrorx(),background->xsize(),0);
       b3->paste(background->mirrory(),0,background->ysize());
@@ -310,7 +310,7 @@ object make_text_image(mapping args, object font, string text,string basedir,
       background = b2;
     }
   } else
-    background = Image.image(xsize, ysize, @bgcolor);
+    background = Image.Image(xsize, ysize, @bgcolor);
 
   if(args->border)
   {
@@ -383,7 +383,7 @@ object make_text_image(mapping args, object font, string text,string basedir,
     string bg;
     sscanf(args->textbox, "%d,%s", alpha, bg);
     sscanf(bg,"%s,%d", bg,border);
-    background->paste_alpha(Image.image(txsize+border*2,tysize+border*2,
+    background->paste_alpha(Image.Image(txsize+border*2,tysize+border*2,
 				  @Colors.parse_color(bg)),
 			    255-(alpha*255/100),xoffset-border,yoffset-border);
   }
@@ -423,7 +423,7 @@ object make_text_image(mapping args, object font, string text,string basedir,
     int xs,ys;
     xs = text_alpha->xsize()+sdist*2+4;
     ys = text_alpha->ysize()+sdist*2+4;
-    object ta = Image.image(xs+sdist*2,ys+sdist*2);
+    object ta = Image.Image(xs+sdist*2,ys+sdist*2);
     array sc = Colors.parse_color(args->scolor||"black");
 
     ta->paste_alpha_color(text_alpha,255,255,255,sdist,sdist);
@@ -449,7 +449,7 @@ object make_text_image(mapping args, object font, string text,string basedir,
       ->color(@fgcolor);
   
 
-  if(!foreground)  foreground=Image.image(txsize, tysize, @fgcolor);
+  if(!foreground)  foreground=Image.Image(txsize, tysize, @fgcolor);
   if(args->textscale)
   {
     string c1="black",c2="black",c3="black",c4="black";

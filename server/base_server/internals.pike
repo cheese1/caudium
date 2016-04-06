@@ -79,7 +79,7 @@
  *                    error://404
  */
 
-static multiset(string) known_methods = (<
+protected multiset(string) known_methods = (<
     "HTML", "IMAGE"
     >);
 
@@ -90,7 +90,7 @@ class InternalResolver
 //
 // maps a module type to its associated files path
 //
-    private static mapping(string:string) paths;
+    private protected mapping(string:string) paths;
 
     //! Process the passed URI, call the associated handler and return
     //! whatever it produced. Returns an empty mapping (NOT 0!!)

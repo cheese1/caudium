@@ -12,7 +12,7 @@
 #define _ROXEN_CONFIG_H_
 
 
-#if efun(thread_create)
+#if constant(Thread.thread_create)
 // Some OS's (eg Linux) can get severe problems (PANIC)
 // if threads are enabled.
 //

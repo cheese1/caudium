@@ -47,10 +47,10 @@
 //! @seealso
 //!  @[FileWatch.Threaded], @[FileWatch.Callout]
 class _base {
-  static int timeout;
-  static string file;
-  static function cb;
-  static Stdio.Stat last_stat;
+  protected int timeout;
+  protected string file;
+  protected function cb;
+  protected Stdio.Stat last_stat;
 
   void create(string _file, int _timeout, function _cb) {
     file    = _file;

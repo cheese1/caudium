@@ -1069,7 +1069,7 @@ mapping find_file(string f, object id)
   }
 }
 
-static string _cdir() {
+protected string _cdir() {
   return Stdio.append_path(caudium->QUERY(cachedir), "args", QUERY(cachedir)) + "/";
 }
 

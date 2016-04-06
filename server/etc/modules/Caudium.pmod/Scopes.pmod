@@ -190,7 +190,7 @@ int set_var(string variable, void|string scope, mixed value, object id)
 //!
 //! @note
 //!  non-RIS code
-static mixed cb_wrapper(object parser, string entity, object id, function cb,
+protected mixed cb_wrapper(object parser, string entity, object id, function cb,
                         mixed ... args) {
   string scope, name, encoding;
   array tmp = (parser->tag_name()) / ":";

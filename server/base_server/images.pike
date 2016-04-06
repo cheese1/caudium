@@ -30,7 +30,7 @@
 
 private mapping _decode( string data, mixed|void tocolor )
 {
-  Image.image i, a;
+  Image.Image i, a;
   string format;
   mapping opts;
   if(!data)

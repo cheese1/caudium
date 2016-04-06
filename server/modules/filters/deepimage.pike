@@ -28,12 +28,12 @@ constant module_doc  =
   "</pre>"
   "<br />"
   "There can be as many <pre>ReferrerAllow</pre> lines as you want. This "
-  "module only works on static images, and not server generated ones.";
+  "module only works on protected images, and not server generated ones.";
   
 constant module_unique = 1;
 constant thread_safe = 1;
 
-static mapping blocked;
+protected mapping blocked;
 
 object module_cache;
 

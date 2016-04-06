@@ -1346,7 +1346,7 @@ string number2string(int num ,mapping params, mixed names) {
 }
 
 // used for image_from_type()
-private static mapping(string:string) ift = ([
+private protected mapping(string:string) ift = ([
   "unknown" : "internal-gopher-unknown",
   "audio" : "internal-gopher-sound",
   "sound" : "internal-gopher-sound",

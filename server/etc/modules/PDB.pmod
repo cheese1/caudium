@@ -25,12 +25,12 @@
 class FileIO {
 
 #ifdef THREAD_SAFE
-  static inherit Thread.Mutex;
+  protected inherit Thread.Mutex;
 #endif
 
-  static int exceptions, sov;
+  protected int exceptions, sov;
 
-  static private object open(string f, string m)
+  protected private object open(string f, string m)
   {
     object o = Stdio.File();
     if(!o->open(f,m))
@@ -39,7 +39,7 @@ class FileIO {
   }
 
   //! 
-  static int safe_write(object o, string d, string ctx)
+  protected int safe_write(object o, string d, string ctx)
   {
     int warned_already=0;
     int n;
@@ -63,7 +63,7 @@ class FileIO {
   }
  
   ///
-  static int write_file(string f, mixed d)
+  protected int write_file(string f, mixed d)
   {
     d = encode_value(d);
     catch {
@@ -85,7 +85,7 @@ class FileIO {
   }
   
   //!
-  static mixed read_file(string f)
+  protected mixed read_file(string f)
   {
     object o = open(f,"r");
     string d = o->read();
@@ -104,21 +104,21 @@ class FileIO {
 class Bucket
 {
   inherit FileIO;
-  static object file=Stdio.File();
-  static array free_blocks = ({});
-  static string rf;
-  static int last_block, dirty;
-  static function db_log;
+  protected object file=Stdio.File();
+  protected array free_blocks = ({});
+  protected string rf;
+  protected int last_block, dirty;
+  protected function db_log;
   int size;
 
   //!
-  static int log(int subtype, mixed arg)
+  protected int log(int subtype, mixed arg)
   {
     return db_log('B', subtype, size, arg);
   }
 
   //!
-  static int write_at(int offset, string to)
+  protected int write_at(int offset, string to)
   {
     if(file->seek(offset*size) < 0)
       PDB_ERR("write_at: seek failed");
@@ -130,7 +130,7 @@ class Bucket
   }
   
   //!
-  static string read_at(int offset)
+  protected string read_at(int offset)
   {
     if(file->seek(offset*size) == -1)
       PDB_ERR("Failed to seek.");
@@ -146,7 +146,7 @@ class Bucket
   }
   
   //!
-  static void save_free_blocks()
+  protected void save_free_blocks()
   {
     if(write_file(rf+".free", ({last_block, free_blocks})))
       dirty = 0;
@@ -269,15 +269,15 @@ class Bucket
 class Table
 {
   inherit FileIO;
-  static mapping index = ([ ]);
-  static int compress, write;
-  static string dir, name;
-  static function get_bucket;
-  static int dirty;
-  static function db_log;
+  protected mapping index = ([ ]);
+  protected int compress, write;
+  protected string dir, name;
+  protected function get_bucket;
+  protected int dirty;
+  protected function db_log;
 
   //!
-  static int log(int subtype, mixed ... arg)
+  protected int log(int subtype, mixed ... arg)
   {
     return db_log('T', subtype, name, @arg);
   }
@@ -479,17 +479,17 @@ class db
 {
   inherit FileIO;
 #ifdef THREAD_SAFE
-  static inherit Thread.Mutex;
+  protected inherit Thread.Mutex;
 #endif
 
-  static int write, compress;
-  static string dir;
-  static mapping (int:object(Bucket)) buckets = ([]);
-  static mapping (string:object(Table)) tables = ([]);
-  static object(Stdio.File) logfile;
+  protected int write, compress;
+  protected string dir;
+  protected mapping (int:object(Bucket)) buckets = ([]);
+  protected mapping (string:object(Table)) tables = ([]);
+  protected object(Stdio.File) logfile;
 
   //!
-  static int log(int major, int minor, mixed ... args)
+  protected int log(int major, int minor, mixed ... args)
   {
     LOCK();
     if(logfile) {
@@ -508,7 +508,7 @@ class db
   }
 
   //!
-  static object(Bucket) get_bucket(int s)
+  protected object(Bucket) get_bucket(int s)
   {
     object bucket;
     LOCK();
@@ -554,7 +554,7 @@ class db
   }
 
   //!
-  static void rotate_logs()
+  protected void rotate_logs()
   {
     mv(dir+"log.1", dir+"log.2");
     logfile->open(dir+"log.1", "cwta");
@@ -588,7 +588,7 @@ class db
 
   // Remove maximum one level of directories and files
   //!
-  static void level2_rm(string f)
+  protected void level2_rm(string f)
   {
     if(sizeof(f) > 1 && f[-1] == '/')
       f = f[0..sizeof(f)-2];  // remove /'s
@@ -615,7 +615,7 @@ class db
   }
 
   //!
-  static void restore_logs()
+  protected void restore_logs()
   {
     string log = "\n"+(Stdio.read_file(dir+"log.2")||"")+
       (Stdio.read_file(dir+"log.1")||"")+"\n";

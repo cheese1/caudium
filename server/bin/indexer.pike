@@ -28,7 +28,7 @@ import Parser.XML.Tree;
 
 #if constant(Java)
 
-static constant jvm = Java.machine;
+protected constant jvm = Java.machine;
 
 int start;
 int files;

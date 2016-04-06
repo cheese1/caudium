@@ -30,7 +30,7 @@ string cvs_version = "$Id$";
 
 #if constant(Java)
 
-static constant jvm = Java.machine;
+protected constant jvm = Java.machine;
 
 string profile_path;
 int verbose;

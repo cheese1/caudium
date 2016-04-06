@@ -273,7 +273,7 @@ private class SettableWrapper
     return 0;
   }
   
-  static string _sprintf(int f)
+  protected string _sprintf(int f)
   {
     switch(f) {
         case 't':
@@ -559,7 +559,7 @@ private array(string) get_plugin_names()
   return ret;
 }
 
-static private array(string) __required_plugin_funcs = ({
+protected private array(string) __required_plugin_funcs = ({
   "setup", "store", "retrieve", "delete_variable", "expire_old", "get_region",
   "get_all_regions", "session_exists", "get_sessions_area", "is_touched",
   "expire_idle", "get_counters", "set_expire_time", "set_expire_hook"

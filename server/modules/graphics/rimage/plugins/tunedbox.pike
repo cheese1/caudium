@@ -27,7 +27,7 @@ void render( mapping args, mapping this, string channel, object id, object m)
   int xp = (int)args->xpos;
   int yp = (int)args->ypos;
   
-  if(!this[channel]) this[channel] = Image.image( xs+xp, ys+yp );
+  if(!this[channel]) this[channel] = Image.Image( xs+xp, ys+yp );
   this[channel]->tuned_box( xp,yp,xp+xs-1,yp+ys-1,
 			   Array.map((args->corners||"black,white,black,white")/",", Colors.parse_color));
 }

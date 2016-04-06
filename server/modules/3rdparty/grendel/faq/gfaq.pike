@@ -45,7 +45,7 @@ constant module_name = "gFAQ module";
 constant module_doc  = "Module implementing a FAQ filesystem.";
 constant module_unique = 0;
 
-static private string css_uri;
+protected private string css_uri;
 
 #define FAQPAGE_MAGIC 0xDEADBEEF
 #define FAQEDIT_MAGIC 0xFEEDBEEF
@@ -326,7 +326,7 @@ mixed find_file(string f, object id)
 }
 
 // This is our default CSS
-static mapping default_css_desc = ([
+protected mapping default_css_desc = ([
   "body" : ([
     "background-color" : "#EEEEEE",
     "font-family" : "Helvetica, Arial, sans-serif",
@@ -392,9 +392,9 @@ static mapping default_css_desc = ([
   ]),
 ]);
 
-static string default_css = "";
+protected string default_css = "";
 
-private static mixed send_faq_css(object id)
+private protected mixed send_faq_css(object id)
 {
 
   if (default_css != "")
@@ -413,12 +413,12 @@ private static mixed send_faq_css(object id)
 }
 
 // variables we copy from the form to the local storage
-private static multiset form_variables = (<
+private protected multiset form_variables = (<
   "text", "number", "full_number", "section",
   "users", "groups", "see_also", "entry_path"
 >);
 
-private static mixed save_edit_data(object id)
+private protected mixed save_edit_data(object id)
 {
   string ret = "<pre>";
 
@@ -471,7 +471,7 @@ private static mixed save_edit_data(object id)
   return Caudium.HTTP.string_answer(ret);
 }
 
-private static array(mapping) get_entries(object id, mapping options, string|void path)
+private protected array(mapping) get_entries(object id, mapping options, string|void path)
 {
   object  storage = id->conf->get_provider(QUERY(prov_storage));
   
@@ -548,7 +548,7 @@ array(string) cont_faqpage(string tag, mapping args, string contents,
   return ({ ret });
 }
 
-static private int find_matching_entry(mixed entry, string path)
+protected private int find_matching_entry(mixed entry, string path)
 {
   if (!mappingp(entry))
     return 0;
@@ -723,7 +723,7 @@ array(string) cont_faqeditarray(string tag, mapping args, string contents,
   return ({ do_output_tag(args, outvars, contents, id) });
 }
 
-static private mapping faqedit_vars = ([
+protected private mapping faqedit_vars = ([
   "faqeditaction" : "",
   "faqannotated" : "",
   "faqeditnumber" : "",

@@ -116,8 +116,8 @@ class FileCounter {
     }
   }
 
-  static string olf; // Used to avoid reparsing of the accessed index file...
-  static mixed names_file_callout_id;
+  protected string olf; // Used to avoid reparsing of the accessed index file...
+  protected mixed names_file_callout_id;
   inline void open_names_file()
   {
     if(objectp(names_file)) return;
@@ -130,7 +130,7 @@ class FileCounter {
   object db_lock = Thread.Mutex();
 #endif /* THREADS */
 
-  static void close_db_file(object db)
+  protected void close_db_file(object db)
   {
 #ifdef THREADS
     mixed key = db_lock->lock();
@@ -140,7 +140,7 @@ class FileCounter {
     }
   }
 
-  static mixed db_file_callout_id;
+  protected mixed db_file_callout_id;
   inline mixed open_db_file()
   {
     mixed key;
@@ -164,7 +164,7 @@ class FileCounter {
     return key;
   }
 
-  static int mdc;
+  protected int mdc;
   int main_database_created() {
     if(!mdc) {
       mixed key = open_db_file();

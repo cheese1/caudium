@@ -166,7 +166,7 @@ string describe_dir_entry(string path, string filename, array stat)
 		 Caudium.sizetostring(len), type);
 }
 
-static private string key;
+protected private string key;
 
 void start()
 {

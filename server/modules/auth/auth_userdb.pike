@@ -67,8 +67,8 @@ mapping users, uid2user;
 mapping usergroups;
 Stdio.Stat fstat;
 
-private static int last_password_read = 0;
-private static int last_group_read = 0;
+private protected int last_password_read = 0;
+private protected int last_group_read = 0;
 
 void report_io_error (string f, mixed... args)
 {
@@ -184,10 +184,10 @@ void try_find_group(string|int g)
 }
 
 #if constant(System.getpwent)
-private static array foo_users;
-private static int foo_upos;
-private static array foo_groups;
-private static int foo_gpos;
+private protected array foo_users;
+private protected int foo_upos;
+private protected array foo_groups;
+private protected int foo_gpos;
 
 void slow_user_update()
 {

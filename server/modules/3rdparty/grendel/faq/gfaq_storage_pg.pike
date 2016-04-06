@@ -47,7 +47,7 @@ constant module_unique = 0;
 #if constant(thread_create)
 constant thread_safe = 1;
 
-private static object db_lock;
+private protected object db_lock;
 #define LOCK() do { object key; if (db_lock) db_lock = Thread.Mutex(); catch(key = db_lock->lock())
 #define UNLOCK() key = 0; } while(0)
 #else
@@ -56,7 +56,7 @@ constant thread_safe = 0;
 #define UNLOCK()
 #endif
 
-static private object   db = 0;
+protected private object   db = 0;
 
 void create()
 {

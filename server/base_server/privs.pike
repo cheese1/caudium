@@ -49,22 +49,22 @@ int new_gid;
 #define HAVE_EFFECTIVE_USER
 #endif
 
-static private string _getcwd()
+protected private string _getcwd()
 {
   if (catch{return(getcwd());}) {
     return("Unknown directory (no x-bit on current directory?)");
   }
 }
 
-static private string dbt(array t)
+protected private string dbt(array t)
 {
   if(!arrayp(t) || (sizeof(t)<2)) return "";
   return (((t[0]||"Unknown program")-(_getcwd()+"/"))-"base_server/")+":"+t[1]+"\n";
 }
 
 #ifdef THREADS
-static mixed mutex_key;	// Only one thread may modify the euid/egid at a time.
-static object threads_disabled;
+protected mixed mutex_key;	// Only one thread may modify the euid/egid at a time.
+protected object threads_disabled;
 #endif /* THREADS */
 
 int p_level;

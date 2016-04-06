@@ -47,10 +47,10 @@ constant storage_default = "+storage.gdbm";
 #define DB db
 
 //!
-static object db;
+protected object db;
 
 //!
-static string path;
+protected string path;
 
 //!
 void create(string _path) {
@@ -112,7 +112,7 @@ void unlink_regexp(string namespace, string regexp) {
 }
 
 //!
-static string encode(string namespace, string key, string value) {
+protected string encode(string namespace, string key, string value) {
   if (!namespace || !key || !value)
     return "";
 
@@ -121,7 +121,7 @@ static string encode(string namespace, string key, string value) {
 }
 
 //!
-static mixed decode(string data) {
+protected mixed decode(string data) {
   program p;
   if (catch(p = compile_string(MIME.decode_base64(data))))
     return 0;
@@ -129,7 +129,7 @@ static mixed decode(string data) {
 }
 
 //!
-static string get_hash( string data ) {
+protected string get_hash( string data ) {
   string retval;
   retval = Caudium.Crypto.hash_md5(data);
   return sprintf("%@02x",(array(int)) retval);

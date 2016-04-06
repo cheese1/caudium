@@ -579,7 +579,7 @@ mapping find_internal(string f, object id)
     return button_cache->http_file_answer(f, id);
 }
 
-static array mk_url(object id, mapping args, string contents)
+protected array mk_url(object id, mapping args, string contents)
 {
     string fi = args["frame-image"] || 
 		( id->misc->defines && id->misc->defines["gbutton-frame-image"] 

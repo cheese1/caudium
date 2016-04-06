@@ -321,7 +321,7 @@ class HeaderModifier {
 }
 
 array patterns;
-#define CHECK_VALUE() if(!value || !strlen(error)) { report_error("Redirect modifier %s requires a value.\n", modifier); break; }
+#define CHECK_VALUE() if(!value || !strlen(value)) { report_error("Redirect modifier %s requires a value.\n", modifier); break; }
 void start()
 {
   array a;

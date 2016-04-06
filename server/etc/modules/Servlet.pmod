@@ -27,77 +27,77 @@
 
 #if constant(Java.machine)
 
-static constant jvm = Java.machine;
+protected constant jvm = Java.machine;
 
 #define FINDCLASS(X) (jvm.find_class(X)||(jvm.exception_describe(),jvm.exception_clear(),error("Failed to load class " X ".\n"),0))
 
-static object servlet_ifc = FINDCLASS("javax/servlet/Servlet");
-static object singlethread_ifc = FINDCLASS("javax/servlet/SingleThreadModel");
-static object class_class = FINDCLASS("java/lang/Class");
-static object classloader_class = FINDCLASS("java/lang/ClassLoader");
-static object classloader2_class = FINDCLASS("java/net/URLClassLoader");
-static object config_class = FINDCLASS("net/caudium/servlet/ServletConfig");
-static object context_class = FINDCLASS("net/caudium/servlet/CaudiumServletContext");
-static object request_class = FINDCLASS("net/caudium/servlet/ServletRequest");
-static object response_class = FINDCLASS("net/caudium/servlet/ServletResponse");
-static object stream_class = FINDCLASS("net/caudium/servlet/HTTPOutputStream");
-static object session_context_class = FINDCLASS("net/caudium/servlet/CaudiumSessionContext");
-static object dictionary_class = FINDCLASS("java/util/Dictionary");
-static object hashtable_class = FINDCLASS("java/util/Hashtable");
-static object throwable_class = FINDCLASS("java/lang/Throwable");
-static object unavailable_class = FINDCLASS("javax/servlet/UnavailableException");
-static object servlet_exc_class = FINDCLASS("javax/servlet/ServletException");
-static object stringwriter_class = FINDCLASS("java/io/StringWriter");
-static object printwriter_class = FINDCLASS("java/io/PrintWriter");
-static object vector_class = FINDCLASS("java/util/Vector");
-static object file_class = FINDCLASS("java/io/File");
-static object url_class = FINDCLASS("java/net/URL");
-static object string_class = FINDCLASS("java/lang/String");
-static object jarutil_class = FINDCLASS("net/caudium/caudium/JarUtil");
+protected object servlet_ifc = FINDCLASS("javax/servlet/Servlet");
+protected object singlethread_ifc = FINDCLASS("javax/servlet/SingleThreadModel");
+protected object class_class = FINDCLASS("java/lang/Class");
+protected object classloader_class = FINDCLASS("java/lang/ClassLoader");
+protected object classloader2_class = FINDCLASS("java/net/URLClassLoader");
+protected object config_class = FINDCLASS("net/caudium/servlet/ServletConfig");
+protected object context_class = FINDCLASS("net/caudium/servlet/CaudiumServletContext");
+protected object request_class = FINDCLASS("net/caudium/servlet/ServletRequest");
+protected object response_class = FINDCLASS("net/caudium/servlet/ServletResponse");
+protected object stream_class = FINDCLASS("net/caudium/servlet/HTTPOutputStream");
+protected object session_context_class = FINDCLASS("net/caudium/servlet/CaudiumSessionContext");
+protected object dictionary_class = FINDCLASS("java/util/Dictionary");
+protected object hashtable_class = FINDCLASS("java/util/Hashtable");
+protected object throwable_class = FINDCLASS("java/lang/Throwable");
+protected object unavailable_class = FINDCLASS("javax/servlet/UnavailableException");
+protected object servlet_exc_class = FINDCLASS("javax/servlet/ServletException");
+protected object stringwriter_class = FINDCLASS("java/io/StringWriter");
+protected object printwriter_class = FINDCLASS("java/io/PrintWriter");
+protected object vector_class = FINDCLASS("java/util/Vector");
+protected object file_class = FINDCLASS("java/io/File");
+protected object url_class = FINDCLASS("java/net/URL");
+protected object string_class = FINDCLASS("java/lang/String");
+protected object jarutil_class = FINDCLASS("net/caudium/caudium/JarUtil");
 
-static object new_instance = class_class->get_method("newInstance", "()Ljava/lang/Object;");
-static object file_init = file_class->get_method("<init>", "(Ljava/lang/String;)V");
-static object file_tourl = file_class->get_method("toURL", "()Ljava/net/URL;");
-static object load_class = classloader_class->get_method("loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-static object cl_init = classloader2_class->get_method("<init>", "([Ljava/net/URL;)V");
-static object servlet_init = servlet_ifc->get_method("init", "(Ljavax/servlet/ServletConfig;)V");
-static object servlet_destroy = servlet_ifc->get_method("destroy", "()V");
-static object servlet_getservletinfo = servlet_ifc->get_method("getServletInfo", "()Ljava/lang/String;");
-static object servlet_service = servlet_ifc->get_method("service", "(Ljavax/servlet/ServletRequest;Ljavax/servlet/ServletResponse;)V");
-static object cfg_init = config_class->get_method("<init>", "(Ljavax/servlet/ServletContext;Ljava/lang/String;)V");
-static object context_init = context_class->get_method("<init>", "(ILjava/lang/String;)V");
-static object context_id_field = context_class->get_field("id", "I");
-static object context_initpars_field = context_class->get_field("initparameters", "Ljava/util/Hashtable;");
-static object context_set_attribute = context_class->get_method("setAttribute", "(Ljava/lang/String;Ljava/lang/Object;)V");
-static object request_init = request_class->get_method("<init>", "(Lnet/caudium/servlet/CaudiumServletContext;Lnet/caudium/servlet/CaudiumSessionContext;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
-static object response_init = response_class->get_method("<init>", "(Lnet/caudium/servlet/HTTPOutputStream;)V");
-static object dic_field = config_class->get_field("dic", "Ljava/util/Dictionary;");
-static object params_field = request_class->get_field("parameters", "Ljava/util/Dictionary;");
-static object attrs_field = request_class->get_field("attributes", "Ljava/util/Dictionary;");
-static object headers_field = request_class->get_field("headers", "Ljava/util/Dictionary;");
-static object set_response_method = request_class->get_method("setResponse", "(Lnet/caudium/servlet/ServletResponse;)V");
-static object dic_put = dictionary_class->get_method("put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-static object hash_clear = hashtable_class->get_method("clear", "()V");
-static object stream_id_field = stream_class->get_field("id", "I");
-static object stream_init = stream_class->get_method("<init>", "(I)V");
-static object throwable_printstacktrace = throwable_class->get_method("printStackTrace", "(Ljava/io/PrintWriter;)V");
-static object throwable_getmessage = throwable_class->get_method("getMessage", "()Ljava/lang/String;");
-static object unavailable_ispermanent = unavailable_class->get_method("isPermanent", "()Z");
-static object unavailable_getunavailableseconds = unavailable_class->get_method("getUnavailableSeconds", "()I");
-static object servlet_exc_getrootcause = servlet_exc_class->get_method("getRootCause", "()Ljava/lang/Throwable;");
-static object stringwriter_init = stringwriter_class->get_method("<init>", "()V");
-static object printwriter_init = printwriter_class->get_method("<init>", "(Ljava/io/Writer;)V");
-static object printwriter_flush = printwriter_class->get_method("flush", "()V");
-static object wrapup_method = response_class->get_method("wrapUp", "()V");
-static object session_context_init = session_context_class->get_method("<init>", "()V");
-static object vector_init = vector_class->get_method("<init>", "()V");
-static object vector_add = vector_class->get_method("add", "(Ljava/lang/Object;)Z");
-static object jarutil_expand = jarutil_class->get_static_method("expand", "(Ljava/lang/String;Ljava/lang/String;)V");
+protected object new_instance = class_class->get_method("newInstance", "()Ljava/lang/Object;");
+protected object file_init = file_class->get_method("<init>", "(Ljava/lang/String;)V");
+protected object file_tourl = file_class->get_method("toURL", "()Ljava/net/URL;");
+protected object load_class = classloader_class->get_method("loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+protected object cl_init = classloader2_class->get_method("<init>", "([Ljava/net/URL;)V");
+protected object servlet_init = servlet_ifc->get_method("init", "(Ljavax/servlet/ServletConfig;)V");
+protected object servlet_destroy = servlet_ifc->get_method("destroy", "()V");
+protected object servlet_getservletinfo = servlet_ifc->get_method("getServletInfo", "()Ljava/lang/String;");
+protected object servlet_service = servlet_ifc->get_method("service", "(Ljavax/servlet/ServletRequest;Ljavax/servlet/ServletResponse;)V");
+protected object cfg_init = config_class->get_method("<init>", "(Ljavax/servlet/ServletContext;Ljava/lang/String;)V");
+protected object context_init = context_class->get_method("<init>", "(ILjava/lang/String;)V");
+protected object context_id_field = context_class->get_field("id", "I");
+protected object context_initpars_field = context_class->get_field("initparameters", "Ljava/util/Hashtable;");
+protected object context_set_attribute = context_class->get_method("setAttribute", "(Ljava/lang/String;Ljava/lang/Object;)V");
+protected object request_init = request_class->get_method("<init>", "(Lnet/caudium/servlet/CaudiumServletContext;Lnet/caudium/servlet/CaudiumSessionContext;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+protected object response_init = response_class->get_method("<init>", "(Lnet/caudium/servlet/HTTPOutputStream;)V");
+protected object dic_field = config_class->get_field("dic", "Ljava/util/Dictionary;");
+protected object params_field = request_class->get_field("parameters", "Ljava/util/Dictionary;");
+protected object attrs_field = request_class->get_field("attributes", "Ljava/util/Dictionary;");
+protected object headers_field = request_class->get_field("headers", "Ljava/util/Dictionary;");
+protected object set_response_method = request_class->get_method("setResponse", "(Lnet/caudium/servlet/ServletResponse;)V");
+protected object dic_put = dictionary_class->get_method("put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+protected object hash_clear = hashtable_class->get_method("clear", "()V");
+protected object stream_id_field = stream_class->get_field("id", "I");
+protected object stream_init = stream_class->get_method("<init>", "(I)V");
+protected object throwable_printstacktrace = throwable_class->get_method("printStackTrace", "(Ljava/io/PrintWriter;)V");
+protected object throwable_getmessage = throwable_class->get_method("getMessage", "()Ljava/lang/String;");
+protected object unavailable_ispermanent = unavailable_class->get_method("isPermanent", "()Z");
+protected object unavailable_getunavailableseconds = unavailable_class->get_method("getUnavailableSeconds", "()I");
+protected object servlet_exc_getrootcause = servlet_exc_class->get_method("getRootCause", "()Ljava/lang/Throwable;");
+protected object stringwriter_init = stringwriter_class->get_method("<init>", "()V");
+protected object printwriter_init = printwriter_class->get_method("<init>", "(Ljava/io/Writer;)V");
+protected object printwriter_flush = printwriter_class->get_method("flush", "()V");
+protected object wrapup_method = response_class->get_method("wrapUp", "()V");
+protected object session_context_init = session_context_class->get_method("<init>", "()V");
+protected object vector_init = vector_class->get_method("<init>", "()V");
+protected object vector_add = vector_class->get_method("add", "(Ljava/lang/Object;)Z");
+protected object jarutil_expand = jarutil_class->get_static_method("expand", "(Ljava/lang/String;Ljava/lang/String;)V");
 
 
-static object natives_bind1, natives_bind2, natives_bind3;
+protected object natives_bind1, natives_bind2, natives_bind3;
 
-static void check_exception()
+protected void check_exception()
 {
   object e = jvm.exception_occurred();
   if(e) {
@@ -124,7 +124,7 @@ static void check_exception()
   }
 }
 
-static void check_unavailable_exception()
+protected void check_unavailable_exception()
 {
   object e = jvm.exception_occurred();
   if(e) {
@@ -161,12 +161,12 @@ class jarutil {
 //!
 class servlet {
 
-  static object s, d;
-  static object context;
-  static string classname;
+  protected object s, d;
+  protected object context;
+  protected string classname;
   int singlethreaded = 0;
 #if constant(thread_create)
-  static object lock;
+  protected object lock;
 #endif
 
   //!
@@ -250,7 +250,7 @@ class servlet {
 //!
 class loader {
 
-  static object cl;
+  protected object cl;
 
   //!
   object low_load(string name)
@@ -314,11 +314,11 @@ class config {
 
 };
 
-static int context_id = 1;
-static mapping(int:object) contexts = ([]);
-static mapping(object:object) context_for_conf = ([]);
+protected int context_id = 1;
+protected mapping(int:object) contexts = ([]);
+protected mapping(object:object) context_for_conf = ([]);
 
-static object ctx_object(object ctx)
+protected object ctx_object(object ctx)
 {
   return contexts[context_id_field->get(ctx)];
 }
@@ -329,8 +329,8 @@ class context {
 
   object ctx, sctx, conf;
   object parent_module;
-  static int id;
-  static string dir;
+  protected int id;
+  protected string dir;
 
   //!
   string gettempdir()
@@ -559,7 +559,7 @@ object request(object context, mapping(string:array(string))|object id,
   return r;
 }
 
-static int stream_id = 0;
+protected int stream_id = 0;
 mapping(int:object) streams = ([]);
 
 //!
@@ -582,7 +582,7 @@ object response(object file)
 }
 
 //!
-static void native_log(object ctx, object msg)
+protected void native_log(object ctx, object msg)
 {
   if (ctx_object(ctx))
     ctx_object(ctx)->log((string)msg);
@@ -591,38 +591,38 @@ static void native_log(object ctx, object msg)
 }
 
 //!
-static string native_getRealPath(object ctx, object path)
+protected string native_getRealPath(object ctx, object path)
 {
   return ctx_object(ctx)->get_real_path((string)path);
 }
 
 //!
-static string native_getMimeType(object ctx, object file)
+protected string native_getMimeType(object ctx, object file)
 {
   return ctx_object(ctx)->get_mime_type((string)file);
 }
 
 //!
-static string native_getServerInfo(object ctx)
+protected string native_getServerInfo(object ctx)
 {
   return ctx_object(ctx)->get_server_info();
 }
 
 //!
-static object native_getRequestDispatcher(object ctx, object path1, object path2)
+protected object native_getRequestDispatcher(object ctx, object path1, object path2)
 {
   return ctx_object(ctx)->get_request_dispatcher(combine_path((string)path1,
 							      (string)path2));
 }
 
 //!
-static string native_getResourceURL(object ctx, object path)
+protected string native_getResourceURL(object ctx, object path)
 {
   return ctx_object(ctx)->get_resource((string)path);
 }
 
 //!
-static void native_forgetfd(object str)
+protected void native_forgetfd(object str)
 {
   int id = stream_id_field->get(str);
   object f = streams[id];
@@ -632,7 +632,7 @@ static void native_forgetfd(object str)
 }
 
 //!
-static void native_close(object str)
+protected void native_close(object str)
 {
   int id = stream_id_field->get(str);
   object f = streams[id];
@@ -643,7 +643,7 @@ static void native_close(object str)
 }
 
 //!
-static void native_writeba(object str, object b, int off, int len)
+protected void native_writeba(object str, object b, int off, int len)
 {
   object f = streams[stream_id_field->get(str)];
   if(f)
@@ -651,7 +651,7 @@ static void native_writeba(object str, object b, int off, int len)
 }
 
 //!
-static string native_blockingIPToHost(object n)
+protected string native_blockingIPToHost(object n)
 {
   return caudium->blocking_ip_to_host((string)n);
 }

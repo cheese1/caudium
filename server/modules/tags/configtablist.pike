@@ -213,7 +213,7 @@ mapping find_file(string f, object id)
   array(string) arr = f/"/";
   if (sizeof(arr) > 1) {
     object interface = load_interface();
-    object(Image.image) button;
+    object(Image.Image) button;
 
     if (arr[-1][sizeof(arr[-1])-4..] == ".gif") {
       arr[-1] = arr[-1][..sizeof(arr[-1])-5];

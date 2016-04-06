@@ -120,11 +120,11 @@ void create()
          "Normally this will only waste bandwidth");
 }
 
-static private mapping cached_args = ([ ]);
+protected private mapping cached_args = ([ ]);
 
 #define MAX(a,b) ((a)<(b)?(b):(a))
 
-static private mapping (int:array(array(int))) matrixes = ([]);
+protected private mapping (int:array(array(int))) matrixes = ([]);
 array (array(int)) make_matrix(int size)
 {
   if(matrixes[size]) return matrixes[size];

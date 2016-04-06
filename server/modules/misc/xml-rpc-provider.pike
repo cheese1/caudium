@@ -30,7 +30,7 @@ constant cvs_version="$Id$";
 inherit "module";
 inherit "caudiumlib";
 
-static private string doc()
+protected private string doc()
 {
     return "This is a demo module for the XML-RPC protocol.\n";
 }

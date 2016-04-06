@@ -116,7 +116,7 @@ string reporterr (string header, string prg, string dump)
 // buffer as a string.  A flush() is done automatically if the
 // "script" does not return any data, thus, another way to write the
 // hello world script is <pike>output("Hello %s\n", "World");</pike>
-inline private nomask string functions()
+inline private final string functions()
 {
   return 
     "inherit \"caudiumlib\";\n"
@@ -143,7 +143,7 @@ inline private nomask string functions()
 }
 
 // Preamble
-private nomask inline string pre(string what)
+private final inline string pre(string what)
 {
   if(search(what, "parse(") != -1)
     return functions();
@@ -156,7 +156,7 @@ private nomask inline string pre(string what)
 }
 
 // Will be added at the end...
-private nomask inline string post(string what) 
+private final inline string post(string what) 
 {
   if(search(what, "parse(") != -1)
     return "";
@@ -166,7 +166,7 @@ private nomask inline string post(string what)
     return "}";
 }
 
-private static mapping(string:program) program_cache = ([]);
+private protected mapping(string:program) program_cache = ([]);
 
 // Compile and run the contents of the tag (in s) as a pike
 // program. 

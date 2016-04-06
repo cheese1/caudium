@@ -42,15 +42,15 @@ constant module_unique = 1;
 
 constant unit_gif = "/(internal,image)/unit";
 
-static private int loaded;
+protected private int loaded;
 
-static private string doc()
+protected private string doc()
 {
   return !loaded?"":replace(Stdio.read_bytes("modules/tags/doc/obox")||"",
 			    ({ "{", "}" }), ({ "&lt;", "&gt;" }));
 }
 
-static string img_placeholder (mapping args)
+protected string img_placeholder (mapping args)
 {
   int width=((int)args->outlinewidth)||1;
 
@@ -58,14 +58,14 @@ static string img_placeholder (mapping args)
 		 unit_gif, width, width);
 }
 
-static string handle_title(string name, mapping junk_args,
+protected string handle_title(string name, mapping junk_args,
 			   string contents, mapping args)
 {
   args->title=contents;
   return "";
 }
 
-static string horiz_line(mapping args)
+protected string horiz_line(mapping args)
 {
   args->fixedleft="";
   return sprintf("<tr><td colspan=5 bgcolor=\"%s\">\n"
@@ -74,7 +74,7 @@ static string horiz_line(mapping args)
 		 img_placeholder(args));
 }
 
-static string title(mapping args)
+protected string title(mapping args)
 {
   if (!args->title)
     return horiz_line(args);

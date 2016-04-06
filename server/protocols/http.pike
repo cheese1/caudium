@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -246,9 +246,9 @@ void handle_body_encoding(int content_length)
   }
 }
 
-private static mixed f, line;
-static int last_search;
-static int parse_got()
+private protected mixed f, line;
+protected int last_search;
+protected int parse_got()
 {
   array mod_config;
   string a, linename, contents, s;
@@ -816,7 +816,7 @@ void end(string|void s, int|void keepit)
   disconnect();  
 }
 
-static void do_timeout()
+protected void do_timeout()
 {
   // werror("do_timeout() called, time="+time+"; time()="+_time()+"\n");
   int elapsed = _time()-time;
@@ -829,13 +829,13 @@ static void do_timeout()
     // per deafult any century now..
     end("");
   } else {
-    // premature call_out... *¤#!"
+    // premature call_out... *ï¿½#!"
     call_out(do_timeout, 10);
     MARK_FD("HTTP premature timeout");
   }
 }
 
-static string last_id, last_from;
+protected string last_id, last_from;
 string get_id(string from)
 {
   if(last_from == from) return last_id;
@@ -1064,7 +1064,7 @@ void do_log()
   return;
 }
 
-static void pipe_timeout() {
+protected void pipe_timeout() {
 #if defined(FD_DEBUG) || defined(DEBUG)
   werror("Sending of data (piping) timed out.\n");
 #endif
@@ -1072,7 +1072,7 @@ static void pipe_timeout() {
 }
 
 
-static void timer(int start, int|void last_sent, int|void called_out)
+protected void timer(int start, int|void last_sent, int|void called_out)
 {
   if(pipe) {
 #ifdef USE_SHUFFLER
@@ -1319,7 +1319,7 @@ array parse_range_header(int len)
   return ranges;
 }
 
-static string make_content_type(object conf, mapping file)
+protected string make_content_type(object conf, mapping file)
 {
   string     type, charset = 0;
 

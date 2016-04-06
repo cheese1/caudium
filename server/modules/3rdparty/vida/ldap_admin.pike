@@ -1005,7 +1005,7 @@ void modifyinldap(object con, mapping defines, string basedn)
 void rchown(string dir, int uid, int gid)
 {
   string filename;
-  array type;
+  object type;
   array filenames = get_dir(dir);
   if(filenames == 0)
     throw (({ "Your directory" + dir + " doesn't exist" }));
@@ -1013,7 +1013,7 @@ void rchown(string dir, int uid, int gid)
   foreach(filenames, filename)
   {
     type = file_stat(dir + filename);
-    if(type != 0)
+    if(type)
     { 
       if(type[1] == -2)
         rchown(dir + filename, uid, gid);
@@ -1027,7 +1027,7 @@ void rchown(string dir, int uid, int gid)
 void updatevar(object con, mapping defines, string basedn)
 {
   // defines is a mapping of array
-  array(int) dirstat;
+  object dirstat;
   string newgid = (string) QUERY(currentgidnumber);
   array oldgid = defines["gidNumber"];
   //In the case there are both upper and lower case, pay attention to use the good one or this will cause a _lot_ of trouble

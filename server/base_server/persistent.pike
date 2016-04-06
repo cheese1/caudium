@@ -28,9 +28,9 @@
 //something is changed.
 #undef SAVE_IO
 
-static void _nosave(){}
-static function nosave = _nosave;
-private static array __id;
+protected void _nosave(){}
+protected function nosave = _nosave;
+private protected array __id;
 
 //!
 void really_save()
@@ -60,7 +60,7 @@ void really_save()
 /* Public methods! */
 
 //!
-static int ___destructed = 0;
+protected int ___destructed = 0;
 
 //!
 public void begone()
@@ -80,7 +80,7 @@ void destroy()
 }
 
 //!
-static void compat_persist()
+protected void compat_persist()
 {
   string _id;
   _id=(__id[0]+".class/"+__id[1]);

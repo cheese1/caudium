@@ -58,7 +58,7 @@ void create()
 	     );
 }
 
-static private string doc()
+protected private string doc()
 {
   return "currently two types of templates are supported:<br>\n"
          "<dl>"

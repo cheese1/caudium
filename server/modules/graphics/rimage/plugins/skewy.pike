@@ -35,7 +35,7 @@ void render(mapping args, mapping this, string channel, object id, object m)
     return;
 
   if(!this->mask)
-    this->mask = Image.image( this->image->xsize(), 
+    this->mask = Image.Image( this->image->xsize(), 
 			      this->image->ysize(),
 			      255,255,255 );
   this->image->skewy_expand(amnt);

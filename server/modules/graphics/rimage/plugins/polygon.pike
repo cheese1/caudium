@@ -35,7 +35,7 @@ void render(mapping args, mapping this, string channel, object id, object m)
   if(channel == "image")
   {
     if(!this->mask) 
-      this->mask = Image.image(this->image->xsize(), this->image->ysize());
+      this->mask = Image.Image(this->image->xsize(), this->image->ysize());
     this->mask->setcolor( 255,255,255 );
     this->mask->polyfill( points );
   }

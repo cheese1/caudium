@@ -57,7 +57,7 @@ constant thread_safe=1;
 int redirects, accesses, errors, dirlists;
 int puts, deletes, mkdirs, moves, chmods, appes;
 int dirperm, fileperm, default_umask;
-static int do_stat = 1;
+protected int do_stat = 1;
 
 mapping putting = ([]);
 
@@ -892,7 +892,7 @@ string real_file( mixed f, mixed id )
 
 mixed stat_file( mixed f, mixed id )
 {
-  array fs;
+  object fs;
 #ifndef THREADS
   object privs;
   if (id->get_user() && ((int)id->get_user()->uid) && ((int)id->get_user()->gid) &&

@@ -63,7 +63,7 @@
 //!  functions. It defaults to id->misc->defines.
 //! @returns
 //!  The RXML parsed result.
-static string parse_rxml(string what, object id,
+protected string parse_rxml(string what, object id,
                          void|object file, void|mapping defines)
 {
   if (!id)
@@ -839,7 +839,7 @@ int set_scope_var(string variable, void|string scope, mixed value, object id)
 //!
 //! @note
 //!  non-RIS code
-static mixed cb_wrapper(object parser, string entity, object id, function cb,
+protected mixed cb_wrapper(object parser, string entity, object id, function cb,
                         mixed ... args) {
   string scope, name, encoding;
   array tmp = (parser->tag_name()) / ":";

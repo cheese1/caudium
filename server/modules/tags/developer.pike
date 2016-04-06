@@ -105,7 +105,7 @@ mapping(string:array) developers = ([
   "vida":({"David Gourdelier", "vida@caudium.net", "1979-02-16", "France"}),
 ]);
 
-static string print_developer(string dev, array devdata, int full)
+protected string print_developer(string dev, array devdata, int full)
 {
     string   ret = "", info = "";
     
@@ -133,7 +133,7 @@ static string print_developer(string dev, array devdata, int full)
     return (ret + info);
 }
 
-static string birthday_text(array(string) dev, object cal)
+protected string birthday_text(array(string) dev, object cal)
 {
     string      ret = "";
     
@@ -152,7 +152,7 @@ static string birthday_text(array(string) dev, object cal)
     return ret;
 }
 
-static string birthday_notify()
+protected string birthday_notify()
 {
     object cal;
     object today = Calendar.ISO.Day();

@@ -11,15 +11,15 @@
 
 #if constant(Crypto.SHA1.name)
 
-static constant RANDOM_DEVICE = "/dev/random";
-static constant PRANDOM_DEVICE = "/dev/urandom";
+protected constant RANDOM_DEVICE = "/dev/random";
+protected constant PRANDOM_DEVICE = "/dev/urandom";
 
 /* Collect somewhat random data from the environment. Unfortunately,
  * this is quite system dependent
  */
-static constant PATH = "/usr/sbin:/usr/etc:/usr/bin/:/sbin/:/etc:/bin";
+protected constant PATH = "/usr/sbin:/usr/etc:/usr/bin/:/sbin/:/etc:/bin";
 
-static constant SYSTEM_COMMANDS = ({
+protected constant SYSTEM_COMMANDS = ({
   "last -256", "arp -a",
   "netstat -anv","netstat -mv","netstat -sv",
   "uptime","ps -fel","ps aux",
@@ -27,8 +27,8 @@ static constant SYSTEM_COMMANDS = ({
   "iostat","iostat -cdDItx"
 });
 
-static RandomSource global_arcfour;
-static int(0..1) goodseed;
+protected RandomSource global_arcfour;
+protected int(0..1) goodseed;
 
 //! Executes several programs (last -256, arp -a, netstat -anv, netstat -mv,
 //! netstat -sv, uptime, ps -fel, ps aux, vmstat -s, vmstat -M, iostat,
@@ -76,7 +76,7 @@ constant pike_random = RandomSource;
 //! A pseudo random generator based on the arcfour crypto.
 class arcfour_random {
 
-  inherit Nettle.ARCFOUR_State;
+  inherit Nettle.ARCFOUR().State;
 
   //! Initialize and seed the arcfour random generator.
   void create(string secret)

@@ -46,10 +46,10 @@ int load_gif(string data, mapping this, string channel )
 #if constant(Image.GIF._decode)
   catch {
     array a = Image.GIF._decode( data );
-    object img_res = Image.image(a[0],a[1]);
+    object img_res = Image.Image(a[0],a[1]);
     object alpha;
     if(channel == "image")
-      alpha = Image.image(a[0],a[1]);
+      alpha = Image.Image(a[0],a[1]);
     foreach(a[4..], array b)
     {
       if(b[0]==Image.GIF.RENDER)
@@ -63,7 +63,7 @@ int load_gif(string data, mapping this, string channel )
 	{
 	  img_res->paste( b[3],b[1],b[2] );
 	  if(channel == "image")
-	    alpha = Image.image( a[1],a[1], 255,255,255 );
+	    alpha = Image.Image( a[1],a[1], 255,255,255 );
 	}
     }
     
@@ -209,7 +209,7 @@ void render( mapping args, mapping this,
   {
     int xs = t->image->xsize(), ys=t->image->ysize();
     if(!t->mask)
-      t->mask = Image.image( xs,ys, 255,255,255 );
+      t->mask = Image.Image( xs,ys, 255,255,255 );
     if(this->image)
     {
       int xx = max(this->image->xsize(), xs+xp);

@@ -172,10 +172,10 @@ constant cvs_version = "$Id ERROR.pmod,v 1.3 2001/01/03 06:25:25 james_tyson Exp
 
 //! I'm assuming this to be true for now - anyone want to make a nice 50Mb
 //! flash file for 404? Then we can be just like MacOS :)
-static constant mime_type = "text/html";
+protected constant mime_type = "text/html";
 
 //!
-static mapping default_error = ([
+protected mapping default_error = ([
 				 "data" : #string "ERROR.html",
 				 "type" : mime_type ]);
 

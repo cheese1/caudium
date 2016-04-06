@@ -152,7 +152,7 @@ class FCGIChannel
         fd = 0;
       }
     }
-  } /* end of static */
+  } /* end of protected */
 
 
   void setup_channels()
@@ -230,7 +230,7 @@ class Packet
   {
     int readyp;
     string leftovers;
-  } /* end of static */
+  } /* end of protected */
 
 
   mixed cast( string to )
@@ -838,7 +838,7 @@ werror("address: %O\n", socket->query_address());
 //                                         "FCGI_MPXS_CONNS") );
 #endif
     }
-  } /* end of  static */
+  } /* end of  protected */
 
 
   FCGIChannel stream()

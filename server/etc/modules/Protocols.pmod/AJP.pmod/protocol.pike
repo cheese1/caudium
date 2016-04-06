@@ -615,7 +615,7 @@ mapping decode_forward(mapping packet)
   // now we get the attributes.
   packet->attributes=([]);
   int ended=0;
-  if(strlen(packet))
+  if(strlen(packet->data))
     do 
     {
       //werror("scanning attributes.\n");

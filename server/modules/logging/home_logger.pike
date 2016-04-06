@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -55,8 +55,9 @@ constant module_unique = 1;
 // Parse the logging format strings.
 private inline string fix_logging(string s)
 {
-  string pre, post, c;
-  sscanf(s, "%*[\t ]", s);
+  string pre, post;
+  int c;
+  sscanf(s, "%*[\t ]%s", s);
   s = replace(s, ({"\\t", "\\n", "\\r" }), ({"\t", "\n", "\r" }));
   // FIXME: This looks like a bug.
   // Is it supposed to strip all initial whitespace, or do what it does?
@@ -87,19 +88,19 @@ private void write_to_log( string host, string rest, string oh, function fun )
 }
 
 // Logging format support functions.
-nomask private inline string host_ip_to_int(string s)
+final private inline string host_ip_to_int(string s)
 {
   int a, b, c, d;
   sscanf(s, "%d.%d.%d.%d", a, b, c, d);
   return sprintf("%c%c%c%c",a, b, c, d);
 }
 
-nomask private inline string unsigned_to_bin(int a)
+final private inline string unsigned_to_bin(int a)
 {
   return sprintf("%4c", a);
 }
 
-nomask private inline string unsigned_short_to_bin(int a)
+final private inline string unsigned_short_to_bin(int a)
 {
   return sprintf("%2c", a);
 }
@@ -316,7 +317,7 @@ string start()
   parse_log_formats();
 }
 
-static void do_log(mapping file, object request_id, function log_function)
+protected void do_log(mapping file, object request_id, function log_function)
 {
   string a;
   string form;

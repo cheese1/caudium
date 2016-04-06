@@ -34,7 +34,7 @@ void render( mapping args, mapping this, string channel, object id, object m)
   int xs = txt->xsize(), ys = txt->ysize();
   
   if(args->replace || !this[channel]) 
-    this[channel] = Image.image( xs+xp, ys+yp );
+    this[channel] = Image.Image( xs+xp, ys+yp );
   if(this[channel]->xsize() < xs+xp ||
      this[channel]->ysize() < xs+xp)
     this[channel]=this[channel]->copy(0,0,max(xs+xp,this[channel]->xsize()),

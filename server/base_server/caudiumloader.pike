@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -28,7 +28,7 @@
 //!   master() efun when used in this file will return the old
 //!   master and not the new one.
 
-private static object new_master;
+private protected object new_master;
 
 constant cvs_version="$Id$";
 
@@ -41,7 +41,7 @@ constant cvs_version="$Id$";
 program Privs;
 
 #define perror roxen_perror
-private static int perror_status_reported=0;
+private protected int perror_status_reported=0;
 
 int pid = getpid();
 Stdio.File stderr = Stdio.File("stderr");
@@ -143,7 +143,7 @@ object db;
 mapping(string:object) dbs = ([ ]);
 
 #if constant(thread_create)
-static private inherit Thread.Mutex:db_lock;
+protected private inherit Thread.Mutex:db_lock;
 #endif
 
 object open_db(string id)
@@ -566,7 +566,7 @@ object cache_manager() {
   return _cache_manager;
 }
  
-static private void initiate_cache()
+protected private void initiate_cache()
 {
 #ifdef CACHE_DEBUG
   werror("initiate_cache()\n");

@@ -53,7 +53,7 @@ int num;
 string logtable; 
 
 #if constant(thread_create)
-static inherit Thread.Mutex;
+protected inherit Thread.Mutex;
 #define THREAD_SAFE
 #define LOCK() do { object key; catch(key=lock())
 #define UNLOCK() key=0; } while(0)
@@ -66,7 +66,7 @@ static inherit Thread.Mutex;
 
 class db_handler {
 #ifdef THREAD_SAFE
-  static inherit Thread.Mutex;
+  protected inherit Thread.Mutex;
 #endif
   
   array (object) dbs = ({});

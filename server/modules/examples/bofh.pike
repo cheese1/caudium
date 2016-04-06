@@ -37,11 +37,11 @@ array(string) excuses = ({
 "clock speed ",
 "solar flares ",
 "electromagnetic radiation from satellite debris ",
-"static from nylon underwear ",
-"static from plastic slide rules ",
+"protected from nylon underwear ",
+"protected from plastic slide rules ",
 "global warming ",
 "poor power conditioning ",
-"static buildup ",
+"protected buildup ",
 "doppler effect ",
 "hardware stress fractures "});
 

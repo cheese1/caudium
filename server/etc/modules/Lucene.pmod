@@ -27,33 +27,33 @@ string cvs_version = "$Id$";
 
 #if constant(Java.machine)
 //!
-static constant jvm = Java.machine;
+protected constant jvm = Java.machine;
 
 #if constant(jvm)
 
 //!
-static object throwable_class = FINDCLASS("java/lang/Throwable");
+protected object throwable_class = FINDCLASS("java/lang/Throwable");
 
 //!
-static object stringwriter_class = FINDCLASS("java/io/StringWriter");
+protected object stringwriter_class = FINDCLASS("java/io/StringWriter");
 
 //!
-static object printwriter_class = FINDCLASS("java/io/PrintWriter");
+protected object printwriter_class = FINDCLASS("java/io/PrintWriter");
 
 //!
-static object throwable_printstacktrace = throwable_class->get_method("printStackTrace", "(Ljava/io/PrintWriter;)V");
+protected object throwable_printstacktrace = throwable_class->get_method("printStackTrace", "(Ljava/io/PrintWriter;)V");
 
 //!
-static object stringwriter_init = stringwriter_class->get_method("<init>", "()V");
+protected object stringwriter_init = stringwriter_class->get_method("<init>", "()V");
 
 //!
-static object printwriter_init = printwriter_class->get_method("<init>", "(Ljava/io/Writer;)V");
+protected object printwriter_init = printwriter_class->get_method("<init>", "(Ljava/io/Writer;)V");
 
 //!
-static object printwriter_flush = printwriter_class->get_method("flush", "()V");
+protected object printwriter_flush = printwriter_class->get_method("flush", "()V");
 
 //!
-static object throwable_getmessage = throwable_class->get_method("getMessage", "()Ljava/lang/String;");
+protected object throwable_getmessage = throwable_class->get_method("getMessage", "()Ljava/lang/String;");
 
 import Parser.XML.Tree;
 
@@ -167,92 +167,92 @@ class Indexer
 #define FINDCLASS(X) (jvm->find_class(X)||(jvm->exception_describe(),jvm->exception_clear(),error("Failed to load class " X ".\n"),0))
 
 //!
-static object class_class = FINDCLASS("java/lang/Class");
+protected object class_class = FINDCLASS("java/lang/Class");
 
 //!
-static object classloader_class = FINDCLASS("java/lang/ClassLoader");
+protected object classloader_class = FINDCLASS("java/lang/ClassLoader");
 
 //!
-static object load_class = classloader_class->get_method("loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+protected object load_class = classloader_class->get_method("loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 
 //!
-static object dictionary_class = FINDCLASS("java/util/Dictionary");
+protected object dictionary_class = FINDCLASS("java/util/Dictionary");
 
 //!
-static object array_class = FINDCLASS("java/lang/reflect/Array");
+protected object array_class = FINDCLASS("java/lang/reflect/Array");
 
 //!
-static object arraylist_class = FINDCLASS("java/util/ArrayList");
+protected object arraylist_class = FINDCLASS("java/util/ArrayList");
 
 //!
-static object list_class = FINDCLASS("java/util/List");
+protected object list_class = FINDCLASS("java/util/List");
 
 //!
-static object hashmap_class = FINDCLASS("java/util/HashMap");
+protected object hashmap_class = FINDCLASS("java/util/HashMap");
 
 //!
-static object collection_class = FINDCLASS("java/util/Collection");
+protected object collection_class = FINDCLASS("java/util/Collection");
 
 //!
-static object string_class = FINDCLASS("java/lang/String");
+protected object string_class = FINDCLASS("java/lang/String");
 
 //!
-static object arraylist_init = arraylist_class->get_method("<init>", "()V");
+protected object arraylist_init = arraylist_class->get_method("<init>", "()V");
 
 //!
-static object arraylist_get = list_class->get_method("get", "(I)Ljava/lang/Object;");
+protected object arraylist_get = list_class->get_method("get", "(I)Ljava/lang/Object;");
 
 //!
-static object arraylist_size = collection_class->get_method("size", "()I");
+protected object arraylist_size = collection_class->get_method("size", "()I");
 
 //!
-static object hashmap_get = hashmap_class->get_method("get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+protected object hashmap_get = hashmap_class->get_method("get", "(Ljava/lang/Object;)Ljava/lang/Object;");
 
 
 //!
-static object array_newinstance = array_class->get_static_method("newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;");
+protected object array_newinstance = array_class->get_static_method("newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;");
 
 //!
-static object array_set = array_class->get_static_method("set", "(Ljava/lang/Object;ILjava/lang/Object;)V");
+protected object array_set = array_class->get_static_method("set", "(Ljava/lang/Object;ILjava/lang/Object;)V");
 
 //!
-static object array_get = array_class->get_static_method("get", "(Ljava/lang/Object;I)Ljava/lang/Object;");
+protected object array_get = array_class->get_static_method("get", "(Ljava/lang/Object;I)Ljava/lang/Object;");
 
 //!
-static object index_class = FINDCLASS("net/caudium/search/Indexer");
+protected object index_class = FINDCLASS("net/caudium/search/Indexer");
 
 //!
-static object summary_class = FINDCLASS("net/caudium/search/URLSummary");
+protected object summary_class = FINDCLASS("net/caudium/search/URLSummary");
 
 //!
-static object index_init = index_class->get_method("<init>", "(Ljava/lang/String;[Ljava/lang/String;Z)V");
+protected object index_init = index_class->get_method("<init>", "(Ljava/lang/String;[Ljava/lang/String;Z)V");
 
 //!
-static object summary_init = summary_class->get_method("<init>", "()V");
+protected object summary_init = summary_class->get_method("<init>", "()V");
 
 //!
-static object index_close = index_class->get_method("close", "()V");
+protected object index_close = index_class->get_method("close", "()V");
 
 //!
-static object index_add = index_class->get_method("add", "(Lnet/caudium/search/URLSummary;)V");
+protected object index_add = index_class->get_method("add", "(Lnet/caudium/search/URLSummary;)V");
 
 //!
-static object summary_url=summary_class->get_field("url", "Ljava/lang/String;");
+protected object summary_url=summary_class->get_field("url", "Ljava/lang/String;");
 
 //!
-static object summary_body=summary_class->get_field("body", "Ljava/lang/String;");
+protected object summary_body=summary_class->get_field("body", "Ljava/lang/String;");
 
 //!
-static object summary_desc=summary_class->get_field("desc", "Ljava/lang/String;");
+protected object summary_desc=summary_class->get_field("desc", "Ljava/lang/String;");
 
 //!
-static object summary_title=summary_class->get_field("title", "Ljava/lang/String;");
+protected object summary_title=summary_class->get_field("title", "Ljava/lang/String;");
 
 //!
-static object summary_type=summary_class->get_field("type", "Ljava/lang/String;");
+protected object summary_type=summary_class->get_field("type", "Ljava/lang/String;");
 
 //!
-static object summary_date=summary_class->get_field("date", "Ljava/lang/String;");
+protected object summary_date=summary_class->get_field("date", "Ljava/lang/String;");
 
 //!
 object ie;
@@ -412,87 +412,87 @@ class Index
 {
 
 //!
-static object class_class = FINDCLASS("java/lang/Class");
+protected object class_class = FINDCLASS("java/lang/Class");
 
 //!
-static object classloader_class = FINDCLASS("java/lang/ClassLoader");
+protected object classloader_class = FINDCLASS("java/lang/ClassLoader");
 
 //!
-static object load_class = classloader_class->get_method("loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+protected object load_class = classloader_class->get_method("loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 
 //!
-static object throwable_class = FINDCLASS("java/lang/Throwable");
+protected object throwable_class = FINDCLASS("java/lang/Throwable");
 
 //!
-static object stringwriter_class = FINDCLASS("java/io/StringWriter");
+protected object stringwriter_class = FINDCLASS("java/io/StringWriter");
 
 //!
-static object printwriter_class = FINDCLASS("java/io/PrintWriter");
+protected object printwriter_class = FINDCLASS("java/io/PrintWriter");
 
 //!
-static object dictionary_class = FINDCLASS("java/util/Dictionary");
+protected object dictionary_class = FINDCLASS("java/util/Dictionary");
 
 //!
-static object array_class = FINDCLASS("java/lang/reflect/Array");
+protected object array_class = FINDCLASS("java/lang/reflect/Array");
 
 //!
-static object arraylist_class = FINDCLASS("java/util/ArrayList");
+protected object arraylist_class = FINDCLASS("java/util/ArrayList");
 
 //!
-static object list_class = FINDCLASS("java/util/List");
+protected object list_class = FINDCLASS("java/util/List");
 
 //!
-static object hashmap_class = FINDCLASS("java/util/HashMap");
+protected object hashmap_class = FINDCLASS("java/util/HashMap");
 
 //!
-static object collection_class = FINDCLASS("java/util/Collection");
+protected object collection_class = FINDCLASS("java/util/Collection");
 
 //!
-static object string_class = FINDCLASS("java/lang/String");
+protected object string_class = FINDCLASS("java/lang/String");
 
 //!
-static object throwable_printstacktrace = throwable_class->get_method("printStackTrace", "(Ljava/io/PrintWriter;)V");
+protected object throwable_printstacktrace = throwable_class->get_method("printStackTrace", "(Ljava/io/PrintWriter;)V");
 
 //!
-static object stringwriter_init = stringwriter_class->get_method("<init>", "()V");
+protected object stringwriter_init = stringwriter_class->get_method("<init>", "()V");
 
 //!
-static object printwriter_init = printwriter_class->get_method("<init>", "(Ljava/io/Writer;)V");
+protected object printwriter_init = printwriter_class->get_method("<init>", "(Ljava/io/Writer;)V");
 
 //!
-static object printwriter_flush = printwriter_class->get_method("flush", "()V");
-
-
-//!
-static object array_newinstance = array_class->get_static_method("newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;");
-
-//!
-static object array_set = array_class->get_static_method("set", "(Ljava/lang/Object;ILjava/lang/Object;)V");
-
-//!
-static object array_get = array_class->get_static_method("get", "(Ljava/lang/Object;I)Ljava/lang/Object;");
-
-//!
-static object arraylist_init = arraylist_class->get_method("<init>", "()V");
-
-//!
-static object arraylist_get = list_class->get_method("get", "(I)Ljava/lang/Object;");
-
-//!
-static object arraylist_size = collection_class->get_method("size", "()I");
-
-//!
-static object hashmap_get = hashmap_class->get_method("get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+protected object printwriter_flush = printwriter_class->get_method("flush", "()V");
 
 
 //!
-static object search_class = FINDCLASS("net/caudium/search/Search");
+protected object array_newinstance = array_class->get_static_method("newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;");
 
 //!
-static object search_init = search_class->get_method("<init>", "(Ljava/lang/String;[Ljava/lang/String;)V");
+protected object array_set = array_class->get_static_method("set", "(Ljava/lang/Object;ILjava/lang/Object;)V");
 
 //!
-static object search_search = search_class->get_method("search", "(Ljava/lang/String;)Ljava/util/ArrayList;");
+protected object array_get = array_class->get_static_method("get", "(Ljava/lang/Object;I)Ljava/lang/Object;");
+
+//!
+protected object arraylist_init = arraylist_class->get_method("<init>", "()V");
+
+//!
+protected object arraylist_get = list_class->get_method("get", "(I)Ljava/lang/Object;");
+
+//!
+protected object arraylist_size = collection_class->get_method("size", "()I");
+
+//!
+protected object hashmap_get = hashmap_class->get_method("get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+
+
+//!
+protected object search_class = FINDCLASS("net/caudium/search/Search");
+
+//!
+protected object search_init = search_class->get_method("<init>", "(Ljava/lang/String;[Ljava/lang/String;)V");
+
+//!
+protected object search_search = search_class->get_method("search", "(Ljava/lang/String;)Ljava/util/ArrayList;");
 
 private object se;
 private object sw;

@@ -70,7 +70,7 @@ class Logger {
   //! needs to be resolved.
   mapping (string:object) log_format_objs = ([]);
 
-  static constant codes =
+  protected constant codes =
   ([ "ipnumber"     : "id->remoteaddr",
      "binipnumber"  : "Logging.host_ip_to_int(id->remoteaddr)",
      "cerndate"     : "Caudium.HTTP.cern_date(id->time)",
@@ -92,7 +92,7 @@ class Logger {
      "requesttime"  : "(time(1)-id->time)",
   ]);
 
-  static constant prg_prefix = "inherit \"caudiumlib14\";";
+  protected constant prg_prefix = "inherit \"caudiumlib14\";";
 
   // Parse the logging format strings.
   inline string fix_logging(string s)

@@ -42,7 +42,7 @@ void render( mapping args, mapping this, string channel, object id, object m )
   else
   {
     if(!args["nomask"] && channel == "image")
-      this->mask = Image.image(xs,ys,255,255,255);
-    this[channel] = Image.image( xs,ys, @color );
+      this->mask = Image.Image(xs,ys,255,255,255);
+    this[channel] = Image.Image( xs,ys, @color );
   }
 }

@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1999 Bill Welliver <hww3@riverweb@com>
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1999 Bill Welliver <hww3@riverweb@com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -53,7 +53,7 @@ int num;
 string logtable; 
 
 #if constant(thread_create)
-static inherit Thread.Mutex;
+protected inherit Thread.Mutex;
 #define THREAD_SAFE
 #define LOCK() do { object key; catch(key=lock())
 #define UNLOCK() key=0; } while(0)
@@ -66,7 +66,7 @@ static inherit Thread.Mutex;
 
 class db_handler {
 #ifdef THREAD_SAFE
-  static inherit Thread.Mutex;
+  protected inherit Thread.Mutex;
 #endif
   
   array (object) dbs = ({});
@@ -167,8 +167,8 @@ void log(object id, mapping file)  {
 		    (string)id->method,
 		    (string)id->prot,
 		    (string)id->not_query,
-                    id->query?sprintf("'?%s'",(string)id->query):"NULL",
-		    Logging.unsigned_to_bin(file->error||200),
+        id->query?sprintf("'?%s'",(string)id->query):"NULL",
+		    (int)Logging.unsigned_to_bin(file->error||200),
 		    time(),
 		    host,
 		    );

@@ -32,7 +32,7 @@
 constant cvs_version = "$Id$";
 
 
-static mapping go( string type, mixed obj, string name, void|int exp ) {
+protected mapping go( string type, mixed obj, string name, void|int exp ) {
   mapping meta = ([ ]);
   meta->name = name;
   meta->object = obj;

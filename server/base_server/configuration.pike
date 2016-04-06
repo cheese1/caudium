@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -143,7 +143,7 @@ void killvar(string name)
   m_delete(variables, name);
 }
 
-static class ConfigurableWrapper
+protected class ConfigurableWrapper
 {
   int mode;
   function f;
@@ -952,7 +952,7 @@ private mapping internal_gopher_image(string from)
            "type":"image/gif"]);
 }
 
-private static int nest = 0;
+protected int nest = 0;
   
 #ifdef MODULE_LEVEL_SECURITY
 private mapping misc_cache=([]);
@@ -1366,7 +1366,7 @@ string examine_return_mapping(mapping m)
       res+=(a[1]-m->file->tell())+" bytes ";
     }) res+="? bytes";
 
-  if (m->data) res+=" (static)";
+  if (m->data) res+=" (protected)";
   else if (m->file) res+="(open file)";
 
   if (stringp(m->extra_heads["http-content-type"]))
@@ -2441,7 +2441,7 @@ public int is_file(string what, object id)
 }
 
 //! A quick hack to generate correct protocol references
-static string make_proto_name(string p)
+protected string make_proto_name(string p)
 {
   // Note these are only the protocols that
   // Caudium can directly use
@@ -3143,7 +3143,7 @@ string check_variable(string name, string value)
 // This is used to update the server-global and module variables
 // between Roxen releases. It enables the poor roxen administrator to
 // reuse the configuration file from a previous release. without any
-// fuss. Configuration files from Roxen 1.0ß11 pre 11 and earlier
+// fuss. Configuration files from Roxen 1.0ï¿½11 pre 11 and earlier
 // are not differentiated, but since that release is quite old already
 // when I write this, that is not really a problem....
 
@@ -3473,7 +3473,7 @@ int load_module(string module_file)
   return 1;
 }
 
-//§
+//ï¿½
 int unload_module(string module_file)
 {
   mapping module;
@@ -3724,7 +3724,7 @@ class DataCache
   int hits, misses;
 
   //!
-  static void clear_some_cache()
+  protected void clear_some_cache()
   {
     int i;
     array q = indices( cache );
@@ -3781,7 +3781,7 @@ class DataCache
   }
 
   //!
-  static void create(int _size, int _fsize, float gc_cleanup )
+  protected void create(int _size, int _fsize, float gc_cleanup )
   {
     init_from_variables(_size,_fsize, gc_cleanup);
   }

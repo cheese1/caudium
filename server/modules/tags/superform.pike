@@ -47,7 +47,7 @@ inherit "module";
 inherit "caudiumlib";
 
 
-static private int loaded;
+protected private int loaded;
 
 string demo_widget(string widget,string descr) ;
 mixed tag_input(string tag_name, mapping args,
@@ -55,7 +55,7 @@ mixed tag_input(string tag_name, mapping args,
 		 mapping defines, object fd) ;
 int|string luhn_check(string number) ;
 
-static private string doc()
+protected private string doc()
 {
   string doc="This tag extends html forms to add new widget types, "+
     "provide verification functions, and generally make dealing with "+

@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -86,7 +86,7 @@ string date(int timestamp, mapping|void m)
     return snumber(num/(unit))+(name)+snumber(num%(unit))
  
 
-static string snumber(int num)
+protected string snumber(int num)
 {
   if(num<0)
     return "min "+snumber(-num);

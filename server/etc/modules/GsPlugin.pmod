@@ -121,7 +121,7 @@ private string plugin_description()
 //! id->misc->gsession->region_name mapping. This is true for all the
 //! storage mechanisms.
 //!
-static mapping(string:mapping(string:mapping(string:mixed))) _plugin_storage = ([]);
+protected mapping(string:mapping(string:mapping(string:mixed))) _plugin_storage = ([]);
 
 //
 //! Registration record for the "plugin". Such record is used for all the
@@ -215,7 +215,7 @@ static mapping(string:mapping(string:mapping(string:mixed))) _plugin_storage = (
 //!  returns the special '_sessions_' area in the storage. That area
 //!  stores all the options global to any session ID.
 //! @endmapping
-static mapping plugin_storage_registration_record = ([
+protected mapping plugin_storage_registration_record = ([
     "name" : plugin_name(),
     "description" : plugin_description(),
     "setup" : plugin_setup,

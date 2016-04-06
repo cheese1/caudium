@@ -213,7 +213,7 @@ class Date
 object event = class
 {
 #define S_EVENT(E,D,M) mapping E = ([ "mday":(D), "mon":((M)-1) ])
-  private static inherit Date;
+  private protected inherit Date;
 
   S_EVENT(christmas_eve, 24, 12);
   S_EVENT(christmas_day, 25, 12);
@@ -234,7 +234,7 @@ object event = class
 // :-) This code is not exactly conforming to the Roxen API, since it
 // uses a rather private mapping the language object (which you are
 // not even supposed to know the existence of). But I wanted some nice
-// month->number code that did not depend on a static mapping.
+// month->number code that did not depend on a protected mapping.
 // Currently, this means that you can enter the name of the month or day in
 // your nativ language, if it is supported by roxen.
 constant language = caudium->language;

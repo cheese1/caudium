@@ -32,7 +32,7 @@ constant cvs_version = "$Id$";
 //! @fixme
 //!   HIGHTLY EXPERIMENTAL (now you have been warned).
 
-static int|string|array(string) compat_call_tag (
+protected int|string|array(string) compat_call_tag (
   Parser.HTML p, string str, mixed... extra)
 {
   string name = lower_case (p->tag_name());
@@ -45,7 +45,7 @@ static int|string|array(string) compat_call_tag (
   return 1;
 }
 
-static int|string|array(string) compat_call_container (
+protected int|string|array(string) compat_call_container (
   Parser.HTML p, mapping(string:string) args, string content, mixed... extra)
 {
   string name = lower_case (p->tag_name());
@@ -90,7 +90,7 @@ string parse_html (string data, mapping(string:function|string) tags,
   return ParseHtmlCompat (tags, containers, @args)->finish (data)->read();
 }
 
-static int|string|array(string) compat_call_tag_lines (
+protected int|string|array(string) compat_call_tag_lines (
   Parser.HTML p, string str, mixed... extra)
 {
   string name = lower_case (p->tag_name());
@@ -103,7 +103,7 @@ static int|string|array(string) compat_call_tag_lines (
   return 1;
 }
 
-static int|string|array(string) compat_call_container_lines (
+protected int|string|array(string) compat_call_container_lines (
   Parser.HTML p, mapping(string:string) args, string content, mixed... extra)
 {
   string name = lower_case (p->tag_name());

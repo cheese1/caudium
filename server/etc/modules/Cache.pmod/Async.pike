@@ -43,11 +43,11 @@ class Retrieve {
     in->set_nonblocking(read, 0, close);
   }
 
-  static void read(mixed id, string data) {
+  protected void read(mixed id, string data) {
     out->write(data);
   }
 
-  static void close() {
+  protected void close() {
     in->close();
     out->close();
   }
@@ -75,12 +75,12 @@ class Store {
     in->set_nonblocking(read, 0, close);
   }
 
-  static void read(mixed id, string _data) {
+  protected void read(mixed id, string _data) {
     out->write(_data);
     data += _data;
   }
 
-  static void close() {
+  protected void close() {
     in->close();
     out->close();
     object pipe_in = Stdio.File();

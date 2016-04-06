@@ -37,9 +37,9 @@
 
 #define SYNC_IN 5
 
-static mapping storage;
-static object permstore;
-static mapping clients;
+protected mapping storage;
+protected object permstore;
+protected mapping clients;
 function destroy = sync_all;
 
 //!
@@ -109,7 +109,7 @@ public string storage_default() {
 }
 
 //!
-static void store(string namespace, string key, mixed val) {
+protected void store(string namespace, string key, mixed val) {
 #ifdef STORAGE_DEBUG
   write("STORAGE: Storing %O from %O\n", key, namespace);
 #endif
@@ -120,7 +120,7 @@ static void store(string namespace, string key, mixed val) {
 }
 
 //!
-static mixed retrieve(string namespace, string key) {
+protected mixed retrieve(string namespace, string key) {
 #ifdef STORAGE_DEBUG
   write("STORAGE: Retrieving %O from %O\n", key, namespace);
 #endif
@@ -131,7 +131,7 @@ static mixed retrieve(string namespace, string key) {
 }
 
 //!
-static void sync(string namespace, string key) {
+protected void sync(string namespace, string key) {
 #ifdef STORAGE_DEBUG
   write("STORAGE: Syncing %O/%O to permanent storage\n", key, namespace);
 #endif
@@ -142,7 +142,7 @@ static void sync(string namespace, string key) {
 }
 
 //!
-static void unlink(string namespace, void|string key) {
+protected void unlink(string namespace, void|string key) {
 #ifdef STORAGE_DEBUG
   write("STORAGE: Removing %O in %O\n", (key?key:"all"), namespace);
 #endif
@@ -157,7 +157,7 @@ static void unlink(string namespace, void|string key) {
 }
 
 //!
-static void unlink_regexp(string namespace, string regexp) {
+protected void unlink_regexp(string namespace, string regexp) {
   sync_all(namespace);
   permstore->unlink_regexp(namespace, regexp);
 }
@@ -172,7 +172,7 @@ void stop(void|string namespace) {
 }
 
 //!
-static void sync_all(void|string namespace) {
+protected void sync_all(void|string namespace) {
 #ifdef STORAGE_DEBUG
   write("STORAGE: Syncing all objects\n");
 #endif
@@ -194,7 +194,7 @@ string storage_backend() {
 }
 
 //!
-static int size(string namespace) {
+protected int size(string namespace) {
 #ifdef STORAGE_DEBUG
   write("STORAGE: Getting total size of %O\n", namespace);
 #endif
@@ -203,7 +203,7 @@ static int size(string namespace) {
 }
 
 //!
-static array list(string namespace) {
+protected array list(string namespace) {
 #ifdef STORAGE_DEBUG
   write("STORAGE: Listing objects in %O\n", namespace);
 #endif

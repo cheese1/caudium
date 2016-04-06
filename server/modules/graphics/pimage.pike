@@ -59,8 +59,8 @@ constant module_doc  = "This module adds two new tags, &lt;gclock&gt; and "
 	      "Draws some text..<br>";
 constant module_unique = 1;
 
-#if constant(Image.image)
-#define IMAGE Image.image
+#if constant(Image.Image)
+#define IMAGE Image.Image
 #else
 #define IMAGE Image.Image
 #endif
@@ -242,7 +242,7 @@ class Constructors
     }
   }
 
-  private static array (int) to_color(mixed in)
+  private protected array (int) to_color(mixed in)
   {
     if(stringp(in)) return Colors.parse_color(in);
     return ({ in, in, in });

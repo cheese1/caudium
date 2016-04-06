@@ -25,7 +25,7 @@ constant cvs_version = "$Id$";
 
 #define SLEEP 0.2
 
-static mapping locks;
+protected mapping locks;
 
 void create() {
   locks = ([]);
@@ -157,14 +157,14 @@ object lock(string path, string mode, int behavior) {
 
 //! @fixme
 //!   Document this function.
-static void unlock(mixed id) {
+protected void unlock(mixed id) {
   rm(locks[id]->lock_file);
   m_delete(locks, id);
 }
 
 //! @fixme
 //!   Document this function.
-static string get_hash( string data ) {
+protected string get_hash( string data ) {
   string retval;
   retval = Caudium.Crypto.hash_md5(data);
   return sprintf("%@02x",(array(int)) retval);
@@ -177,11 +177,11 @@ void destruct() {
 }
 
 //! This class is the object containing the hitchingpost lock.
-static class _lock {
+protected class _lock {
 
   mixed id;
-  static function unlock;
-  static string desc;
+  protected function unlock;
+  protected string desc;
   int since;
   
   void create(mixed _id, function _unlock, string _desc) {

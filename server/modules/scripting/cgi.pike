@@ -560,7 +560,7 @@ class CGIWrapper
     return 1;
   }
 
-  static int mode;
+  protected int mode;
   void process( string what )
   {
     DWERROR(sprintf("CGI:CGIWrapper::process(%O)\n", what));
@@ -654,11 +654,11 @@ class CGIScript
   }
 
   // HUP, PIPE, INT, TERM, KILL
-  static constant kill_signals = ({ signum("HUP"), signum("PIPE"),
+  protected constant kill_signals = ({ signum("HUP"), signum("PIPE"),
 				    signum("INT"), signum("TERM"),
 				    signum("KILL") });
-  static constant kill_interval = 3;
-  static int next_kill;
+  protected constant kill_interval = 3;
+  protected int next_kill;
 
   void kill_script()
   {
@@ -1133,7 +1133,7 @@ void create(object conf)
 	 "The maximum number of files the script can keep open at any time. "
          "It is not possible to set this value over the system maximum. "
          "On most systems, there is no limit, but some unix systems still "
-         "have a static filetable (Linux and *BSD, basically).",
+         "have a protected filetable (Linux and *BSD, basically).",
 	 ({64,128,256,512,1024,2048}));
 
   defvar("stack", -2, "Limits: Stack size", TYPE_INT|VAR_EXPERT,
@@ -1362,7 +1362,7 @@ mapping query_tag_callers()
 //!  name: Limits: Maximum file size
 //
 //! defvar: open_files
-//! The maximum number of files the script can keep open at any time. It is not possible to set this value over the system maximum. On most systems, there is no limit, but some unix systems still have a static filetable (Linux and *BSD, basically).
+//! The maximum number of files the script can keep open at any time. It is not possible to set this value over the system maximum. On most systems, there is no limit, but some unix systems still have a protected filetable (Linux and *BSD, basically).
 //!  type: TYPE_INT_LIST|VAR_MORE
 //!  name: Limits: Maximum number of open files
 //

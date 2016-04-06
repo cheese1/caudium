@@ -266,7 +266,7 @@ class Dir
     return my_dir;
   }
     
-  static string _sprintf(int f)
+  protected string _sprintf(int f)
   {
     switch(f) {
         case 't':
@@ -694,7 +694,7 @@ class File
     return retrieve_region(region);
   }
   
-  static string _sprintf(int f)
+  protected string _sprintf(int f)
   {
     switch(f) {
         case 't':

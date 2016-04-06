@@ -1232,7 +1232,7 @@ string|array(string) tag_inc(string tag, mapping args, object id) {
   return inc(args, val, id);
 }
 
-static string|array(string) inc(mapping m, int val, object id)
+protected string|array(string) inc(mapping m, int val, object id)
 {
   string scope, var;
   mixed curr;

@@ -38,9 +38,9 @@ constant module_doc  = "This tag is the manual librarian.<p>"
       "See <tt>&lt;manual help&gt</tt> for more information.\n"; // \n<p>"+doc();
 constant module_unique = 1;
 
-static private int loaded;
+protected private int loaded;
 
-static private string doc()
+protected private string doc()
 {
   return !loaded?"":replace(Stdio.read_bytes("modules/tags/doc/manual")||"",
 			    ({ "{", "}" }), ({ "&lt;", "&gt;" }));

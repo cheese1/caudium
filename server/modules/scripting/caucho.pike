@@ -336,9 +336,9 @@ class CseStream
 // wrapper for parsing html from output.
 class RXMLParseWrapper
 {
-  static object _file;
-  static object _id;
-  static string _data;
+  protected object _file;
+  protected object _id;
+  protected string _data;
 
   int write(string data)
   {

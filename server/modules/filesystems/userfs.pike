@@ -439,7 +439,7 @@ int|string query_redir(string what)
   return tmp->tourl;
 }
 
-static array(string) find_user(string f, object id)
+protected array(string) find_user(string f, object id)
 {
   string of = f;
   string u;

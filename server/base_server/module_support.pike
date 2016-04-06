@@ -45,7 +45,7 @@ int setvars( mapping (string:mixed) vars )
   return 1;
 }
 
-static class ConfigurableWrapper
+protected class ConfigurableWrapper
 {
   int mode;
   function f;

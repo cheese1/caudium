@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -82,7 +82,7 @@ mapping parse_args(string options)
 }
 
 class roxen_ssl_context {
-  inherit SSL.context;
+  inherit SSL.Context;
   int port; /* port number */
 }
 
@@ -244,8 +244,6 @@ array|void real_port(array port, object cfg)
     ({ report_error, throw }) ("ssl3: Certificate and private key do not match.\n");
 #endif
 
-  function r = Caudium.Crypto_Randomness.reasonably_random()->read;
-
 #ifdef SSL3_DEBUG
   werror(sprintf("RSA key size: %d bits\n", rsa->rsa_size()));
 #endif
@@ -253,9 +251,13 @@ array|void real_port(array port, object cfg)
   if (rsa->rsa_size() > 512)
   {
     /* Too large for export */
-    ctx->short_rsa = Crypto.RSA()->generate_key(512, r);
+    int e = (int)Crypto.Random.random(65537);
+    if(!(e%2)) e++;
+    ctx->short_rsa = Crypto.RSA()->generate_key(512, e);
 
-    // ctx->long_rsa = Crypto.RSA()->generate_key(rsa->rsa_size(), r);
+    e = (int)Crypto.Random.random(65537);
+    if(!(e%2)) e++;
+    ctx->long_rsa = Crypto.RSA()->generate_key(rsa->rsa_size(), e);
   }
 
   if(options["client-cert-request"])
@@ -269,7 +271,6 @@ array|void real_port(array port, object cfg)
   // we need the certificates to be in the opposite order (my cert first) for ssl to work.
   ctx->certificates=reverse(ctx->certificates);
   ctx->rsa = rsa;
-  ctx->random = r;
 }
 
 #define CHUNK 16384
@@ -277,7 +278,7 @@ array|void real_port(array port, object cfg)
 string to_send_buffer;
 int done;
 
-static void write_more();
+protected void write_more();
 
 void got_data_to_send(mixed fooid, string data)
 {
@@ -344,7 +345,7 @@ string|int get_data()
   return s;
 }
 
-static void die()
+protected void die()
 {
   my_fd->set_blocking();
   my_fd->close();
@@ -352,7 +353,7 @@ static void die()
 }
 
 string cache;
-static void write_more()
+protected void write_more()
 {
 #ifdef SSL3_DEBUG
   roxen_perror(sprintf("SSL3:write_more()\n"));
@@ -422,7 +423,7 @@ string get_data_file()
   return s;
 }
 
-static void write_more_file()
+protected void write_more_file()
 {
 #ifdef SSL3_DEBUG
   roxen_perror(sprintf("SSL3:write_more_file()\n"));
@@ -493,7 +494,7 @@ void do_log()
   return;
 }
 
-static int parse_got()
+protected int parse_got()
 {
   int r = ::parse_got();
   if(r == -1)
@@ -674,7 +675,7 @@ void ssl_accept_callback(object id)
 }
 
 class roxen_sslfile {
-  inherit SSL.sslfile : ssl;
+  inherit SSL.File : ssl;
 
   object raw_file;
   object config;
@@ -741,14 +742,20 @@ void create(void|object f, void|object c)
     }
     remoteaddr = Caudium.get_address(f->query_address()||"");
     my_fd_for_destruct = my_fd = roxen_sslfile(f, ctx, c);
-    if(my_fd->set_alert_callback)
-      my_fd->set_alert_callback(http_fallback);
+
     my_fd->set_accept_callback(ssl_accept_callback);
     conf = c;
     my_fd->set_nonblocking(got_data,0,end);
+    if(my_fd->set_alert_callback)
+
+    my_fd->accept();
+        my_fd->set_alert_callback(http_fallback);
+
   } else {
     // Main object. 
   }
+  
+
 
   server_protocol="HTTPS";
 

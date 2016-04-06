@@ -96,8 +96,8 @@ string file_name_and_stuff()
           (this->cvs_version?"<b>CVS Version: </b>"+fix_cvs(this->cvs_version)+"<nr>\n":""));
 }
 
-static private object _my_configuration;
-static private object _my_module = this;
+protected private object _my_configuration;
+protected private object _my_module = this;
 
 //! Returns the module's configuration object.
 //!
@@ -188,7 +188,7 @@ string info(object conf)
 }
 
 //!
-static class ConfigurableWrapper
+protected class ConfigurableWrapper
 {
   int mode;
   function f;
@@ -713,7 +713,7 @@ mapping query_emit_callers() { return 0; }
 class IP_with_mask {
   int net;
   int mask;
-  static private int ip_to_int(string ip)
+  protected private int ip_to_int(string ip)
   {
     int res;
     foreach(((ip/".") + ({ "0", "0", "0" }))[..3], string num) {

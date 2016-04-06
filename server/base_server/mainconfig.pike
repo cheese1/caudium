@@ -261,7 +261,7 @@ mapping stores( string s )
 #define CONFIG_URL caudium->config_url(id)
 
 // Holds the default ports for various protocols.
-static private constant default_ports = ([
+protected private constant default_ports = ([
   "ftp":21,
   "http":80,
   "https":443,

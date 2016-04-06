@@ -53,7 +53,7 @@ int pass_cnt=0;	// PASS count
 
 array msglist;	// Array of message files
 
-static class POP3_Session
+protected class POP3_Session
 {
   inherit Protocols.Line.simple;
 
@@ -86,10 +86,10 @@ static class POP3_Session
 
   object(fake_id) id = fake_id();
 
-  static object conf;
-  static object parent;
+  protected object conf;
+  protected object parent;
 
-  static mapping(string:mixed) log_id;
+  protected mapping(string:mixed) log_id;
 
   string username;	// The user login
   int loginok;		// We are logged
@@ -101,10 +101,10 @@ static class POP3_Session
 
   // TODO: Deleted message list
   // array del_msg = ({ 1, 3 , 5 });
-  // search (del_msg, 4);	-> -1 donc pas supprimé
-  // search (del_msg, 1);	-> >=0 donc a supprimé
+  // search (del_msg, 4);	-> -1 donc pas supprimï¿½
+  // search (del_msg, 1);	-> >=0 donc a supprimï¿½
 
-  static void log(string cmd, string not_query, int errcode, int|void sz)
+  protected void log(string cmd, string not_query, int errcode, int|void sz)
   {
     log_id->method = cmd;
     log_id->not_query = not_query;
@@ -113,14 +113,14 @@ static class POP3_Session
 //     conf->log(([ "error":errcode, "len":sz ]), log_id);
   }
 
-  static void send(string s)
+  protected void send(string s)
   {
     send_q->put(s);
     con->set_write_callback(write_callback);
   }
 
 
-  static string bytestuff(string s)
+  protected string bytestuff(string s)
   {
     // RFC 1939 doesn't explicitly say what quoting is to be used,
     // but it says something about bytestuffing lines beginning with '.',
@@ -135,7 +135,7 @@ static class POP3_Session
     return(s);
   }
 
-  static void handle_command(string line)
+  protected void handle_command(string line)
   {
     if (sizeof(line)) {
       array a = (line/" ");
@@ -154,8 +154,8 @@ static class POP3_Session
     }
   }
 
-  static int timeout_sent;
-  static void do_timeout()
+  protected int timeout_sent;
+  protected void do_timeout()
   {
     if (!timeout_sent) {
       parent->to_cnt++;
@@ -180,11 +180,12 @@ static class POP3_Session
     }
   }
 
-  void return_error(string error, string command,
+  int return_error(string error, string command,
 		    array(string) args)
   {
     send("-ERR "+error+"\r\n");
     log(command, args*" ", 400);
+    return 0;
   }
 
   void create(object con, int timeout, object c, object p)
@@ -293,8 +294,8 @@ static class POP3_Session
      int mailsize;
      string renameto = foo;
      if(!sscanf(foo,"%*s,S=%d",mailsize)) {
-       array|int foo2 = file_stat(homedir + "new/" + foo, 1);
-       if (arrayp(foo2)) {
+       object foo2 = file_stat(homedir + "new/" + foo, 1);
+       if (foo2) {
          if (foo2[1] >0) renameto += sprintf(",S=%d",foo2[1]);
        }
      }
@@ -336,7 +337,6 @@ static class POP3_Session
   {
    if(sizeof(args) >1) {
      return_error("Too much arguments.","LIST",args);
-     return;
    }
    if(sizeof(args) ==1) {
      // TODO: do not count marked as deleted messages
@@ -344,23 +344,21 @@ static class POP3_Session
      if(sscanf(args[0],"%d",msgid)) {
        if(msgid==0) {
          return_error("No such message.","LIST",args);
-         return;
+         return 0;
        }
        msgid--;
        int|string output;
        output = list(msgid);
        if(stringp(output)) {
         send("+OK "+output+"\r\n");
-        return;
+        return 0;
        }
        else {
         return_error("No such message "+(string)msgid+".","LIST",args);
-        return;
        }
      }
      else {
        return_error("No such message.","LIST",args);
-       return;
      }
    }
    // Now this is for all mails
@@ -420,11 +418,11 @@ static class POP3_Session
   }
 };
 
-static object conf;
+protected object conf;
 
-static object port;
+protected object port;
 
-static void got_connection()
+protected void got_connection()
 {
   object con = port->accept();
 
@@ -433,7 +431,7 @@ static void got_connection()
   POP3_Session(con, QUERY(timeout), conf, this_object());
 }
 
-static void init()
+protected void init()
 {
   int portno = QUERY(port) || Protocols.Ports.tcp.pop3;
   string host = 0; // QUERY(host);

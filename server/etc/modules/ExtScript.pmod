@@ -12,7 +12,7 @@
 mapping scripthandlers = ([ ]);
 
 //!
-static void diag(string x)
+protected void diag(string x)
 { // report_debug(x);
 }
 
@@ -65,14 +65,14 @@ class Handler
   }
 
   //!
-  static void putvar(string vtype, string vname, string vval)
+  protected void putvar(string vtype, string vname, string vval)
   { pipe->write(sprintf("%s%c%s%c%c%c", vtype, strlen(vname), vname,
           strlen(vval)/65536, strlen(vval)/256, strlen(vval) & 255));
     pipe->write(vval);
   }
 
   //!
-  static string launch_process(string how)
+  protected string launch_process(string how)
   { /* must have locked the mutex to call this function */
 
     if (proc && proc->status() == 0)
@@ -99,7 +99,7 @@ class Handler
   }
 
   //!
-  static array do_helper(string how, string arg, object id, void|mapping opts)
+  protected array do_helper(string how, string arg, object id, void|mapping opts)
   {
 #if constant(Thread.Mutex)
     object lock = mutex ? mutex->lock() : 0;
@@ -299,10 +299,10 @@ object dispatchmutex = Thread.Mutex();
 #endif
 
 //!
-static int lastobjdiag = 0;
+protected int lastobjdiag = 0;
 
 //!
-static void objdiag()
+protected void objdiag()
 { if (lastobjdiag > time(0)-25) return;
   lastobjdiag = time(0);
   diag("Subprocess status:\n");
@@ -318,7 +318,7 @@ static void objdiag()
 }
 
 //!
-static int lastcleanup = 0;
+protected int lastcleanup = 0;
 
 //!
 void periodic_cleanup()

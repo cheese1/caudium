@@ -36,7 +36,7 @@ int thread_safe=1;
 
 inherit "module";
 inherit "caudiumlib";
-static inherit "http";
+protected inherit "http";
 
 
 constant module_type = MODULE_PARSER;

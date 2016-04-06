@@ -34,14 +34,14 @@
  */
 
 
-static function _store;
-static function _retrieve;
-static function _unlink;
-static function _unlink_regexp;
-static function _size;
-static function _list;
-static function _stop;
-static string namespace;
+protected function _store;
+protected function _retrieve;
+protected function _unlink;
+protected function _unlink_regexp;
+protected function _size;
+protected function _list;
+protected function _stop;
+protected string namespace;
 
 //!
 void create(string _namespace, mapping callbacks) {

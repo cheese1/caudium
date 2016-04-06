@@ -72,7 +72,7 @@ constant module_unique = 0;
 int redirects, accesses, errors, dirlists;
 int puts, deletes, mkdirs, moves, chmods, appes;
 
-static int do_stat = 1;
+protected int do_stat = 1;
 
 string status()
 {

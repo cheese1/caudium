@@ -26,7 +26,7 @@
 constant cvs_version="$Id$";
 
 //!
-static array(mapping) image_types =
+protected array(mapping) image_types =
 ({
     (["ext": "gif","type":"image/gif"]),
     (["ext": "png","type":"image/png"]),

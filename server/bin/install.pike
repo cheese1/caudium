@@ -380,10 +380,10 @@ string find_arg(array argv, array|string shortform,
 
 class Environment
 {
-  static string filename;
-  static mapping(string:array(string)) env, oldenv;
+  protected string filename;
+  protected mapping(string:array(string)) env, oldenv;
 
-  static void read()
+  protected void read()
   {
     string var, def;
     multiset(string) exports = (<>);
@@ -425,7 +425,7 @@ class Environment
     oldenv = copy_value(env);
   }
 
-  static void write()
+  protected void write()
   {
     object f = open(filename, "cwt");
     if(!f) {
@@ -458,7 +458,7 @@ class Environment
     f->close();
   }
 
-  static int changed()
+  protected int changed()
   {
     return !equal(env, oldenv);
   }

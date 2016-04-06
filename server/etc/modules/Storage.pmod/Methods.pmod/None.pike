@@ -40,7 +40,7 @@ constant storage_type    = "None";
 constant storage_doc     = "";
 
 //!
-static string version = sprintf("%d.%d.%d", __MAJOR__, __MINOR__, __BUILD__); 
+protected string version = sprintf("%d.%d.%d", __MAJOR__, __MINOR__, __BUILD__); 
 
 //!
 void create() {

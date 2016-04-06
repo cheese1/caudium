@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -519,7 +519,7 @@ class CGIWrapper
     return 1;
   }
 
-  static int mode;
+  protected int mode;
   void process( string what )
   {
     DWERROR(sprintf("CGI:CGIWrapper::process(%O)\n", what));
@@ -613,11 +613,11 @@ class CGIScript
   }
 
   // HUP, PIPE, INT, TERM, KILL
-  static constant kill_signals = ({ signum("HUP"), signum("PIPE"),
+  protected constant kill_signals = ({ signum("HUP"), signum("PIPE"),
 				    signum("INT"), signum("TERM"),
 				    signum("KILL") });
-  static constant kill_interval = 3;
-  static int next_kill;
+  protected constant kill_interval = 3;
+  protected int next_kill;
 
   void kill_script()
   {
@@ -812,7 +812,7 @@ void start(int n, object conf)
     // global_env["SERVER_URL"] = get_canonical_url();
 
     array us = ({0,0});
-    foreach(query("extra_env")/"\n", tmp)
+    foreach(query("extra_env")/"\n";; string tmp)
       if(sscanf(tmp, "%s=%s", us[0], us[1])==2)
         global_env[us[0]] = us[1];
   }
@@ -1072,7 +1072,7 @@ void create(object conf)
 	 "The maximum number of files the script can keep open at any time. "
          "It is not possible to set this value over the system maximum. "
          "On most systems, there is no limit, but some unix systems still "
-         "have a static filetable (Linux and *BSD, basically).",
+         "have a protected filetable (Linux and *BSD, basically).",
 	 ({64,128,256,512,1024,2048}));
 
   defvar("stack", -2, "Limits: Stack size", TYPE_INT,
@@ -1206,7 +1206,7 @@ void create(object conf)
 //!  name: Limits: Maximum file size
 //
 //! defvar: open_files
-//! The maximum number of files the script can keep open at any time. It is not possible to set this value over the system maximum. On most systems, there is no limit, but some unix systems still have a static filetable (Linux and *BSD, basically).
+//! The maximum number of files the script can keep open at any time. It is not possible to set this value over the system maximum. On most systems, there is no limit, but some unix systems still have a protected filetable (Linux and *BSD, basically).
 //!  type: TYPE_INT_LIST
 //!  name: Limits: Maximum number of open files
 //

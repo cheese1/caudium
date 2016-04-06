@@ -47,10 +47,10 @@ constant storage_default = "+";
 // into a cycle of sync processes.
 #define SYNCTIME 60
 
-static string path;
+protected string path;
 mapping idx;
 mapping idx_sz;
-static mapping _size;
+protected mapping _size;
 array _sending;
 int idx_sync_stop;
 
@@ -189,14 +189,14 @@ void unlink_regexp(string namespace, string regexp) {
 }
 
 //!
-static string encode(string namespace, string key, string value) {
+protected string encode(string namespace, string key, string value) {
   mapping tmp = ([ "namespace" : namespace, "key" : key, "value" : value ]);
   string data = sprintf("/* Storage.Disk */\n\nmapping data = %O;\n", tmp);
   return data;
 }
 
 //!
-static mixed decode(string data) {
+protected mixed decode(string data) {
   program p;
   object e = ErrorContainer();
   master()->set_inhibit_compile_errors(e);
@@ -211,11 +211,11 @@ static mixed decode(string data) {
 }
 
 //!
-static string get_hash(string data) {
+protected string get_hash(string data) {
   return Caudium.Crypto.hash_md5(data, 1);
 }
 
-static string hash_path(string namespace, string key) {
+protected string hash_path(string namespace, string key) {
   return Caudium.Crypto.hash_md5(namespace + key, 1);
 }
 
@@ -290,12 +290,12 @@ void flush() {
 }
 
 //!
-static void sending(object o) {
+protected void sending(object o) {
   _sending += ({ o });
 }
 
 //!
-static void unsending(object o) {
+protected void unsending(object o) {
   _sending -= ({ o });
 }
 

@@ -125,13 +125,13 @@ void host_to_ip(string|void host, function|void callback, mixed ... args)
 }
 
 //!
-static void dummy_ip_to_host(string ip, function callback, mixed ... args)
+protected void dummy_ip_to_host(string ip, function callback, mixed ... args)
 {
   callback(ip, 0, @args);
 }
 
 //!
-static void dummy_host_to_ip(string host, function callback, mixed ... args)
+protected void dummy_host_to_ip(string host, function callback, mixed ... args)
 {
   callback(host, 0, @args);
 }

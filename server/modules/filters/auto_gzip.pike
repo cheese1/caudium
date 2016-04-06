@@ -33,8 +33,8 @@ constant module_name = "Compression module";
 constant module_doc  = "This module will allow you to send compressed "
 		"data to the client with the use of the Accept-Encoding "
 		"header. Currently two modes of operation are supported:"
-		"<ol><li>Sending pre-compressed version of static file from "
-		"the real filesystem. This is ideal for your static content "
+		"<ol><li>Sending pre-compressed version of protected file from "
+		"the real filesystem. This is ideal for your protected content "
 		"as it won't take much CPU time and remains simple.</li>"
 		"<li>Creating and sending a compressed version of the content."
 		" This is for dynamic content and useful if you want to use "
@@ -143,7 +143,7 @@ mapping first_try(object id)
 
 void create()
 {
-  defvar("gzipprecompress", 1, "Send compressed version of static files",
+  defvar("gzipprecompress", 1, "Send compressed version of protected files",
   	 TYPE_FLAG, "This option implements a suggestion by Francesco Chemolli:<br>\n"
       "The module will:\n"
       "<ul><li>check if the browser supports on-the-fly decompression</li>\n"
@@ -272,7 +272,7 @@ void start()
 }
 
 // taken from Cache code
-static string get_hash( string data ) {
+protected string get_hash( string data ) {
 string retval;
   retval = Caudium.Crypto.hash_md5(data);
   return sprintf("%@02x",(array(int)) retval);
@@ -449,7 +449,7 @@ mapping filter(mapping response, object id)
 //!<li>if so, send a redirection to the precompressed file</li></ul>
 //!<p>So, no cost for compression, all URLs, content-types and such would remain vaild, no compression overhead.Also, it would allow a site mantainer to choose WHAT to precompress and what not to.</p><p>With this option, the module will acts as a filter, and it _will_ use one extra stat per access from browsers that support automatic decompression. Of course you won't be able to compress dynamic content with this option.</p><i>Note: this option will not work if your gzip file is older than the original one.</i>
 //!  type: TYPE_FLAG
-//!  name: Send compressed version of static files
+//!  name: Send compressed version of protected files
 //
 //! defvar: gzipfly
 //! If set the module will compress data on the fly even on dynamic content. Useful if for you CPU is cheaper than bandwith.

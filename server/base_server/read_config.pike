@@ -217,7 +217,7 @@ Stdio.Stat config_is_modified(string cl)
           return st;
 }
 
-private static void read_it(string cl)
+private protected void read_it(string cl)
 {
   string ccl = replace(cl, " ", "_");
 

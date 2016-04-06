@@ -77,7 +77,7 @@ class client
      554:"Transaction failed" ]);
 
   // Does smtp command and throw if there any errors.
-  static private int cmd(string c, string|void comment)
+  protected private int cmd(string c, string|void comment)
   {
     int r = command(c);
     switch(r) {
@@ -213,7 +213,7 @@ class client
     //werror ("ESMTP: mail sent.\n");
   }
 
- static string parse_addr(string addr)
+ protected string parse_addr(string addr)
   {
     array(string|int) tokens = replace(MIME.tokenize(addr), '@', "@");
 

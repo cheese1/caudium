@@ -186,7 +186,7 @@ void create()
 void start(int level, object _conf)
 {}
 
-static array(object) make_years(object id, string yr, object now, object target)
+protected array(object) make_years(object id, string yr, object now, object target)
 {
   if (!yr || !sizeof(yr))
     return now->years();
@@ -226,7 +226,7 @@ static array(object) make_years(object id, string yr, object now, object target)
   return sizeof(ret) ? ret : now->years();
 }
 
-static string make_ds_form(object id, mapping my_args, object now, object target)
+protected string make_ds_form(object id, mapping my_args, object now, object target)
 {
   mapping ds_form = ([]);
   mapping ds_month = ([]);
@@ -343,7 +343,7 @@ static string make_ds_form(object id, mapping my_args, object now, object target
   return Caudium.make_container("table", ds_table, tcontents);
 }
 
-static string make_monthyear_selector(object id, mapping my_args, object now, object target)
+protected string make_monthyear_selector(object id, mapping my_args, object now, object target)
 {
   mapping ds_row = ([]);
   mapping ds_cell = ([
@@ -359,7 +359,7 @@ static string make_monthyear_selector(object id, mapping my_args, object now, ob
                         Caudium.make_container("td", ds_cell, contents));
 }
 
-static string make_weekdays_row(object id, mapping my_args, object now, object target)
+protected string make_weekdays_row(object id, mapping my_args, object now, object target)
 {
   mapping  wd_row = ([]);
   mapping  wd_cell = ([]);
@@ -545,7 +545,7 @@ string make_monthdays_grid(object id, mapping my_args, object now,
   return ret;
 }
 
-static void check_array(mapping var, string name)
+protected void check_array(mapping var, string name)
 {
   if (!var[name])
     return;
@@ -555,7 +555,7 @@ static void check_array(mapping var, string name)
   var[name] = varray[-1];
 }
 
-static int value_in_range(int val, array(mapping) range, int rel, void|int min, void|int max)
+protected int value_in_range(int val, array(mapping) range, int rel, void|int min, void|int max)
 {
   if (!range || !sizeof(range))
     return 0;
@@ -611,7 +611,7 @@ static int value_in_range(int val, array(mapping) range, int rel, void|int min, 
   return 0;
 }
 
-static multiset check_in_range(object date, mapping range, int maxdays)
+protected multiset check_in_range(object date, mapping range, int maxdays)
 {
   int      day, month, year, week;
   mixed    error;
@@ -754,7 +754,7 @@ static multiset check_in_range(object date, mapping range, int maxdays)
   return ret;
 }
 
-static multiset mark_active_weeks(object target, object id)
+protected multiset mark_active_weeks(object target, object id)
 {
   if (!target || !objectp(target))
     return (<>);    
@@ -782,7 +782,7 @@ static multiset mark_active_weeks(object target, object id)
   return ret;
 }
 
-static multiset mark_active_days(object target, object id)
+protected multiset mark_active_days(object target, object id)
 {
   if (!target || !objectp(target))
     return (<>);    
@@ -822,7 +822,7 @@ static multiset mark_active_days(object target, object id)
   return ret;
 }
 
-static array(mapping) parse_ranges(string c)
+protected array(mapping) parse_ranges(string c)
 {
   if (!c || !sizeof(c))
     return ({});
@@ -868,7 +868,7 @@ static array(mapping) parse_ranges(string c)
 }
 
 // inner tags
-static string startdate_tag(string tag, mapping args, object id)
+protected string startdate_tag(string tag, mapping args, object id)
 {
   int    when, wday, wmonth, wyear;
   mixed  error;
@@ -948,12 +948,12 @@ static string startdate_tag(string tag, mapping args, object id)
   return "<!-- start date set -->";
 }
 
-static private mapping how_dir = ([
+protected private mapping how_dir = ([
   "before" : "prev",
   "after" : "next"
 ]);
 
-static array(mapping) make_ba_range(object date, string when, string how)
+protected array(mapping) make_ba_range(object date, string when, string how)
 {
   string           fun;
 
@@ -1004,7 +1004,7 @@ static array(mapping) make_ba_range(object date, string when, string how)
   return ({range});
 }
 
-static string hotdate_tag(string tag, mapping args, object id)
+protected string hotdate_tag(string tag, mapping args, object id)
 {
   multiset   relative = (<"tomorrow", "today", "yesterday", "specified">);
 
@@ -1172,7 +1172,7 @@ string calendar_tag(string tag, mapping args, string cont,
   return tmp +Caudium.make_container("table", main_table, contents);
 }
 
-static multiset  changetypes = (<"day", "week">);
+protected multiset  changetypes = (<"day", "week">);
 
 string calendar_action_tag(string tag, mapping args, string cont,
                            object id, object f, mapping defines)
@@ -1265,7 +1265,7 @@ mapping query_tag_callers()
 
 // some major uglinness
 // put last so that it doesn't blur the code
-static private string default_js = #"
+protected private string default_js = #"
 <script language=\"JavaScript\">
 function disp_month()
 {
@@ -1326,7 +1326,7 @@ function disp_week(weeknum)
 
 </script>";
 
-static private string default_css = #"<style type=\"text/css\">
+protected private string default_css = #"<style type=\"text/css\">
 td.cal-td {
       background: #ffffff;
       font-weight: bold;

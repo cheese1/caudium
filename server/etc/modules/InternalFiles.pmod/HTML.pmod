@@ -26,15 +26,15 @@
 constant cvs_version="$Id$";
 
 //!
-static constant mime_type = "text/html";
+protected constant mime_type = "text/html";
 
 //!
-static mapping empty_file = ([
+protected mapping empty_file = ([
     "data":#string "nofile.html",
     "type":mime_type]);
 
 //!
-static string replace_vars(string file, mapping(string:string) vars)
+protected string replace_vars(string file, mapping(string:string) vars)
 {
     if (!vars || !sizeof(vars))
         return file;

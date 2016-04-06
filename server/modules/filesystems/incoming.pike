@@ -39,19 +39,19 @@ constant module_doc  = "This is a virtual filesystem than can be used only for u
                        "downloads.";
 constant module_unique = 0;
 
-static class decaying_file {
+protected class decaying_file {
 
   inherit Stdio.File;
 
-  static int rate, left;
-  static function other_read_callback;
-  static int crot;
+  protected int rate, left;
+  protected function other_read_callback;
+  protected int crot;
 
 
   constant rotten_bits = "muahaha!(%/?\"&?¡/&?(/?_,-.,_:;Ñ¬¾´";
 
 
-  static string decay(string data)
+  protected string decay(string data)
   {
     if(sizeof(data)<=left) {
       left -= sizeof(data);
@@ -79,7 +79,7 @@ static class decaying_file {
     return r;
   }
 
-  static mixed my_read_callback(mixed id, string data)
+  protected mixed my_read_callback(mixed id, string data)
   {
     if(stringp(data))
       data = decay(data);
@@ -141,7 +141,7 @@ void create()
 	 lambda(){ return !QUERY(bitrot); });
 }
 
-static mixed not_allowed( object id )
+protected mixed not_allowed( object id )
 {
   id->misc->moreheads = (id->misc->moreheads||([]))|(["allow":"PUT"]);
   id->misc->error_code = 405;
@@ -152,7 +152,7 @@ static mixed not_allowed( object id )
 #define FILE_SIZE(X) (Stdio.file_size(X))
 
 
-static mixed lose_file( string f, object id )
+protected mixed lose_file( string f, object id )
 {
   object o;
   int size = FILE_SIZE( f = path + f );

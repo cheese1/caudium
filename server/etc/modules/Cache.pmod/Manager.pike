@@ -54,7 +54,7 @@ void create() {
 //! Trigger delayed start for the cache, this stops us from having to load
 //! up indexes for potentially large caches unless they are actually needed
 //! see also: delayed module loading.
-static void really_start() {
+protected void really_start() {
   if ( _really_started ) return;
 #ifdef CACHE_DEBUG
   write( "CACHE: Delayed cache start triggered. Loading caching subsystem: " );
@@ -84,7 +84,7 @@ mapping status() {
 }
 
 //! internal method used to create a cache instance.
-static void create_cache( string namespace ) {
+protected void create_cache( string namespace ) {
   int max_object_ram = (int)(max_ram_size * 0.25);
   int max_object_disk = (int)(max_disk_size * 0.25);
   caches += ([ namespace : Cache.Cache( namespace, max_object_ram, max_object_disk, slow->get_storage(namespace), default_ttl ) ]);
@@ -92,7 +92,7 @@ static void create_cache( string namespace ) {
 
 //! internal method that uses randomness to decide how long to wait in between
 //! expiry and size management runs
-static int sleepfor() {
+protected int sleepfor() {
 	// sleepfor() calculates how long to sleep between callouts to
 	// watch_size(), alsolute minimum time for a sleep is 30 seconds,
 	// providing that vigilance is set to 100% and the last random
@@ -145,7 +145,7 @@ void start( int _max_ram_size, int _max_disk_size, int _vigilance, int _default_
 //! mathematical algorhythm (which wont be discussed here) to find the caches
 //! with the largest size and force objects to expire until the total size of
 //! all caches is back within operational tolerances.
-static void watch_size() {
+protected void watch_size() {
   if ( ! _really_started ) {
     call_out( watch_size, sleepfor() );
     return;
@@ -226,7 +226,7 @@ static void watch_size() {
 
 //! Check to see whether any caches halflifes have expired - i.e. they havent
 //! been used for any operations within a certain period of time.
-static void watch_halflife() {
+protected void watch_halflife() {
   if ( ! _really_started ) {
     call_out( watch_halflife, 3600 );
     return;
@@ -292,7 +292,7 @@ object get_cache( void|string|object one ) {
 //!
 //! @param namespace
 //! The namespace of the cache we want.
-static object low_get_cache( string namespace ) {
+protected object low_get_cache( string namespace ) {
   if ( ! caches[ namespace ] ) {
     create_cache( namespace );
   }
