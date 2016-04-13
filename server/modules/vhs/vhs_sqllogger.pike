@@ -85,7 +85,6 @@ class db_handler {
   
   void|object handle(void|object d) {
     LOCK();
-    int count;
     dbs -= ({0});
     if(objectp(d)) {
       if(search(dbs, d) == -1) {
@@ -139,9 +138,7 @@ void stop() {
 
 void log(object id, mapping file)  {
   string log_query, referer, host;
-  array auth;
   object sql_conn=db->handle();
-
 
   referer = (arrayp(id->referer))?(array)id->referer*" ":(string)id->referer;
 

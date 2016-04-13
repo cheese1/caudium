@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2008 The Caudium Group
+ * Copyright ï¿½ 2000-2008 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -224,7 +224,6 @@ string query_name()
 
 array find_dir( string f, object id )
 {
-  mixed ret;
   array dir;
   object privs;
 

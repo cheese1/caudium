@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -434,7 +434,7 @@ string get_host_url(object id)
 
 mixed first_try(object id)
 {
-  string f, to;
+  string to;
   mixed tmp;
   string url,hurl;
 
@@ -443,7 +443,6 @@ mixed first_try(object id)
   }
   
   string m;
-  int ok;
   m = id->not_query;
   if(id->query && sscanf(id->raw, "%*s?%[^\n\r ]", tmp))
     m += "?"+tmp;

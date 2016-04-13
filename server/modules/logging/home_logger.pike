@@ -80,7 +80,6 @@ private inline string fix_logging(string s)
 // Really write an entry to the log.
 private void write_to_log( string host, string rest, string oh, function fun )
 {
-  int s;
   if(!host) host=oh;
   if(!stringp(host))
     host = "error:no_host";
@@ -311,7 +310,6 @@ object mutex;
 
 string start()
 {
-  object f;
   if(cache_head) destruct(cache_head);
   cache_head = CacheFile(QUERY(num), QUERY(delay), this_object(), mutex);
   parse_log_formats();
@@ -319,9 +317,7 @@ string start()
 
 protected void do_log(mapping file, object request_id, function log_function)
 {
-  string a;
   string form;
-  function f;
 
   if(!log_function) return;// No file is open for logging.
 

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -165,16 +165,6 @@ private void replace_attribute(string name, string|array(string) value, mapping(
 private void delete_attribute(string name, mapping(string:array(string)) data)
 {
     insert_attr(name, 0,  "delete", data);
-}
-
-private void add_class(string|array(string) name, mapping(string:array(string)) data)
-{
-    insert_attr("objectClass", name, "add", data);
-}
-
-private void replace_class(string name, mapping(string:array(string)) data)
-{
-    insert_attr("objectClass", name, "replace", data);
 }
 
 //

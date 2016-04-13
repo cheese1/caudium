@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -625,9 +625,7 @@ constant replace_to   = values( Caudium.Const.iso88591 ) + ({ nbsp, "<", ">", "&
 
 mixed draw_callback(mapping args, string text, object id)
 {
-  array err;
   mixed data;
-  int elapsed;
   string orig_text = text;
   object img;
 
@@ -715,7 +713,7 @@ mixed draw_callback(mapping args, string text, object id)
 
   if(args->fadein)
   {
-    int amount=2, steps=10, delay=10, initialdelay=0, ox;
+    int amount=2, steps=10, delay=10, initialdelay=0;
     string res = img->gif_begin();
     sscanf(args->fadein,"%d,%d,%d,%d", amount, steps, delay, initialdelay);
     if(initialdelay)

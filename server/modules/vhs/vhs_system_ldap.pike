@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -454,7 +454,7 @@ void create()
 void precache_rewrite(object id)
 {
   string hostname = lower_case( ( (id->host || "localhost" ) / ":" )[0] );
-  string host, p;
+  string host;
   mapping vhs = ([]);
 
   id->raw_url = id->host + id->raw_url;

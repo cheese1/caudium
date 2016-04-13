@@ -6,7 +6,6 @@
 //
 constant cvs_version = "$Id: mailit.pike,v 1.14 2004-08-04 17:21:28 hww3 Exp $";
 #include <module.h>
-#include <process.h>
 inherit "module";
 inherit "roxenlib";
 
@@ -269,10 +268,10 @@ request_id->misc->mailitattachments;
 		perror("MailIt!: Sending mail from "+f_user[0]+"...\n");
 		}
 	if(query("checkowner")){
-	  spawn(query("sendmail")+" -t -f "+f_user[0]+"",out,0,out);
+	  Process.spawn(query("sendmail")+" -t -f "+f_user[0]+"",out,0,out);
 	  }
 	else {
-	  spawn(query("sendmail")+" -t",out,0,out);
+	  Process.spawn(query("sendmail")+" -t",out,0,out);
 	  }
 	retval=(string)mpmsg;
 	in->write((string)mpmsg);

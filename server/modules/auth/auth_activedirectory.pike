@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -144,7 +144,6 @@ string get_attrval(mapping attrval, string attrname, string dflt)
 mapping|int get_user_info(string username)
 {
   ERROR("get_user_info: " + username);
-  int res;
   if(!username)
     return 0;
   mapping data=loadUserInfo(username);
@@ -210,7 +209,6 @@ mapping|int get_groupname(string gid)
 mapping|int get_group_info(string groupname)
 {
   ERROR("get_user_info: " + groupname);
-  int res;
   if(!groupname)
     return 0;
   mapping data=loadGroupInfo(groupname);
@@ -947,7 +945,7 @@ string getUserDN(string username)
 //
 int authenticate(string username, string password)
 {
-  object ldap, entry;
+  object ldap;
   int res;
 
   string userdn=getUserDN(username);

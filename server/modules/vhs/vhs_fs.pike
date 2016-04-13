@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -75,7 +75,7 @@ mixed getdata(string f, object id)
 
 mixed find_file(string f, object id)
 {
-  string u, of;
+  string of;
   of = f;
 
 #ifdef USERFS_DEBUG
@@ -130,9 +130,8 @@ mixed find_file(string f, object id)
 
 mixed real_file(string f, object id)
 {
-  string u, of;
+  string of;
   of=f;
-	array st;
 	mixed dir;
 
 	DW("real_file / "+ f);
@@ -153,10 +152,8 @@ mixed real_file(string f, object id)
 
 mixed stat_file(string f, object id)
 {
-  string u, of;
+  string of;
   of=f;
-
-	array st;
 
 	mixed dir;
 
@@ -171,7 +168,7 @@ mixed stat_file(string f, object id)
 
 mixed find_dir(string f, object id)
 {
-  string u, of;
+  string of;
   of = f;
 
 #ifdef USERFS_DEBUG

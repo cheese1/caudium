@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * Based on the word from Matthew Brookes <matt@broadcom.ie> and
  * Bill Welliver <hww3@riverweb.com>.
  *
@@ -172,7 +172,6 @@ string tag_path( string tag, mapping args, object id, object file, mapping defin
 
    // split path/file part of URL into an array "parts"
    array (string) parts = id->not_query / "/";
-   array (string) tmp;
    mixed t;
    string a = (sizeof(id->prestate)?"apre":"a");
 

@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2001-2002 The Caudium Group
- * Copyright © 2002 David Gourdelier
+ * Copyright ï¿½ 2001-2002 The Caudium Group
+ * Copyright ï¿½ 2002 David Gourdelier
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -967,7 +967,6 @@ void nodouble_attr(string attr_user, string attr_prog, mapping defines)
 void modifyinldap(object con, mapping defines, string basedn)
 {
   mapping attropval = ([ ]);
-  array define;
   array indic;
   indic = indices(defines);
   string indice;

@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,7 +27,7 @@
 //! cvs_version: $Id: cvsfs.pike,v 1.21 2005-01-03 17:04:45 kiwi Exp $
 //
 /*
- * Written by Niels Möller 1997
+ * Written by Niels Mï¿½ller 1997
  */
 
 constant cvs_version = "$Id: cvsfs.pike,v 1.21 2005-01-03 17:04:45 kiwi Exp $";
@@ -44,7 +44,6 @@ inherit "caudiumlib";
 import Stdio;
 import Array;
 #else
-#include <stdio.h>
 #include <array.h>
 #endif
 
@@ -81,7 +80,6 @@ object|array run_cvs(string prog, string dir, int with_stderr, string ...args)
   object stdin = File();
   object stdout = File();
   object stderr = File();
-  int id;
   object|array result;
 
   // report_debug("run_cvs: %s %s\n", prog, args * " "); 
@@ -101,7 +99,6 @@ object|array run_cvs(string prog, string dir, int with_stderr, string ...args)
 
 mapping parse_modules_file(string modules)
 {
-  int i;
   array rows = map(replace(modules, "\t", " ") / "\n",
 		   lambda (string row) { return (row / " ") - ({""}); } ) - ({ ({}) }) ;
 // report_debug("parse_modules_file: %O\n", rows);
@@ -272,8 +269,6 @@ string query_location() { return query("location"); }
 
 string|void check_variable(string name, string value)
 {
-  string path;
-  // report_debug("Trying to set '" + name + "' = '" + value + "'\n");
   switch(name)
   {
   case "cvsmodule":

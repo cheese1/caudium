@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -38,26 +38,6 @@ constant module_doc  = "This tag generates tables.<p>"
 constant module_unique = 1;
 
 protected private int loaded;
-
-protected private constant old_doc =
-  ("Generates tables from, as an example, tab separated fields in newline"
-   " separated records (this is the default)."
-   "<p>This module defines a tag, {tablify}<p>Arguments:<br>"
-   "help: This help<br>\n"
-   "nice: Generate \"nice\" tables. The first row is the title row<br>\n"
-   "nicer: Generate \"even nicer\" tables. The first row is the title row<br>\n"
-   "cellseparator=str: Use str as the column-separator<br>\n"
-   "rowseparator=str: Use str as the row-separator<br>\n"
-   "cellalign=left|right|center: Align the contents of the cells<br>\n"
-   "rowalign=left|right|center: Align the contents of the rows<br>\n");
-
-protected private string doc()
-{
-  return !loaded?"":replace(Stdio.read_bytes("modules/tags/doc/tablify")||
-			    old_doc,
-			    ({ "{", "}" }), ({ "&lt;", "&gt;" }));
-}
-
 
 void start(int num, object configuration)
 {
@@ -151,7 +131,7 @@ string tag_tablify( string tag, mapping m, string q, object request_id,
 		    object file, mapping defines)
 {
   array rows, res;
-  string sep, td, color, table;
+  string sep, td, table;
   int i;
 
 #if 0

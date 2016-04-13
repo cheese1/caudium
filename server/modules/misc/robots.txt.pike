@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 2000-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2001 Roxen Internet Software
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -69,7 +69,6 @@ void create() {
 private string _robots;
 private string _internal_location;
 private array(array(string|function)) _loc_mods;
-private array(string) _loc_loc;
 private int _stat;
 
 string make_rules(mapping forbidden) {

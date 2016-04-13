@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Based on Superform © NSL Internet / shez@nsl.net.
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Based on Superform ï¿½ NSL Internet / shez@nsl.net.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -179,7 +179,7 @@ mixed tag_input(string tag_name, mapping args,
 		 object request_id, object f,
 		 mapping defines, object fd)
 {
-  string result,hidden,type;
+  string result,type;
   
   if (args->type && args->type=="bool") {
     result="<default name=\""+args->name+"\" value=\""+args->value+"\">"+
@@ -471,9 +471,8 @@ int process_widgets(object rid) {
 mixed first_try(object rid)
 {
   mixed match;
-  string error,value,mail,mailerror,domain,mxdomain,mandatory;
+  string error,mail,mailerror,mxdomain,mandatory;
   int err=0;
-  mixed tmp;
   if (!rid->variables["sform_rand"]) {
     return 0;
   }
@@ -511,7 +510,6 @@ mixed first_try(object rid)
     if (rid->variables[match]) {
       string pattern=rid->variables[match];
       string pattern2=rid->variables[match];
-      function split;
       // replace any predifined expressions
       pattern=replace_predefined(pattern);
       // we want to make sure the regexp is of the form:
@@ -584,7 +582,7 @@ mixed first_try(object rid)
 }
  
 
-// does a luhn check on the number.  From Henrik Grubbström's
+// does a luhn check on the number.  From Henrik Grubbstrï¿½m's
 // code posted on 15/9/97
 
 int|string luhn_check(string number) {

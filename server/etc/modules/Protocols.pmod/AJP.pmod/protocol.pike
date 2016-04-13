@@ -618,8 +618,6 @@ mapping decode_forward(mapping packet)
   if(strlen(packet->data))
     do 
     {
-      //werror("scanning attributes.\n");
-     int code;
      string value;
      array x = 
       array_sscanf(packet->data, "%c%s");

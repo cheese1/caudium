@@ -72,8 +72,6 @@ mapping find_file(string f, object id)
   object result = cache_lookup("thumbnail", f);
 
   if(!result) {
-
-    int err;
     mixed t;
     string buff;
 

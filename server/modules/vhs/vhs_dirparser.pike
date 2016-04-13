@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -453,7 +453,7 @@ object find_finished_node(string f, object id)
 
 mapping standard_redirect(object o, object id)
 {
-  string loc, l2;
+  string loc;
   
   if (!o) o=root(id,0);
   

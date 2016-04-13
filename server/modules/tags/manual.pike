@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,12 +39,6 @@ constant module_doc  = "This tag is the manual librarian.<p>"
 constant module_unique = 1;
 
 protected private int loaded;
-
-protected private string doc()
-{
-  return !loaded?"":replace(Stdio.read_bytes("modules/tags/doc/manual")||"",
-			    ({ "{", "}" }), ({ "&lt;", "&gt;" }));
-}
 
 array file_finder(string entry, int lvl)
 {

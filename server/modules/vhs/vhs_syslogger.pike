@@ -80,16 +80,6 @@ private inline string fix_logging(string s)
   return s;
 }
 
-// Really write an entry to the log.
-private void write_to_log( string host, string rest, string oh, function fun )
-{
-  int s;
-  if(!host) host=oh;
-  if(!stringp(host))
-    host = "error:no_host";
-  if(fun) fun(replace(rest, "$host", host));
-}
-
 // Logging format support functions.
 final private inline string host_ip_to_int(string s)
 {
@@ -205,7 +195,6 @@ int loggingfield;	// Set the stuff for logginf
 
 string start()
 {
-  object f;
   parse_log_formats();
 
   switch(QUERY(LogST))
@@ -249,9 +238,7 @@ void hostsyslog(string data)
 
 protected void do_log(mapping file, object request_id, function log_function)
 {
-  string a;
   string form,out;
-  function f;
 
   if (!(form=log_format[(string)file->error]))
      form = log_format["*"];

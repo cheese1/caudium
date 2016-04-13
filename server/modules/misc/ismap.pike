@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -74,7 +74,7 @@ mapping find_colors(array lines, int color)
   int i;
   string s, url;
   int col1, col2;
-  int sr, sg, sb, er, eg, eb, r, g, b;
+  int sr, sg, sb, er, eg, eb;
   string btmp, ctmp;
   mapping res=([ "ranges":({}), ]);
 
@@ -154,8 +154,7 @@ mapping find_colors(array lines, int color)
 
 mixed parse_roxen_map_line(string line)
 {
-  string Url, tmp;
-  int c;
+  string Url;
   int x, y, x1, y1, r;
   mixed tmp1;
   line = (replace(line, "\t", "")/" " - ({""})) * "";;
@@ -173,10 +172,8 @@ mixed parse_roxen_map_line(string line)
 
 mixed parse_cern_map_line(string line)
 {
-  string Url, tmp, cmd;
-  int c;
+  string Url, cmd;
   int x, y, x1, y1, r;
-  mixed tmp1;
 
   line = replace(line, "\t", " ");
   while(line != (line = replace(line, "  ", " ")))
@@ -213,12 +210,9 @@ mixed parse_cern_map_line(string line)
 
 mixed parse_ncsa_map_line(string line)
 {
-  mixed coordinate_list;
-  string Url, tmp, cmd;
-  int c;
-  int x, y, x1, y1, r;
-  mixed tmp1;
-  
+  string Url, cmd;
+  int x, y, x1, y1;
+
   line = replace(line, "\t", " ");
   while(line != (line = replace(line, "  ", " ")))
     ;
@@ -356,13 +350,9 @@ mixed do_color_match(string file, mapping cols, int x, int y, int color)
   int xs, ys, eol;
   int r, g, b, i, grey;
 
-
   if(!file_stat(file))
     return 0;
 
-
-  int depth;
-  
   if(!(f=open(file, "r")))
     return 0;
   f->seek(3);

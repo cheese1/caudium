@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * Based on work from Karl Stevens <karl@maxim.ca>
  * 
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,6 @@
 //! cvs_version: $Id$
 //
 #include <module.h>
-#include <process.h>
 inherit "module";
 inherit "caudiumlib";
 
@@ -523,9 +522,7 @@ mixed find_file(string path, object id) {
 
   string result="";
   string file="";
-  mixed returncode;
   string project="";
-  int tt;
   int ts=time();
   int prj;
 

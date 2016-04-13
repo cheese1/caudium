@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -58,7 +58,7 @@ array seclevels = ({ });
 
 void start()
 {
-  string sl, sec;
+  string sl;
   array new_seclevels = ({});
 
   foreach(replace(query("sec"),({" ","\t","\\\n"}),({"","",""}))/"\n", sl)

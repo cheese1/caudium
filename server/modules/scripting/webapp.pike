@@ -1,6 +1,6 @@
 // This is a Caudium module. 
-// Copyright © 1999 - 2002, Roxen IS.
-// Copyright © 2003, The Caudium Group.
+// Copyright ï¿½ 1999 - 2002, Roxen IS.
+// Copyright ï¿½ 2003, The Caudium Group.
 
 inherit "modules/filesystems/filesystem.pike";
 
@@ -1621,7 +1621,7 @@ protected private array(string) my_combine_path_array(array(string) base, string
   }
 }
 
-protected private array(string) glob_expand(string glob_path)
+protected array(string) glob_expand(string glob_path)
 {
   WEBAPP_WERR(sprintf("glob_expand(%s)",glob_path));
   string|array(string) ret_path = glob_path;

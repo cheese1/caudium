@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -498,7 +498,6 @@ string ldapoutput_tag(string tag_name, mapping args, string contents,
     string cset = QUERY(charset);
     int proto = QUERY(ldapver);
     object con = 0, en;
-    array(mapping(string:mixed)) result;
     function dir_connect = request_id->conf->dir_connect;
     mixed error;
     string atype;

@@ -39,7 +39,6 @@
 //! cvs_version: $Id$
 
 #include <module.h>
-#include <process.h>
 inherit "module";
 inherit "caudiumlib";
 

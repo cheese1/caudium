@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -333,10 +333,9 @@ private string get_attrval(mapping attrval, string attrname, string dflt)
 mapping|int get_user_info(string user) {
 
     object sr,dir;
-    mixed err;
     mapping dirinfo=([]);
 
-    mapping(string:array(string)) tmp, attrsav;
+    mapping(string:array(string)) tmp;
 
     DEBUGLOG ("userinfo ("+user+")\n");
 
@@ -459,10 +458,9 @@ string|int get_groupname(string gid)
 mapping|int get_group_info(string group) {
 
     object sr,dir;
-    mixed err;
     mapping dirinfo=([]);
 
-    mapping(string:array(string)) tmp, attrsav;
+    mapping(string:array(string)) tmp;
 
     DEBUGLOG ("groupinfo ("+group+")\n");
 
@@ -653,10 +651,8 @@ private int|object get_group_object(object dir, string group)
 
 int authenticate (string user, string password)
 {
-    mixed err;
     object dir;
     string userdn;
-    mapping dirinfo;
     int res;
     object sr;
 

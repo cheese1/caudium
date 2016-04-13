@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,7 +47,6 @@ string copyright = ("<BR>Copyright 1997 "
 		    "http://david.hedbor.org/>David Hedbor</a>.");
 
 #include <module.h>
-#include <array.h>
 inherit "module";
 inherit "caudiumlib";
 
@@ -169,7 +168,7 @@ mapping ppmlist(string font, string user, string dir)
     "<H2>Cool PPM Font '"+font+"' not found!!</H2><HR>"+
     cvs_version + "<BR>" + copyright + "<HR>";
 
-  catch( fnts=sort_array(get_dir( dir ) - ({".",".."})) );
+  catch( fnts=Array.sort_array(get_dir( dir ) - ({".",".."})) );
   if( fnts ) {
     out += "<B>Available Digits:</B><DL>";
     string initial="";

@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2004 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -893,7 +893,7 @@ string tag_echo(string tag,mapping m,object id,object file,
     if(sizeof(m) == 1)
       m->var = m[indices(m)[0]];
     else 
-      return "<!-- ¿Que? -->";
+      return "<!-- ï¿½Que? -->";
   } else if(tag == "insert")
     return "";
   if(tag == "!--#echo" && id->misc->ssi_variables &&
@@ -3154,7 +3154,7 @@ mapping query_container_callers()
            "trace":tag_trace,
            "urldecode":tag_urldecode,
            "cset":lambda(string t, mapping m, string c, object id)
-        	  { return tag_set("set",m+([ "value":Protocols.HTTP.unentity(c) ]),
+        	  { return tag_set("set",m+([ "value": Parser.parse_html_entities(c) ]),
         		    id); },
            "source":tag_source,
            "case":tag_case,

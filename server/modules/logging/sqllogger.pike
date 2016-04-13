@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1999 Bill Welliver <hww3@riverweb@com>
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1999 Bill Welliver <hww3@riverweb@com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -85,7 +85,6 @@ class db_handler {
   
   void|object handle(void|object d) {
     LOCK();
-    int count;
     dbs -= ({0});
     if(objectp(d)) {
       if(search(dbs, d) == -1) {

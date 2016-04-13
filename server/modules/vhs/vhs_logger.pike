@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -245,7 +245,6 @@ object mutex;
 
 string start()
 {
-  object f;
   if(cache_head) destruct(cache_head);
   cache_head = CacheFile(QUERY(num), QUERY(delay), this_object(), mutex);
   logger->parse_log_formats(QUERY(LogFormat));
@@ -253,9 +252,7 @@ string start()
 
 protected void do_log(mapping file, object request_id, function log_function)
 {
-  string a;
   string form;
-  function f;
 
   if (!log_function) return;	// No file is open for logging.
 

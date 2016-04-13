@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  *
  * Ported from Roxen module
  * Daniel Podlejski <underley@underley.eu.org>
@@ -271,7 +271,6 @@ class CseStream
     object srun;
     string buff;
     string result;
-    int i;
   
     RESINWERR("send_data(1): lastcode = " + lastcode);
 

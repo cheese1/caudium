@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2002 The Caudium Group
- * Copyright © 2000-2001 Roxen Internet Software
+ * Copyright ï¿½ 2002 The Caudium Group
+ * Copyright ï¿½ 2000-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -61,7 +61,7 @@ constant module_doc  =
 
 class FCGIChannel
 {
-  static
+  protected
   {
     Stdio.File fd;
     array request_ids = allocate(MAX_FCGI_PREQ+1);
@@ -226,7 +226,7 @@ class FCGIChannel
 
 class Packet
 {
-  static
+  protected
   {
     int readyp;
     string leftovers;
@@ -310,7 +310,7 @@ class Stream
 
   int writer, closed;
 
-  static
+  protected
   {
     int reqid;
     FCGIChannel fd;
@@ -651,7 +651,7 @@ class FCGIRun
 
 class FCGI
 {
-  static
+  protected
   {
     Stdio.Port socket;
     array all_pids = ({});

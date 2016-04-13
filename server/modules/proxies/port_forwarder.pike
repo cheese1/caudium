@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1998 Francesco Chemolli,
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1998 Francesco Chemolli,
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -144,7 +144,6 @@ class Connection
 	}
 
 	void destroy() {
-		mapping result;
 		debug_perror("Destroying connection\n");
 		fdescs[0]->close();
 		fdescs[1]->close();

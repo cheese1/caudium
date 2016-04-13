@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -106,15 +106,6 @@ private constant default_error_return =
 //
 // Helper methods
 //
-private void notice(string msg, mixed ... args) 
-{
-    report_notice("DATA_COLLECTOR(notice): " + msg + "\n", @args);
-}
-
-private void error(string msg, mixed ... args) 
-{
-    report_error("DATA_COLLECTOR(error): " + msg + "\n", @args);
-}
 
 private void debug(string msg, mixed ... args) 
 {

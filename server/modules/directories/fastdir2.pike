@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -96,7 +96,6 @@ inline string link(string a, string b)
 string find_readme(string path, object id)
 {
   string rm, f;
-  object n;
   foreach(({ "README.html", "README" }), f)
   {
     rm=caudium->try_get_file(path+f, id);
@@ -198,8 +197,7 @@ mapping parse_directory(object id)
 {
   string f;
   string dir;
-  array indexfiles;
-
+  
   f=id->not_query;
 
   if(strlen(f) > 1 ?  f[-1] != '/' : f != "/")

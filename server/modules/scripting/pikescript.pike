@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2004 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2004 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -157,11 +157,10 @@ void my_error(array err, string|void a, string|void b)
 array|mapping call_script(function fun, object id, object file)
 {
   mixed result, err;
-  string s;
   object privs;
   if(!functionp(fun))
     return 0;
-  string|array (int) uid, olduid;
+  string|array (int) uid;
   array us; // really, not the best solution.
 
   if(id->rawauth && QUERY(fork_exec) && (!QUERY(rawauth) || !QUERY(clearpass)))

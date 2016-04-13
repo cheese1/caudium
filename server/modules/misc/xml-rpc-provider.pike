@@ -26,7 +26,6 @@
 constant cvs_version="$Id$";
 
 #include <module.h>
-#include <stdio.h>
 inherit "module";
 inherit "caudiumlib";
 

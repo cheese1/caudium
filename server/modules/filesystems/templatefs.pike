@@ -21,7 +21,6 @@
 //  unix or roxen-guru.
 
 #include <module.h>
-#include <stdio.h>
 inherit "caudiumlib";
 inherit "module";
 
@@ -212,8 +211,6 @@ mixed find_file( string f, object id )
 
   if(id->misc->templatefs_internal_get)
     return 0;
-
-  string template, vtemplate;
 
   mapping defines = id->misc->defines || ([]);
   id->misc->defines = defines;

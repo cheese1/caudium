@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2002-2003 The Caudium Group
+ * Copyright ï¿½ 2002-2003 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -351,7 +351,7 @@ protected string make_monthyear_selector(object id, mapping my_args, object now,
     "valign" : "top",
     "colspan" : id->misc->_calendar->cols
   ]);
-  string   contents, contents1;
+  string   contents;
     
   ds_row->bgcolor = my_args->ds_bgcolor || QUERY(ds_bgcolor);
   contents = make_ds_form(id, my_args, now, target);
@@ -437,7 +437,7 @@ string make_monthdays_grid(object id, mapping my_args, object now,
   md_text->href = "javascript:void()";
   md_todaytext->href = "javascript:void()";
     
-  int      x, y, doing_now, dow_start, curday, today;
+  int      x, y, dow_start, curday, today;
   object   month;
     
   rcontents = "";
@@ -614,7 +614,6 @@ protected int value_in_range(int val, array(mapping) range, int rel, void|int mi
 protected multiset check_in_range(object date, mapping range, int maxdays)
 {
   int      day, month, year, week;
-  mixed    error;
   multiset ret = (<>);
   
   if (!range || !date)
@@ -1054,9 +1053,8 @@ protected string hotdate_tag(string tag, mapping args, object id)
 
     id->misc->_calendar->hotdates += ({range});
   } else if (before || after) {
-    mapping  range;
     mixed    error;
-    object   now, then;
+    object   now;
 
     error = catch {
       now = Calendar.now();
