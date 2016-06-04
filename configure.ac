@@ -446,11 +446,13 @@ for PIKE in $PIKES_TO_CHECK; do
         continue
       else
          FOUND_PIKE=1
+	 PIKE_VERSION=$THIS_PIKE_VER
 	 break;
          echo " => too new (but using anyway due to --with-any-pike-version)"
       fi
     else
       FOUND_PIKE=1
+      PIKE_VERSION=$THIS_PIKE_VER
       echo " => good version"
       break;
     fi
