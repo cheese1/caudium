@@ -10,12 +10,12 @@ AC_REVISION($Revision: 1.65 $)
 # Some prerequisites of ours
 #
 # The oldest version of Pike we run
-REQ_MIN_PIKE_MAJOR=7
-REQ_MIN_PIKE_MINOR=6
-REQ_MIN_PIKE_BUILD=112
+REQ_MIN_PIKE_MAJOR=8
+REQ_MIN_PIKE_MINOR=0
+REQ_MIN_PIKE_BUILD=0
 # But on the other end we can't run Pike above or equal this one
-REQ_MAX_PIKE_MAJOR=7
-REQ_MAX_PIKE_MINOR=7
+REQ_MAX_PIKE_MAJOR=8
+REQ_MAX_PIKE_MINOR=1
 REQ_MAX_PIKE_BUILD=0
 
 # Some DMALLOC and usefull macros
@@ -445,67 +445,22 @@ for PIKE in $PIKES_TO_CHECK; do
         echo " => too new"
         continue
       else
+         FOUND_PIKE=1
+	 break;
          echo " => too new (but using anyway due to --with-any-pike-version)"
       fi
     else
+      FOUND_PIKE=1
       echo " => good version"
+      break;
     fi
 
-  
-
-    PIKE_DIRNAME="`dirname $PIKE`"
-    for PIKE_INCDIR in $PIKE_DIRNAME/.. \
-                       $PIKE_DIRNAME/../..\
-                       $PIKE_DIRNAME/../../..\
-                       $PIKE_DIRNAME/../../../.. ; do
-      for INCDIR in $PIKE_INCDIR/pike/$THIS_PIKE_VER/include/pike \
-                  $PIKE_INCDIR/include/pike/`basename $PIKE` \
-                  $PIKE_INCDIR/include/`basename $PIKE` \
-                  $PIKE_INCDIR/include/pike/${THIS_PIKE_VER} \
-                  $PIKE_INCDIR/include/pike${THIS_PIKE_VER} \
-                  $PIKE_INCDIR/include/pike$THIS_PIKE_VER \
-                  $PIKE_INCDIR/include/pike${THIS_PIKE_MAJOR}.${THIS_PIKE_MINOR}\
-                  $PIKE_INCDIR/include/pike/${THIS_PIKE_MAJOR}.${THIS_PIKE_MINOR} \
-                  $PIKE_INCDIR/include/pike/pike${THIS_PIKE_MAJOR}.${THIS_PIKE_MINOR} \
-                  $PIKE_INCDIR/include/pike \
-                  $PIKE_INCDIR/src ; do
-
-	if test ! -f $INCDIR/version.h; then
-					echo "No version.h in $INCDIR"
-          continue
-        else
-					echo "Using $INCDIR as the C include directory"
-          cd $INCDIR
-          INCLUDE_DIR=`pwd`
-	fi
-	if test -f version.h; then
-	  C_PIKE_MAJOR=`cat version.h | grep PIKE_MAJOR_VERSION | tr -s ' ' | cut -d ' ' -f 3`
-	  C_PIKE_MINOR=`cat version.h | grep PIKE_MINOR_VERSION | tr -s ' ' | cut -d ' ' -f 3`
-	  C_PIKE_BUILD=`cat version.h | grep PIKE_BUILD_VERSION | tr -s ' ' | cut -d ' ' -f 3`
-
-	  if test $C_PIKE_MAJOR -ne $THIS_PIKE_MAJOR -o $C_PIKE_MINOR -ne $THIS_PIKE_MINOR -o $C_PIKE_BUILD -ne $THIS_PIKE_BUILD; then
-	    echo -n
-	    break
-	  fi
-	  echo "$INCLUDE_DIR"
-	  FOUND_PIKE=1
-	  PIKE_VERSION=$THIS_PIKE_VER
-	  PIKE_INCLUDE_DIRS="$PIKE_INCLUDE_DIRS -I$INCLUDE_DIR"
-	  break
-	else
-	  echo -n
-	fi
-      done
-    done
-  fi
-  if test "x$FOUND_PIKE" = "x1"; then
-    break
   fi
 done
 
 cd $OLD_DIR
 if test "x$FOUND_PIKE" = "x1"; then 
-  AC_MSG_RESULT([found Pike $PIKE_VERSION ($PIKE) with C headers in $PIKE_INCLUDE_DIRS])
+  AC_MSG_RESULT([found Pike $PIKE_VERSION ($PIKE)])
 else
   cat << EOF
 *****************************************************************************
