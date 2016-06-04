@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -183,7 +183,7 @@ static INLINE struct mapping *encode_mapping(struct mapping *mapping2encode, int
 
   NEW_MAPPING_LOOP(mapping2encode->data)
   {
-    if (k->ind.type != T_STRING || k->val.type != T_STRING)
+    if (TYPEOF(k->ind) != T_STRING || TYPEOF(k->val) != T_STRING)
       continue;
     
 
@@ -291,7 +291,7 @@ static void f_make_tag_attributes(INT32 args)
    */
   max_shift = 0;
   NEW_MAPPING_LOOP(in->data) {
-    if(k->ind.type!=T_STRING || k->val.type!=T_STRING) continue;
+    if(TYPEOF(k->ind)!=T_STRING || TYPEOF(k->val)!=T_STRING) continue;
     if(k->ind.u.string->size_shift > max_shift)
       max_shift = k->ind.u.string->size_shift;
     if(k->val.u.string->size_shift > max_shift)
@@ -302,7 +302,7 @@ static void f_make_tag_attributes(INT32 args)
 
   NEW_MAPPING_LOOP(safe_in->data)
   {
-    if (k->ind.type != T_STRING || k->val.type != T_STRING)
+    if (TYPEOF(k->ind) != T_STRING || TYPEOF(k->val) != T_STRING)
       continue;
     /* alloc enough space for name="value" */
     len = k->ind.u.string->len + k->val.u.string->len + 5;
@@ -475,7 +475,8 @@ static void f_buf_append( INT32 args )
     return;
   }
 
-  skey.type = sval.type = T_STRING;
+  SET_SVAL_TYPE(skey, T_STRING); 
+  SET_SVAL_TYPE(sval, T_STRING);
 
   sval.u.string = make_shared_binary_string( (char *)pp, BUF->pos - pp);
   low_mapping_insert(BUF->other, SVAL(data), &sval, 1); /* data */
@@ -559,7 +560,7 @@ static void f_buf_append( INT32 args )
       for(j=os;j<l;j++)  if( in[j] == '\n' || in[j]=='\r')  break; 
 
       if((tmp = low_mapping_lookup(BUF->headers, &skey)) &&
-         tmp->type == T_STRING)
+         TYPEOF(*tmp) == T_STRING)
       {
         int len = j - os + 1;
         int len2 = len +tmp->u.string->len;
@@ -765,8 +766,8 @@ static int get_next_header(unsigned char *heads, int len,
   int data, count, colon, count2=0;
   struct svalue skey, sval;
 
-  skey.type = T_STRING;
-  sval.type = T_STRING;
+  SET_SVAL_TYPE(skey, T_STRING);
+  SET_SVAL_TYPE(sval, T_STRING);
   
   for(count=0, colon=0; count < len; count++) {
     switch(heads[count]) {
@@ -812,7 +813,7 @@ void entity_callback(char *entname, char params[], ENT_CBACK_RESULT *res,
   if(tmp)
   {
     int i;
-    if(tmp->type != T_OBJECT)
+    if(TYPEOF(*tmp) != T_OBJECT)
       Pike_error("_Caudium.parse_entities(): expected object.\n");
 
    i=find_identifier("get", tmp->u.object->prog);
@@ -829,7 +830,7 @@ void entity_callback(char *entname, char params[], ENT_CBACK_RESULT *res,
      push_array_items(arr_extra_args);
    }
    apply_low(tmp->u.object, i, 1 + nb_of_args);
-   if(Pike_sp[-1].type==T_STRING)
+   if(TYPEOF(Pike_sp[-1])==T_STRING)
    {
       tmp2 = malloc(Pike_sp[-1].u.string->len);
 
@@ -849,7 +850,7 @@ void entity_callback(char *entname, char params[], ENT_CBACK_RESULT *res,
      pop_stack();
 
    }
-   else if(Pike_sp[-1].type == T_INT && Pike_sp[-1].u.integer == 0)
+   else if(TYPEOF(Pike_sp[-1]) == T_INT && Pike_sp[-1].u.integer == 0)
    {
     res->buf = NULL;
     res->buflen = 0;
@@ -906,9 +907,9 @@ static void f_parse_entities( INT32 args )
   ENT_RESULT *eres;
   if (args<2)
     SIMPLE_TOO_FEW_ARGS_ERROR("_Caudium.parse_entities", 2);
-  if(Pike_sp[-args].type != PIKE_T_STRING)
+  if(TYPEOF(Pike_sp[-args]) != PIKE_T_STRING)
     Pike_error("Wrong argument 1 to _Caudium.parse_entities\n");
-  if(Pike_sp[1-args].type != PIKE_T_MAPPING)
+  if(TYPEOF(Pike_sp[1-args]) != PIKE_T_MAPPING)
     Pike_error("Wrong argument 2 to _Caudium.parse_entities\n");
   input = Pike_sp[-args].u.string;
   scopemap = Pike_sp[1-args].u.mapping;
@@ -1003,7 +1004,8 @@ static void f_parse_query_string( INT32 args )
   
   get_all_args("_Caudium.parse_query_string", args, "%S%m%U", &query,
                &variables, &emptyvars);
-  skey.type = sval.type = T_STRING;
+  SET_SVAL_TYPE(skey, T_STRING);
+  SET_SVAL_TYPE(sval, T_STRING);
   /* end of query string */
   end = (unsigned char *)(query->str + query->len);
   name = ptr = (unsigned char *)query->str;
@@ -1068,7 +1070,7 @@ static void f_parse_query_string( INT32 args )
 
           if (!valulen) {
             /* valueless, add the name to the multiset */
-            skey.type = T_STRING;
+            SET_SVAL_TYPE(skey, T_STRING);
             skey.u.string = make_shared_binary_string(name, namelen);
             if (!skey.u.string)
               Pike_error("Out of memory.\n");
@@ -1083,7 +1085,7 @@ static void f_parse_query_string( INT32 args )
           }
           
           exist = low_mapping_lookup(variables, &skey);
-          if (!exist || exist->type != T_STRING) {
+          if (!exist || TYPEOF(*exist) != T_STRING) {
             sval.u.string = url_decode(equal, valulen, 0, 0);
             if (!sval.u.string) /* OOM. Bail out */
               Pike_error("Out of memory.\n");
@@ -1156,7 +1158,7 @@ static void f_parse_prestates( INT32 args )
   for(i = 2; i <= prestate_end; i++) {
     if (url->str[i] == ',' || url->str[i] == ')') {
       int len = i - last_start;
-      ind.type = T_STRING;
+      SET_SVAL_TYPE(ind, T_STRING);
       
       switch(done_first) {
           case 0:
@@ -1942,8 +1944,8 @@ static void f_program_object_memory_usage(INT32 args)
    */
   push_mapping(m = allocate_mapping(100));
 
-  o_sv.type = PIKE_T_OBJECT;
-  o_sv.subtype = 0;
+  SET_SVAL_TYPE(o_sv, PIKE_T_OBJECT);
+  SET_SVAL_SUBTYPE(o_sv, 0);
 
   for (o_sv.u.object = first_object; o_sv.u.object;
        o_sv.u.object = o_sv.u.object->next) {
@@ -1952,7 +1954,7 @@ static void f_program_object_memory_usage(INT32 args)
       continue;
     if ((val = low_mapping_lookup(m, &o_sv))) {
 #ifdef PIKE_DEBUG
-      if (val->type != PIKE_T_INT) Pike_fatal("...\n");
+      if (TYPEOF(*val) != PIKE_T_INT) Pike_fatal("...\n");
 #endif /* PIKE_DEBUG */
       val->u.integer += o_sv.u.object->prog->storage_needed;
     } else {
@@ -2017,14 +2019,14 @@ void pike_module_init( void )
   
   strs.mta_equals_p = MKPCHARP_STR(strs.mta_equals.u.string);
   
-  SVAL(data)->type       = T_STRING;
-  SVAL(file)->type       = T_STRING;
-  SVAL(method)->type     = T_STRING;
-  SVAL(protocol)->type   = T_STRING;
-  SVAL(query)->type      = T_STRING;
-  SVAL(raw_url)->type    = T_STRING;
-  SVAL(mta_slash)->type  = T_STRING;
-  SVAL(mta_equals)->type = T_STRING;
+  SET_SVAL_TYPE(*SVAL(data), T_STRING);
+  SET_SVAL_TYPE(*SVAL(file), T_STRING);
+  SET_SVAL_TYPE(*SVAL(method), T_STRING);
+  SET_SVAL_TYPE(*SVAL(protocol), T_STRING);
+  SET_SVAL_TYPE(*SVAL(query), T_STRING);
+  SET_SVAL_TYPE(*SVAL(raw_url), T_STRING);
+  SET_SVAL_TYPE(*SVAL(mta_slash), T_STRING);
+  SET_SVAL_TYPE(*SVAL(mta_equals), T_STRING);
 
   for (i = 0; i < XML_UNSAFECHARS_SIZE; i++)
   {
