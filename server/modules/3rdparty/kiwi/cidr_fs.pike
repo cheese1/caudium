@@ -1,7 +1,7 @@
 /* -*-Pike-*-
  *
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -135,7 +135,7 @@ class IP_check {
   //!   1, if it is inside, 0 if it is outside, 255 if the IP is 
   //!   not a IPv4 IP, 254 if the CIDR is not a CIDR.
   int check(string ipstr) {
-    int   a1, a2, a3, a4, mlen;
+    int   a1, a2, a3, a4;
                                 
     if (_badmask == 1)
       return 254;

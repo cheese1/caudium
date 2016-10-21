@@ -208,7 +208,6 @@ array(string) last_dirs=0, last_dirs_expand;
 string load_from_dirs2 (array dirs, string f, object conf)
 {
   string dir;
-  object o;
   if (!equal(dirs,last_dirs))
   {
     last_dirs_expand = ({});

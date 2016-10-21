@@ -2,7 +2,7 @@
 /*
  * pmenu.pike
  *
- * Copyright András Horváth <raas@dawn.elte.hu>
+ * Copyright Andrï¿½s Horvï¿½th <raas@dawn.elte.hu>
  *
  */
 
@@ -25,7 +25,6 @@ string pmenu(string tag, mapping m, string contents, object id)
 	string pres,val; // current item's prestate and value
 	int pos;	 // tmp, position of the first ":"
 	array(array) items=({ }); // all the menu items with prestates
-	string tmp; // whatever
 
 	foreach(contents/"\n",string s) if(sizeof(s)) // empty lines don't count
 	{

@@ -1,7 +1,7 @@
 /* Dear Emacs, this is a -*-pike-*- source file */
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2002 The Caudium Group
+ * Copyright ï¿½ 2002 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -451,10 +451,9 @@ class File
   private string name_of_module( object m )
   {
     string name = "";
-    mapping mod;
-
 #ifdef CAUDIUM
 #if constant(caudiump)
+    mixed mod;
     foreach(values(caudiump()->current_configuration->modules), mod) {
       if(mod->copies) {
         int i;

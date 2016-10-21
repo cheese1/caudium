@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2001 The Caudium Group
- * Copyright © 2001 Davies, Inc
+ * Copyright ï¿½ 2001 The Caudium Group
+ * Copyright ï¿½ 2001 Davies, Inc
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -25,8 +25,8 @@
 #include <module.h>
 inherit "module";
 inherit "caudiumlib";
-#include <stdio.h>
-#include <array.h>
+//#include <stdio.h>
+//#include <array.h>
 //#include <simulate.h>
 
 //! module: Freesite Layout

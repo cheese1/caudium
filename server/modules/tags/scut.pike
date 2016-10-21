@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
+ * Copyright ï¿½ 2000-2005 The Caudium Group
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -78,7 +78,7 @@ string scut(string tag_name, mapping args, string contents,
  {
   int max=(int) args->max;
   if (max > 1) max = max - 1;
-  contents = Protocols.HTTP.unentity(contents);
+  contents = Parser.parse_html_entities(contents);
   if(sizeof(contents) > max)
   {
     if(args->postfix)

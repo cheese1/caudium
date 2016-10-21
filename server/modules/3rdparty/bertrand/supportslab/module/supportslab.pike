@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2003 The Caudium Group
+ * Copyright ï¿½ 2003 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -167,12 +167,8 @@ string container_supportslab_form(string tagname, mapping args, string contents,
       "supportslab_supports"  : container_supportslab_supports,
     ]);
 
-#if constant(parse_html)
   contents = parse_html(contents, tags, containers, id);
-#else
-  contents = spider.parse_html(contents, tags, containers, id);
-#endif
-  
+
   args->name   = "supportslab_form";
   args->method = "get";
   args->action = id->raw_url;

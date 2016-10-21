@@ -1,6 +1,6 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2002 The Caudium Group
+ * Copyright ï¿½ 2002 The Caudium Group
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -22,7 +22,7 @@
 /*
  *
  * The gFaq module and the accompanying code is 
- * Copyright © 2002 Davies, Inc
+ * Copyright ï¿½ 2002 Davies, Inc
  *
  * This code is released under the LGPL license and is part of the Caudium
  * WebServer.
@@ -79,8 +79,6 @@ private void open_database(object id)
 {
   if (db && objectp(db))
     return;
-
-  mixed error;
   
   LOCK();
   if (id->conf->sql_connect)
