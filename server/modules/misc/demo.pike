@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -85,7 +85,7 @@ mixed find_file( string f, object id )
   if(id->variables->go)
     return Caudium.HTTP.redirect(query("location")+id->variables->pos,id);
   if (!mdb) {
-    mdb = Yabu.db(".demo-bookmarks", "wcCr")["demo"];
+    mdb = Yabu.DB(".demo-bookmarks", "wcCr")["demo"];
     if(!mdb[42])
       mdb[42]=
 #"<for variable=i from=99 to=1 step=-1>
