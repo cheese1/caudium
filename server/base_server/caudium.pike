@@ -52,7 +52,7 @@ object snmp_agent;
 
 object http_error = http_error_handler();
 
-// Inherits
+// Inherits  
 inherit "read_config";
 #ifdef NO_DNS
 inherit "dummy_hosts";
@@ -857,6 +857,18 @@ mixed configuration_parse(mixed ... args)
   if(args) 
     return configuration_interface()->configuration_parse(@args);
 }
+
+mixed xmlrpc_parse(mixed ... args)
+{
+#ifdef THREADS
+  object key;
+  catch(key = configuration_lock->lock());
+#endif
+
+  if(args) 
+    return configuration_interface()->xmlrpc_parse(@args);
+}
+
 
 ADT.History error_log = ADT.History(500);
 

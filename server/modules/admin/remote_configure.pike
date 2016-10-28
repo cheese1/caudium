@@ -20,7 +20,7 @@
  */
 
 //
-//! module: Configuration interface
+//! module: XMLRPC configuration
 //!  This module can be used to access the configuration interface from 
 //!  a location, like a normal filesystem. It can be used to access the
 //!  configuration interface through a firewall.
@@ -177,7 +177,7 @@ if(pass)
   
 //  id->conf = 0;
   id->not_query = "/" + f;
-  ret = caudium->configuration_parse( id );
+  ret = caudium->xmlrpc_parse( id );
   id->not_query = old_file;
   id->conf = old_conf;
   id->auth = old_auth;

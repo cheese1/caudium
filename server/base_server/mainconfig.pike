@@ -1,7 +1,7 @@
 /*
  * Caudium - An extensible World Wide Web server
- * Copyright © 2000-2005 The Caudium Group
- * Copyright © 1994-2001 Roxen Internet Software
+ * Copyright ï¿½ 2000-2005 The Caudium Group
+ * Copyright ï¿½ 1994-2001 Roxen Internet Software
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -178,6 +178,8 @@ class Node {
   }
 }
 
+
+
 //!
 int restore_more_mode()
 {
@@ -196,6 +198,53 @@ void save_more_mode()
     rm(caudium->QUERY(ConfigurationStateDir) + ".more_mode");
 }
 
+
+mapping xmlrpc_parse(object id) {
+  object X;
+
+ // Permission denied by userid?
+  if(!id->misc->read_allow)
+  {
+    if(!conf_auth_ok(id))
+      return Caudium.HTTP.auth_required("Caudium maintenance"); // Denied
+  } else {
+    if(sizeof(id->variables)) // This is not 100% neccesary, really.
+      id->variables = ([ ]);
+  }
+
+  int off = search(id->raw, "\r\n\r\n");
+
+  if(off<=0) error("invalid request format.\n");
+  if(catch(X=Protocols.XMLRPC.decode_call(id->raw[(off+4) ..])))
+  {
+    error("Error decoding the XMLRPC Call. Are you not speaking XMLRPC?\n");
+  }
+ 
+  mixed resp;
+  mixed err;
+ 
+  // X->method_name;
+  // X->params;
+
+  switch(X->method_name) {
+  
+    case "list_configurations":
+      resp = ({});
+      foreach(caudium->configurations, mixed o)
+        resp += ({o->name});
+      break;
+  }
+
+ if(err)
+  {
+    return Caudium.HTTP.string_answer(Protocols.XMLRPC.encode_response_fault(1, err[0]), "text/xml");
+  }
+  else
+  {
+    return Caudium.HTTP.string_answer(Protocols.XMLRPC.encode_response(({resp})), "text/xml");
+  } 
+
+}
 
 //!
 void create()
