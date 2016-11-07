@@ -576,7 +576,7 @@ int authenticate(string user, string password)
 
   if(QUERY(passwordformat)=="MD5")
   {
-    if(Crypto.make_crypt_md5(password, auth_password) == auth_password)
+    if(Crypto.verify_crypt_md5(password, auth_password))
       return 1;
     else return -1;
   }  
