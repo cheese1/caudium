@@ -3964,7 +3964,7 @@ void create(string config)
          "scope-parsing code will attempt to make this a variable "
          "called \"form.variable\" in the \"new\" scope - and since "
          "there is no scope called \"new\", the action will fail - "
-         "this breaks compatablity with existing RXML. A small example "
+         "this breaks compatibility with existing RXML. A small example "
          "to illustrate the situation:</p>"
          "<blockquote><pre>"
          "&lt;if variable=\"new.formvar is \"&gt;\n"
